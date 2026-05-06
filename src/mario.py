@@ -7,6 +7,7 @@ Usage:
 """
 
 import sys
+import time
 from ibm4610 import IBM4610
 
 # ---------------------------------------------------------------------------
@@ -28,9 +29,7 @@ Ab5 = 831;  A5  = 880
 # ---------------------------------------------------------------------------
 s, e, q, dq, h = 1, 2, 3, 4, 6
 
-# REST: frequency=0 maps to the lowest note at minimum volume (vol=1).
-# True silence is not supported by the ESC BEL command — this is as
-# close as the hardware gets.
+# REST: host-side sleep — no beep command is sent, giving true silence.
 REST = 0
 
 # ---------------------------------------------------------------------------
@@ -86,17 +85,20 @@ MELODY = [
 
 
 def play(p: IBM4610, melody: list, volume: int = 80) -> None:
-    """Buffer all notes then flush once — printer plays them sequentially.
+    """Play melody note-by-note with true silence for REST entries.
 
-    Tuples with frequency=REST (0) are sent as minimum-volume lowest-note
-    beeps — the closest approximation to silence the ESC BEL command allows.
+    Each note is flushed immediately so the printer starts it right away.
+    REST entries sleep on the host side without sending any beep command,
+    producing true silence for the rest duration.
     """
+    tick = 0.1   # seconds per duration unit (100 ms)
     for freq, dur in melody:
         if freq == REST:
-            p.beep(duration_100ms=dur, frequency=1, volume=1)
+            time.sleep(dur * tick)
         else:
             p.beep(duration_100ms=dur, frequency=freq, volume=volume)
-    p.flush()
+            p.flush()
+            time.sleep(dur * tick)
 
 
 def main() -> None:
