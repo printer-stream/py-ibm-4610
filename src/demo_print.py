@@ -245,22 +245,31 @@ def build_demo(p: IBM4610) -> None:
 
     p.alignment(ALIGN_LEFT)
 
-    # -- 17. Inline bitmap (checkerboard) ----------------------------------
+    # -- 17. Inline bitmap -------------------------------------------------
     section(p, "15. INLINE BITMAP")
 
-    # IBM 4610 PRINT_LOGOS (ESC * density width_bytes height_bytes data).
-    # width_bytes = pixel_columns/8, height_bytes = pixel_rows/8.
-    # blockSize = width_bytes * height_bytes * 8 bytes of data, row-major.
-    # 64 pixels wide x 8 pixels tall: width_bytes=8, height_bytes=1, data=64 B.
-    # Alternating 0xAA/0x55 rows produce a checkerboard pattern.
-    bmp_width  = 8   # 64 pixel columns / 8
-    bmp_height = 1   # 8 pixel rows / 8
-    bmp_data   = bytes([0xAA if i % 2 == 0 else 0x55
-                        for i in range(bmp_width * bmp_height * 8)])
-    p.write(b"Checkerboard (64 cols x 8 dots):\n")
-    p.print_bitmap(density=DENSITY_NORMAL,
-                   width_bytes=bmp_width, height_bytes=bmp_height,
-                   data=bmp_data)
+    # IBM 4610 PRINT_LOGOS: ESC * density width_bytes height_bytes data
+    # Data is column-major: for each of (width_bytes*8) dot-columns, store
+    # height_bytes bytes (each byte = 8 vertical dots, MSB=top).
+    # blockSize = width_bytes * height_bytes * 8.
+
+    # --- 15a. Solid black band (64 wide x 32 dots = ~4 mm tall) ---
+    bw, bh = 8, 4   # 64 columns, 32 dots tall
+    p.write(b"Solid black band (64x32 dots):\n")
+    p.print_bitmap(DENSITY_NORMAL, bw, bh, bytes([0xFF] * bw * bh * 8))
+    p.lf()
+
+    # --- 15b. Checkerboard: 8x8 dot cells, 64 wide x 64 dots tall ---
+    # Column c (0..63), byte b (0..7):
+    #   cell-col = c // 8,  cell-row = b  -> black if (cell-col+cell-row) odd
+    bw, bh = 8, 8
+    bmp_data = bytes(
+        0xFF if ((c // 8) + b) % 2 == 0 else 0x00
+        for c in range(bw * 8)
+        for b in range(bh)
+    )
+    p.write(b"Checkerboard (8x8 dot cells, 64x64 dots):\n")
+    p.print_bitmap(DENSITY_NORMAL, bw, bh, bmp_data)
     p.lf()
 
     # -- 18. Page mode -----------------------------------------------------

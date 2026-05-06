@@ -337,20 +337,24 @@ class IBM4610:
             timeout=5000,
         )
 
-    def read_response(self, size: int = 64, timeout: int = 2000) -> bytes:
+    def read_response(self, size: int = 0, timeout: int = 2000) -> bytes:
         """Read one HID interrupt IN report from the printer.
 
         Used to collect the printer's response to query commands such as
         :meth:`statistic`.  Returns the raw report bytes, or an empty
         ``bytes`` object if the read times out.
 
-        *size*:    maximum number of bytes to read (default 64).
+        *size*:    maximum number of bytes to read.  Defaults to
+                   ``self._report_size`` (1022) — must be at least the
+                   endpoint's wMaxPacketSize or libusb raises EOVERFLOW.
         *timeout*: USB read timeout in milliseconds (default 2000).
         """
         if self._dev is None:
             raise RuntimeError("Printer not open.")
         if self._ep_in is None:
             raise RuntimeError("No interrupt IN endpoint found on interface.")
+        if size <= 0:
+            size = self._report_size
         try:
             return bytes(self._dev.read(
                 self._ep_in.bEndpointAddress, size, timeout=timeout,
