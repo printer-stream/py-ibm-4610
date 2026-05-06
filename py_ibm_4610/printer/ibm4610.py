@@ -307,24 +307,30 @@ class IBM4610(BasePrinter):
             _log.debug("read_response: timeout or error (%s)", exc)
             return b""
 
-    def read_stat(self, stat_type: str, timeout: int = 2000) -> bytes:
+    def read_stat(self, stat_type: str, timeout: int = 5000) -> bytes:
         """Send a statistics query, flush immediately, and read the response.
 
         Drains all pending unsolicited IN packets first, sends the query,
-        then returns the raw report bytes (empty on timeout).
+        then loops reading packets until the one whose last byte echoes the
+        requested subcommand is received, or the timeout expires.
+
+        The printer continuously sends short (~8-byte) status frames on the
+        interrupt IN endpoint.  After mechanical operations such as cuts the
+        printer may take several seconds to finish before it processes the
+        stat query — hence the generous 5-second default timeout.
 
         Args:
             stat_type: key from :data:`~py_ibm_4610.STATISTIC_SUBCMDS`.
-            timeout:   USB read timeout in milliseconds (default 2000).
+            timeout:   USB read timeout in milliseconds (default 5000).
         """
         _log.debug("read_stat: querying %r", stat_type)
         self.drain_in()
-        self.statistic(stat_type)
+        self.statistic(stat_type)       # raises ValueError if stat_type unknown
         self.flush()
-        # The printer may send one or more short (~8-byte) unsolicited status
-        # frames before the actual stat response (~21 bytes).  Loop until we
-        # receive a packet long enough to contain the count field (≥15 bytes)
-        # or until the caller's timeout expires.
+        # Identify the stat response by its subcommand echo byte (last byte).
+        # This is more reliable than a length check alone: status frames and
+        # other unsolicited packets will not share the same echo byte.
+        expected_echo = STATISTIC_SUBCMDS[stat_type][0]
         deadline = time.monotonic() + timeout / 1000.0
         while True:
             remaining_ms = max(1, int((deadline - time.monotonic()) * 1000))
@@ -332,15 +338,16 @@ class IBM4610(BasePrinter):
             if not resp:
                 _log.debug("read_stat: %r timed out waiting for stat response", stat_type)
                 return b""
-            if len(resp) >= 15:
+            if len(resp) >= 15 and resp[-1] == expected_echo:
                 _log.debug("read_stat: %r → %d bytes", stat_type, len(resp))
                 return resp
             _log.debug(
-                "read_stat: discarding short IN packet (%d bytes), waiting for stat response",
-                len(resp),
+                "read_stat: discarding non-stat IN packet "
+                "(%d bytes, last=0x%02x, want echo=0x%02x)",
+                len(resp), resp[-1], expected_echo,
             )
 
-    def read_stat_value(self, stat_type: str, timeout: int = 2000) -> int:
+    def read_stat_value(self, stat_type: str, timeout: int = 5000) -> int:
         """Query a statistic and return the parsed integer count.
 
         Convenience wrapper: calls :meth:`read_stat` and passes the result
@@ -348,7 +355,7 @@ class IBM4610(BasePrinter):
 
         Args:
             stat_type: key from :data:`~py_ibm_4610.STATISTIC_SUBCMDS`.
-            timeout:   USB read timeout in milliseconds (default 2000).
+            timeout:   USB read timeout in milliseconds (default 5000).
 
         Returns:
             Integer count value from the printer's response.

@@ -15,10 +15,30 @@
 | USB interface | **1** (not 0) |
 | OUT endpoint | Control transfer — `bmRequestType=0x21, bRequest=0x09, wValue=0x0201` |
 | IN endpoint | Interrupt IN on interface 1 |
-| HID report ID | `0x35` (53 decimal) in the `wValue` field |
+| HID report ID | `0x35` (53 decimal) — returned by `getReportID()` in the Java driver |
 | Report size | **1022 bytes** (fixed, zero-padded) |
 
-### HID output report layout
+### HID report ID
+
+`getReportID()` in `Hid4610PrinterHandleImp` returns `53` (= `0x35`).  This
+is used as the report ID argument to `getReport()` on the IN path
+(`getHidDevice().getReport((byte)3, this.getReportID())`).
+
+The **OUT path** uses `setReport((byte)2, (byte)0, ...)`, which maps to a
+standard HID SET_REPORT control transfer:
+
+```
+bmRequestType = 0x21   (HID, host→device, interface)
+bRequest      = 0x09   (SET_REPORT)
+wValue        = 0x0200 | reportID   → 0x0200 in practice (report ID in payload)
+wIndex        = 1      (interface 1)
+```
+
+Note: the Python driver uses `wValue=0x0201` (output report type `0x02`,
+report ID field `0x01`) which is the correct HID class encoding.
+
+Source: `HidPOSPrinterHandleImp.setReport()` / `getReport()` and
+`Hid4610PrinterHandleImp.getReportID()` (returns `bipush 53`).
 
 Every command sent to the printer must be wrapped in a 1022-byte HID report:
 
@@ -142,19 +162,49 @@ def parse_stat_with_remainder(raw: bytes) -> tuple[int, int]:
     )
 ```
 
-Both functions are exported from `py_ibm_4610` and the method
+Both functions are exported from `py_ibm_4610`.
+
 `IBM4610.read_stat_value(stat_type)` wraps `read_stat()` + `parse_stat()`
-into a single call.
+into a single call with a 5-second default timeout (see §3.4).
 
-### Note on `bytestoFollow`
+### 3.3 — Identifying the stat response in the IN stream
 
-`createPrintDataEvent()` reads `bytestoFollow = Util.toInt(data[2], data[1])`
-and then allocates a buffer of `bytestoFollow - 8`. For the captured response
-`data[2]=0x00, data[1]=0x06` → `bytestoFollow=6`, giving `6-8=-2`, which
-is negative. The Java code evidently does not reach this path for statistic
-responses in the normal flow; the printer fires a `DirectIOEvent` instead
-(see `doHidRead()` lines 46–83). The byte offsets above were therefore
-determined empirically and verified against the hardware capture.
+The 4610 sends **continuous unsolicited ~8-byte status frames** on the
+interrupt IN endpoint (mirroring the Java `StatusDaemon` thread).  After
+mechanical operations (cuts, paper feeds) the printer may also send
+additional status frames while it finishes the work.  The response to a
+stat query therefore arrives among a stream of shorter frames.
+
+The reliable way to identify the stat response is the **subcommand echo
+byte at `resp[-1]`**: the printer mirrors back the subcommand byte from
+the request (e.g. `0x81` for `PaperCutCount`).  Status frames will not
+have this value.  The driver loop is:
+
+```python
+expected_echo = STATISTIC_SUBCMDS[stat_type][0]
+while True:
+    resp = read_response(timeout=remaining_ms)
+    if not resp:
+        return b""  # timeout
+    if len(resp) >= 15 and resp[-1] == expected_echo:
+        return resp   # this is the stat response
+    # discard status frames and other non-stat packets
+```
+
+### 3.4 — Timeout after mechanical operations
+
+The printer processes commands sequentially from its internal queue.  If
+four cut commands are pending, the stat query is not processed until all
+four cuts complete.  Each cut takes roughly 300–500 ms of physical time,
+so four cuts can consume ≈ 1.5–2 s before the stat response arrives.
+
+The default timeout in `read_stat` / `read_stat_value` is therefore
+**5000 ms**.  For workflows involving heavy mechanical activity before a
+stat query, pass a longer timeout explicitly:
+
+```python
+p.read_stat_value("PaperCutCount", timeout=10_000)
+```
 
 ---
 
@@ -268,7 +318,7 @@ driver. Final state after this reverse-engineering effort:
 | Base printer / buffer | `py_ibm_4610/printer/base.py` | Complete |
 | Full driver | `py_ibm_4610/printer/ibm4610.py` | Complete |
 | Receipt-only model | `py_ibm_4610/printer/ibm4610_1nr.py` | Complete (auto-selects receipt station on `open()`) |
-| Stat response parser | `py_ibm_4610/printer/ibm4610.py` | `parse_stat()`, `parse_stat_with_remainder()`, `read_stat_value()` |
+| Stat response parser | `py_ibm_4610/printer/ibm4610.py` | `parse_stat()`, `parse_stat_with_remainder()`, `read_stat_value()`; response identified by subcommand echo byte; 5 s default timeout |
 | Tests | `tests/` | 133 tests, all offline (no printer required) |
 | Build | `pyproject.toml` | `setuptools.build_meta`, wheel builds cleanly |
 
