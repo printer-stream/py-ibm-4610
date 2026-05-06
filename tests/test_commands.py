@@ -524,10 +524,24 @@ class TestReadStatStrideScan:
         assert result == _PAPER_CUT_RAW
 
     def test_no_match_returns_empty(self):
-        """All packets have wrong echo → read_stat returns b'' on deadline expiry."""
+        """No matching frame and printer goes silent → read_stat returns b''."""
         stub = self._make_stub([_STALE_RESPONSE])
         result = stub.read_stat("PaperCutCount", timeout=1)
         assert result == b""
+
+    def test_stale_batch_then_correct_packet_separate_reads(self):
+        """Stale batch (no match) then correct packet in the NEXT read.
+
+        This is the real hardware scenario: the printer's command queue holds
+        stale queries ahead of the current one.  The first read returns a
+        batch of stale responses; the second read returns our response.
+        read_stat must NOT give up after discarding the stale batch — it must
+        issue another read and find the frame.
+        """
+        stale_batch = _STALE_RESPONSE + _STALE_RESPONSE   # two stale frames
+        stub = self._make_stub([stale_batch, _PAPER_CUT_RAW])
+        result = stub.read_stat("PaperCutCount", timeout=5000)
+        assert result == _PAPER_CUT_RAW
 
     def test_libusb_timeout_larger_than_deadline(self):
         """read_response receives timeout = overall_timeout + 5000 (race guard).

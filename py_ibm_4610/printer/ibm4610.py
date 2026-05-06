@@ -354,33 +354,35 @@ class IBM4610(BasePrinter):
         self.flush()
         # Each stat response is exactly 21 bytes.  The printer may
         # concatenate multiple queued responses into one USB IN packet
-        # (e.g. a stale response from a previous session followed by the
+        # (e.g. stale responses from a previous session followed by the
         # current one).  Scan in 21-byte strides; the echo byte at offset
         # +20 within each frame uniquely identifies the stat type.
+        #
+        # Deadline policy: the Python deadline is only checked when
+        # read_response returns EMPTY (printer genuinely silent).  While the
+        # printer keeps delivering packets — even stale ones from a backlog —
+        # we keep reading, because our query is sitting behind them in the
+        # printer's FIFO command queue.  Bailing early on a non-matching
+        # packet would discard the very next packet that contains our answer.
+        #
+        # libusb timeout is set to timeout + 5 000 ms so that libusb never
+        # cancels a URB at the exact moment the printer delivers the response
+        # (observed race: ENOENT status + valid data lost).
         _STAT_FRAME = 21
         expected_echo = STATISTIC_SUBCMDS[stat_type][0]
-        deadline = time.monotonic() + timeout / 1000.0
-        # Use a libusb per-read timeout LARGER than the overall deadline so
-        # that libusb does not cancel a URB at the exact moment the printer
-        # delivers the response.  When a cancelled URB happens to carry
-        # valid data the kernel returns ENOENT + bytes; pyusb converts this
-        # to an exception and discards the payload, making the response
-        # invisible.  With a generous libusb timeout the cancellation race
-        # never triggers.  A 5-second grace beyond the Python deadline is
-        # more than enough margin.
         _libusb_timeout = timeout + 5_000
+        deadline = time.monotonic() + timeout / 1000.0
         while True:
-            if time.monotonic() >= deadline:
-                _log.debug("read_stat: %r deadline expired", stat_type)
-                return b""
             resp = self.read_response(timeout=_libusb_timeout)
             if not resp:
+                # Printer went silent — genuine timeout.
                 _log.debug(
-                    "read_stat: %r empty response from libusb (error or "
-                    "extended timeout fired)",
-                    stat_type,
+                    "read_stat: %r printer silent (libusb timeout=%dms)",
+                    stat_type, _libusb_timeout,
                 )
                 return b""
+            # Printer is actively responding — reset the deadline.
+            deadline = time.monotonic() + timeout / 1000.0
             # Scan all 21-byte-aligned frames in the received packet.
             for start in range(0, len(resp) - _STAT_FRAME + 1, _STAT_FRAME):
                 if resp[start + 20] == expected_echo:
@@ -392,7 +394,7 @@ class IBM4610(BasePrinter):
                     return frame
             _log.debug(
                 "read_stat: discarding %d-byte IN packet "
-                "(no frame with echo=0x%02x, hex=%s)",
+                "(no frame with echo=0x%02x, hex=%s) — stale backlog, continuing",
                 len(resp),
                 expected_echo,
                 resp[:48].hex(),
