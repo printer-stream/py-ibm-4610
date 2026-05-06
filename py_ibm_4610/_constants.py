@@ -12,7 +12,7 @@ Sourced from the official JavaPOS driver decompilation:
 VENDOR: int = 0x04B3
 """IBM/Toshiba USB vendor ID."""
 
-PRODUCT: int = 0x4535
+PRODUCT_1NR: int = 0x4535
 """IBM 4610 SureMark USB product ID."""
 
 IFACE: int = 1

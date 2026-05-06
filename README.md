@@ -26,13 +26,19 @@ Also udev features must listed and verified.
 ## Quick start
 
 ```python
-from py_ibm_4610 import IBM4610
+import logging
+from py_ibm_4610 import IBM4610, IBM4610_1NR, STATION_RECEIPT
+from py_ibm_4610 import FONT_A, FONT_B, FONT_C
+
+logging.basicConfig(
+    level=logging.DEBUG,
+)
 
 # Context manager opens and closes the USB connection automatically
-with IBM4610() as p:
-    p.select_station(STATION_RECEIPT)
+with IBM4610_1NR() as p:
+    p.select_font(FONT_C)
     p.bold(True).text("Hello, World!\n").bold(False)
-    p.feed(4)
+    p.feed(10)
     p.cut()
 ```
 

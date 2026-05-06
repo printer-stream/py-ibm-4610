@@ -20,7 +20,6 @@ Reference page demo::
 from .version import __version__
 
 # Printer classes
-from .printer.base        import BasePrinter
 from .printer.ibm4610     import IBM4610
 from .printer.ibm4610_1nr import IBM4610_1NR
 
@@ -30,7 +29,7 @@ from .ref_page import ReferencePage
 # Constants — USB
 from ._constants import (
     VENDOR,
-    PRODUCT,
+    PRODUCT_1NR,
     IFACE,
     REPORT_SIZE,
 )
@@ -145,12 +144,11 @@ __all__ = [
     # version
     "__version__",
     # classes
-    "BasePrinter",
     "IBM4610",
     "IBM4610_1NR",
     "ReferencePage",
     # USB
-    "VENDOR", "PRODUCT", "IFACE", "REPORT_SIZE",
+    "VENDOR", "PRODUCT_1NR", "IFACE", "REPORT_SIZE",
     # stations
     "STATION_NONE", "STATION_RECEIPT", "STATION_SLIP", "STATION_LABEL",
     # text

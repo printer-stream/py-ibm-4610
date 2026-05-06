@@ -1,14 +1,14 @@
-"""Tests for printer/base.py — BasePrinter buffer management (no hardware required)."""
+"""Tests for IBM4610 buffer management (no hardware required)."""
 
 import pytest
 
-from py_ibm_4610.printer.base import BasePrinter
+from py_ibm_4610.printer.ibm4610 import IBM4610
 
 
-class _StubPrinter(BasePrinter):
-    """Minimal concrete implementation for testing BasePrinter in isolation."""
+class _StubPrinter(IBM4610):
+    """Minimal concrete subclass for testing IBM4610 buffer management in isolation."""
 
-    def __init__(self, max_payload: int = BasePrinter._MAX_PAYLOAD):
+    def __init__(self, max_payload: int = IBM4610._MAX_PAYLOAD):
         super().__init__()
         self._MAX_PAYLOAD = max_payload
         self.sent: list[bytes] = []
@@ -44,17 +44,17 @@ class TestBuild:
     def test_build_returns_buffered_bytes(self):
         p = _StubPrinter()
         p.write(b"\x1B\x47\x01")
-        assert p.build() == b"\x1B\x47\x01"
+        assert p.drain() == b"\x1B\x47\x01"
 
     def test_build_clears_buffer(self):
         p = _StubPrinter()
         p.write(b"data")
-        p.build()
+        p.drain()
         assert bytes(p._buf) == b""
 
     def test_build_empty_returns_empty(self):
         p = _StubPrinter()
-        assert p.build() == b""
+        assert p.drain() == b""
 
 
 class TestFlush:

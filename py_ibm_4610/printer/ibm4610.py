@@ -1,25 +1,5 @@
-"""printer/ibm4610.py — IBM 4610 SureMark printer driver (USB HID transport).
-
-Implements the full command set reverse-engineered from the official
-JavaPOS driver (posj.jar):
-
-  - Cmd4610.java              — raw ESC/POS byte sequences
-  - Gen4610CmdFactory.java    — general command construction
-  - Font4610CmdFactory.java   — font / text attribute commands
-  - Grap4610CmdFactory.java   — graphics / barcode commands
-  - Print4610CmdFactory.java  — station routing
-
-Transport: USB HID (VID=0x04b3, PID=0x4535), Interface 1.
-Each HID output report is exactly 1022 bytes (7-byte header + payload).
-
-Quick start::
-
-    from py_ibm_4610 import IBM4610, STATION_RECEIPT
-
-    with IBM4610() as p:
-        p.select_station(STATION_RECEIPT)
-        p.bold(True).text("Hello, World!\\n").bold(False)
-        p.feed(4).cut()
+"""
+    IBM 4610 SureMark printer driver (USB interface).
 """
 
 from __future__ import annotations
@@ -29,9 +9,8 @@ import logging
 import usb.core
 import usb.util
 
-from .base import BasePrinter
 from .._constants import (
-    VENDOR, PRODUCT, IFACE, REPORT_SIZE,
+    IFACE, REPORT_SIZE,
     STATION_RECEIPT, STATION_SLIP, STATION_LABEL,
     ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT,
     FONT_A, FONT_B, FONT_C,
@@ -43,11 +22,11 @@ from .._constants import (
 )
 from .._transport import make_packet, MAX_PAYLOAD
 
-_log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
-class IBM4610(BasePrinter):
-    """Full-capability driver for the IBM / Toshiba 4610 SureMark printer.
+class IBM4610:
+    """IBM/Toshiba 4610 SureMark printer driver (USB HID).
 
     Commands are accumulated in an internal buffer via :meth:`write` and
     dispatched to the printer via :meth:`flush`.  All chainable command
@@ -57,40 +36,86 @@ class IBM4610(BasePrinter):
 
     Use :meth:`send_raw` to bypass buffering and transmit immediately.
 
-    Example::
-
-        with IBM4610() as p:
-            p.select_station(STATION_RECEIPT)
-            p.text("Hello, World!\\n")
-            p.feed(4)
-            p.cut()
+    Subclass this for model-specific restrictions (e.g. :class:`IBM4610_1NR`).
     """
 
-    #: USB vendor ID.
-    VENDOR_ID: int = VENDOR
-    #: USB product ID.
-    PRODUCT_ID: int = PRODUCT
-    #: HID interface number.
-    IFACE: int = IFACE
+    #: USB vendor ID — set by each model subclass.
+    VENDOR_ID:   int | None = None
+    #: USB product ID — set by each model subclass.
+    PRODUCT_ID:  int | None = None
+    #: HID interface number (same across the 4610 product line).
+    IFACE:       int = IFACE
     #: Bytes per HID SET_REPORT transfer.
     REPORT_SIZE: int = REPORT_SIZE
 
+    #: Maximum ESC/POS payload bytes per single :meth:`send_raw` call.
     _MAX_PAYLOAD: int = MAX_PAYLOAD  # 1015 bytes per packet
 
     def __init__(
         self,
-        vendor:      int = VENDOR,
-        product:     int = PRODUCT,
-        iface:       int = IFACE,
-        report_size: int = REPORT_SIZE,
+        vendor:      int | None = None,
+        product:     int | None = None,
+        iface:       int | None = None,
+        report_size: int | None = None,
     ) -> None:
-        super().__init__()
-        self._vendor      = vendor
-        self._product     = product
-        self._iface       = iface
-        self._report_size = report_size
+        self._buf:        bytearray = bytearray()
+        self._vendor      = vendor      if vendor      is not None else self.VENDOR_ID
+        self._product     = product     if product     is not None else self.PRODUCT_ID
+        self._iface       = iface       if iface       is not None else self.IFACE
+        self._report_size = report_size if report_size is not None else self.REPORT_SIZE
         self._dev         = None
-        self._ep_in       = None  # interrupt IN endpoint (populated in open())
+        self._in_endpoint = None
+
+    # ------------------------------------------------------------------
+    # Context manager
+    # ------------------------------------------------------------------
+
+    def __enter__(self) -> "IBM4610":
+        return self.open()
+
+    def __exit__(self, *_) -> None:
+        self.close()
+
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} buf={len(self._buf)}B>"
+
+    # ------------------------------------------------------------------
+    # Buffer management
+    # ------------------------------------------------------------------
+
+    def write(self, data: bytes) -> "IBM4610":
+        """Append raw *data* to the internal send buffer.
+
+        Nothing is transmitted until :meth:`flush` is called.
+        Returns *self* for method chaining.
+        """
+        self._buf.extend(data)
+        logger.debug("write: %d bytes (buffer total %d bytes)", len(data), len(self._buf))
+        return self
+
+    def flush(self) -> int:
+        """Send all buffered bytes in :attr:`_MAX_PAYLOAD`-byte chunks, then clear.
+
+        Returns total bytes transferred.
+        """
+        data = bytes(self._buf)
+        self._buf.clear()
+        chunks = max(1, -(-len(data) // self._MAX_PAYLOAD)) if data else 1
+        logger.debug("flush: %d bytes \u2192 %d chunk(s)", len(data), chunks)
+        total = 0
+        for offset in range(0, max(len(data), 1), self._MAX_PAYLOAD):
+            total += self.send_raw(data[offset: offset + self._MAX_PAYLOAD])
+        return total
+
+    def drain(self) -> bytes:
+        """Return all buffered bytes and clear the buffer *without* sending.
+
+        Useful for unit-testing command sequences.
+        """
+        data = bytes(self._buf)
+        self._buf.clear()
+        logger.debug("build: returning %d buffered bytes", len(data))
+        return data
 
     # ------------------------------------------------------------------
     # Transport — open / close
@@ -105,53 +130,61 @@ class IBM4610(BasePrinter):
         Raises:
             RuntimeError: if the printer cannot be found on the USB bus.
         """
-        _log.info(
+        logger.info(
             "Opening USB connection (VID=%s, PID=%s, iface=%d)",
             hex(self._vendor), hex(self._product), self._iface,
         )
+
         self._dev = usb.core.find(idVendor=self._vendor, idProduct=self._product)
         if self._dev is None:
             raise RuntimeError(
                 f"IBM 4610 printer not found "
                 f"(VID={self._vendor:#06x}, PID={self._product:#06x})."
             )
-        _log.debug("USB device found: %s", self._dev)
-        if self._dev.is_kernel_driver_active(self._iface):
-            _log.debug("Detaching kernel driver from interface %d", self._iface)
-            self._dev.detach_kernel_driver(self._iface)
-        usb.util.claim_interface(self._dev, self._iface)
-        _log.debug("Interface %d claimed", self._iface)
 
-        self._ep_in = None
+        logger.debug("USB device found: %s", self._dev)
+
+        if self._dev.is_kernel_driver_active(self._iface):
+            logger.debug("Detaching kernel driver from interface %d", self._iface)
+            self._dev.detach_kernel_driver(self._iface)
+
+        usb.util.claim_interface(self._dev, self._iface)
+        logger.debug("Interface %d claimed", self._iface)
+
+        self._in_endpoint = None
         for cfg in self._dev:
             for intf in cfg:
                 if intf.bInterfaceNumber == self._iface:
-                    for ep in intf:
-                        if (usb.util.endpoint_direction(ep.bEndpointAddress)
-                                == usb.util.ENDPOINT_IN):
-                            self._ep_in = ep
-                            _log.debug(
+                    for endpoint in intf:
+                        if (usb.util.endpoint_direction(endpoint.bEndpointAddress) == usb.util.ENDPOINT_IN):
+                            self._in_endpoint = endpoint
+                            logger.debug(
                                 "Interrupt IN endpoint: addr=0x%02x, maxPacketSize=%d",
-                                ep.bEndpointAddress, ep.wMaxPacketSize,
+                                endpoint.bEndpointAddress, endpoint.wMaxPacketSize,
                             )
                             break
-        if self._ep_in is None:
-            _log.warning("No interrupt IN endpoint found on interface %d", self._iface)
+
+        if self._in_endpoint is None:
+            logger.warning("No interrupt IN endpoint found on interface %d", self._iface)
+
         return self
 
     def close(self) -> None:
         """Release the USB interface and re-attach the kernel driver."""
         if self._dev is not None:
-            _log.info("Closing USB connection (iface=%d)", self._iface)
+            logger.info("Closing USB connection (iface=%d)", self._iface)
+
             try:
                 usb.util.release_interface(self._dev, self._iface)
-                _log.debug("Interface %d released", self._iface)
+                logger.debug("Interface %d released", self._iface)
                 self._dev.attach_kernel_driver(self._iface)
-                _log.debug("Kernel driver re-attached to interface %d", self._iface)
+                logger.debug("Kernel driver re-attached to interface %d", self._iface)
+
             except Exception as exc:
-                _log.debug("close: cleanup error (ignored): %s", exc)
+                logger.error(f"close: error (ignored) {exc.__class__.__name__}: {exc}")
+
             self._dev = None
-            self._ep_in = None
+            self._in_endpoint = None
 
     # ------------------------------------------------------------------
     # Transport — low-level send / receive
@@ -167,8 +200,10 @@ class IBM4610(BasePrinter):
         """
         if self._dev is None:
             raise RuntimeError("Printer not open — call open() or use a 'with' block.")
-        _log.debug("send_raw: %d payload bytes", len(data))
+
+        logger.debug("send_raw: %d payload bytes", len(data))
         pkt = make_packet(data, self._report_size)
+
         transferred = self._dev.ctrl_transfer(
             bmRequestType=0x21,           # HID, host→device, interface
             bRequest=0x09,                # SET_REPORT
@@ -177,7 +212,8 @@ class IBM4610(BasePrinter):
             data_or_wLength=pkt,
             timeout=5000,
         )
-        _log.debug("send_raw: %d wire bytes transferred", transferred)
+        logger.debug("send_raw: %d wire bytes transferred", transferred)
+
         return transferred
 
     def drain_in(self, timeout: int = 100) -> int:
@@ -192,18 +228,18 @@ class IBM4610(BasePrinter):
         Args:
             timeout: per-read USB timeout in milliseconds (default 100).
         """
-        if self._dev is None or self._ep_in is None:
-            _log.debug("drain_in: skipped (device not open)")
+        if self._dev is None or self._in_endpoint is None:
+            logger.debug("drain_in: skipped (device not open)")
             return 0
         count = 0
-        size = self._ep_in.wMaxPacketSize
+        size = self._in_endpoint.wMaxPacketSize
         while True:
             try:
-                self._dev.read(self._ep_in.bEndpointAddress, size, timeout=timeout)
+                self._dev.read(self._in_endpoint.bEndpointAddress, size, timeout=timeout)
                 count += 1
             except Exception:
                 break
-        _log.debug("drain_in: discarded %d stale IN packet(s)", count)
+        logger.debug("drain_in: discarded %d stale IN packet(s)", count)
         return count
 
     def read_response(self, size: int = 0, timeout: int = 2000) -> bytes:
@@ -221,19 +257,19 @@ class IBM4610(BasePrinter):
         """
         if self._dev is None:
             raise RuntimeError("Printer not open.")
-        if self._ep_in is None:
+        if self._in_endpoint is None:
             raise RuntimeError("No interrupt IN endpoint found on interface.")
         if size <= 0:
-            size = self._ep_in.wMaxPacketSize
-        _log.debug("read_response: reading up to %d bytes (timeout=%dms)", size, timeout)
+            size = self._in_endpoint.wMaxPacketSize
+        logger.debug("read_response: reading up to %d bytes (timeout=%dms)", size, timeout)
         try:
             data = bytes(self._dev.read(
-                self._ep_in.bEndpointAddress, size, timeout=timeout,
+                self._in_endpoint.bEndpointAddress, size, timeout=timeout,
             ))
-            _log.debug("read_response: received %d bytes", len(data))
+            logger.debug("read_response: received %d bytes", len(data))
             return data
         except Exception as exc:
-            _log.debug("read_response: timeout or error (%s)", exc)
+            logger.debug("read_response: timeout or error (%s)", exc)
             return b""
 
     def read_stat(self, stat_type: str, timeout: int = 2000) -> bytes:
@@ -241,32 +277,48 @@ class IBM4610(BasePrinter):
 
         Drains all pending unsolicited IN packets first, sends the query,
         then returns the raw report bytes (empty on timeout).
+        
+        TODO: This is not working.
 
         Args:
             stat_type: key from :data:`~py_ibm_4610.STATISTIC_SUBCMDS`.
             timeout:   USB read timeout in milliseconds (default 2000).
         """
-        _log.debug("read_stat: querying %r", stat_type)
+        logger.debug("read_stat: querying %r", stat_type)
         self.drain_in()
         self.statistic(stat_type)
         self.flush()
         resp = self.read_response(timeout=timeout)
-        _log.debug("read_stat: %r → %d bytes", stat_type, len(resp))
+        logger.debug("read_stat: %r → %d bytes", stat_type, len(resp))
         return resp
 
     # ------------------------------------------------------------------
     # Station / printer control  (Gen4610CmdFactory + Print4610CmdFactory)
     # ------------------------------------------------------------------
 
-    def reset(self) -> "IBM4610":
-        """Full hardware reset — ``RESET = [0x00, 0x40, 0x00]``."""
-        _log.debug("reset: issuing full hardware reset")
-        return self.write(bytes([0x00, 0x40, 0x00]))
+    def reset(self, flush: bool = False) -> "IBM4610":
+        """Full hardware reset — ``RESET = [0x00, 0x40, 0x00]``.
 
-    def reinit(self) -> "IBM4610":
-        """Software re-initialise — ``ESC @`` (0x1B 0x40)."""
-        _log.debug("reinit: software re-initialise")
-        return self.write(bytes([0x1B, 0x40]))
+        Flushes any buffered data first, then sends the reset command
+        immediately via :meth:`send_raw`.
+        """
+        logger.debug("reset: issuing full hardware reset")
+        if flush:
+            self.flush()
+        self.send_raw(bytes([0x00, 0x40, 0x00]))
+        return self
+
+    def reinit(self, flush: bool = False) -> "IBM4610":
+        """Software re-initialise — ``ESC @`` (0x1B 0x40).
+
+        Flushes any buffered data first, then sends the reinit command
+        immediately via :meth:`send_raw`.
+        """
+        logger.debug("reinit: software re-initialise")
+        if flush:
+            self.flush()
+        self.send_raw(bytes([0x1B, 0x40]))
+        return self
 
     def select_station(self, station: int) -> "IBM4610":
         """Select the active print station.
@@ -289,19 +341,19 @@ class IBM4610(BasePrinter):
             ValueError: for an unrecognised station code.
         """
         if station == STATION_RECEIPT:
-            _log.debug("select_station: RECEIPT")
+            logger.debug("select_station: RECEIPT")
             return self.write(bytes([
                 0x1B, 0x63, 0x30, 0x02,  # CR_COMM
                 0x1B, 0x63, 0x31, 0x02,  # CR_SETTINGS
             ]))
         if station == STATION_SLIP:
-            _log.debug("select_station: SLIP")
+            logger.debug("select_station: SLIP")
             return self.write(bytes([
                 0x1B, 0x63, 0x30, 0x04,  # DIP_COMM
                 0x1B, 0x63, 0x31, 0x04,  # DIP_SETTINGS
             ]))
         if station == STATION_LABEL:
-            _log.debug("select_station: LABEL")
+            logger.debug("select_station: LABEL")
             return self.write(bytes([0x1B, 0x63, 0x30, 0x08]))  # DIL_COMM
         raise ValueError(f"Unknown station: {station:#x}")
 
@@ -683,7 +735,7 @@ class IBM4610(BasePrinter):
         Flushes the buffer immediately.
         ``CUT_PAPER = [ESC c 0 2, ESC m]``
         """
-        _log.debug("cut: feed_lines=%d", feed_lines)
+        logger.debug("cut: feed_lines=%d", feed_lines)
         if feed_lines > 0:
             self.feed(feed_lines)
         self.write(bytes([
@@ -914,7 +966,7 @@ class IBM4610(BasePrinter):
     ) -> "IBM4610":
         """Print an inline raster bitmap — ``ESC * density width height data``.
 
-        Uses the IBM 4610 ``PRINT_LOGOS`` command (``{0x1B, 0x2A}``),
+        Uses the IBM 4610 ``PRINTloggerOS`` command (``{0x1B, 0x2A}``),
         mirroring ``Grap4610CmdFactory.createPrintBitmapCmd()``.
 
         Args:
@@ -967,16 +1019,16 @@ class IBM4610(BasePrinter):
             self.alignment(ALIGN_LEFT)
         return self
 
-    def set_logo(self, location: int) -> "IBM4610":
+    def setloggero(self, location: int) -> "IBM4610":
         """Define stored-logo position — ``GS : location``."""
         return self.write(bytes([0x1D, 0x3A, location & 0xFF]))
 
-    def print_set_logo(self, location: int) -> "IBM4610":
+    def print_setloggero(self, location: int) -> "IBM4610":
         """Print a stored logo — ``GS ^ location``, then request EC level."""
         self.write(bytes([0x1D, 0x5E, location & 0xFF]))
         return self.ec_level_request(buffered=True)
 
-    def download_logo(
+    def downloadloggero(
         self,
         density:      int,
         width_bytes:  int,
@@ -1174,7 +1226,7 @@ class IBM4610(BasePrinter):
 
         Returns the number of bytes transferred.
         """
-        _log.debug("print_line: %r", text[:80])
+        logger.debug("print_line: %r", text[:80])
         self.write(text.encode(encoding) + b'\r\n')
         return self.flush()
 
@@ -1195,7 +1247,7 @@ class IBM4610(BasePrinter):
 
         Returns total bytes transferred.
         """
-        _log.info("print_receipt: %d line(s), feed=%d, cut=%s", len(lines), feed, cut)
+        logger.info("print_receipt: %d line(s), feed=%d, cut=%s", len(lines), feed, cut)
         self.select_station(station)
         for line in lines:
             if isinstance(line, bytes):

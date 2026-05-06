@@ -12,7 +12,7 @@ silent mis-use of hardware that does not exist on this model.
 from __future__ import annotations
 
 from .ibm4610 import IBM4610
-from .._constants import STATION_RECEIPT, VENDOR, PRODUCT, IFACE, REPORT_SIZE
+from .._constants import STATION_RECEIPT, VENDOR, PRODUCT_1NR
 
 
 class IBM4610_1NR(IBM4610):
@@ -32,19 +32,10 @@ class IBM4610_1NR(IBM4610):
             p.feed(4).cut()
     """
 
-    def __init__(
-        self,
-        vendor:      int = VENDOR,
-        product:     int = PRODUCT,
-        iface:       int = IFACE,
-        report_size: int = REPORT_SIZE,
-    ) -> None:
-        super().__init__(
-            vendor=vendor,
-            product=product,
-            iface=iface,
-            report_size=report_size,
-        )
+    #: USB vendor ID for the IBM/Toshiba 4610 hardware.
+    VENDOR_ID:  int = VENDOR
+    #: USB product ID for the 1NR model.
+    PRODUCT_ID: int = PRODUCT_1NR
 
     # ------------------------------------------------------------------
     # Station restriction
