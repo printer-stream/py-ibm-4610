@@ -1,0 +1,252 @@
+---
+# yamllint disable rule:line-length
+# yamllint disable rule:truthy
+
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+
+  notify_started:
+    name: Send notification on start
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Send notification on start
+        uses: rest-gateway/notification-action@1.0.9
+        with:
+          message: |
+            Repository: ${GITHUB_REPOSITORY}
+            Workflow: ${GITHUB_WORKFLOW}
+            Triggered on push to '${GITHUB_REF#refs/heads/}'
+          recipient: "${{ secrets.NOTIFICATIONS_DEFAULT_RECIPIENT }}"
+          rest_gateway_url: "${{ secrets.REST_GATEWAY_API_URL }}"
+          rest_gateway_token: "${{ secrets.REST_GATEWAY_TOKEN }}"
+          rest_gateway_bot_name: "${{ secrets.REST_GATEWAY_BOT_NAME }}"
+
+
+  validate_new_version:
+    name: Validate new version
+    runs-on: ubuntu-latest
+    outputs:
+      planned_version: ${{ steps.validate_new_version.outputs.planned_version }}
+      version_file_exists: ${{ steps.validate_new_version.outputs.version_file_exists }}
+      tag_hash: ${{ steps.validate_new_version.outputs.tag_hash }}
+      can_create: ${{ steps.validate_new_version.outputs.can_create }}
+      tag_exists: ${{ steps.validate_new_version.outputs.tag_exists }}
+      branch_name: ${{ steps.validate_new_version.outputs.branch_name }}
+
+    steps:
+
+      - name: Check out this repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+
+      - name: Workaround the version file format
+        id: prepare_version_file
+        shell: bash
+        run: >-
+          grep __version__ py_ibm_4610/version.py | cut -d "=" -f 2 | tr -d "'\" _" > .version
+
+
+      - name: Use latest released action
+        id: validate_new_version
+        uses: reinvented-stuff/validate-version-action@1.2.0
+        with:
+          version_filename: ".version"
+          github_token: "${{ secrets.GITHUB_TOKEN }}"
+          fail_on_error: true
+
+
+  release:
+    name: Create release
+    runs-on: ubuntu-latest
+
+    env:
+      PLANNED_VERSION: ${{ needs.validate_new_version.outputs.planned_version }}
+      PLANNED_RELEASE_NAME: v${{ needs.validate_new_version.outputs.planned_version }}
+      TAG_HASH: ${{ needs.validate_new_version.outputs.tag_hash }}
+      CAN_CREATE_RELEASE: ${{ needs.validate_new_version.outputs.can_create }}
+      TAG_EXISTS: ${{ needs.validate_new_version.outputs.tag_exists }}
+      BRANCH_NAME: ${{ needs.validate_new_version.outputs.branch_name }}
+      APP_NAME: "py_ibm_4610"
+
+    outputs:
+      job_status: ${{ job.status }}
+
+      checkout_code: ${{ steps.checkout_code.outcome }}
+      setup_python: ${{ steps.setup_python.outcome }}
+      prepare_build_env: ${{ steps.prepare_build_env.outcome }}
+      run_build: ${{ steps.run_build.outcome }}
+      generate_changelog: ${{ steps.generate_changelog.outcome }}
+      create_release: ${{ steps.create_release.outcome }}
+      upload_release_assets: ${{ steps.upload_release_assets.outcome }}
+
+      app_name: ${{ env.APP_NAME }}
+      planned_version: ${{ needs.validate_new_version.outputs.planned_version }}
+
+    permissions:
+      # IMPORTANT: this permission is mandatory for Trusted Publishing
+      id-token: write
+      contents: write
+
+    needs:
+      - validate_new_version
+
+    if: >
+      github.event_name == 'push' &&
+      needs.validate_new_version.outputs.can_create == 'true'
+
+    steps:
+
+      - name: Check out code
+        id: checkout_code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+
+      - name: Set up Python3
+        id: setup_python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.10'
+
+
+      - name: Prepare environment
+        id: prepare_build_env
+        shell: bash
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install build twine
+          python3 -m pip install -r requirements.txt
+
+
+      - name: Build python package
+        id: run_build
+        shell: bash
+        run: |
+          make clean build
+          cat .build_artifacts
+
+          echo "artifacts_list_filename=${PWD}/.build_artifacts" >> "${GITHUB_OUTPUT}"
+
+
+      - name: Generate changelog
+        id: generate_changelog
+        uses: reinvented-stuff/changelog-render-action@1.0.1
+        with:
+          long_changelog_export_filename: ".long_changelog.md"
+          short_changelog_export_filename: ".short_changelog.md"
+          print_out_changelogs: true
+
+
+      - name: Create a new tag
+        if: >
+          needs.validate_new_version.outputs.can_create == 'true' &&
+          needs.validate_new_version.outputs.branch_name == 'master' &&
+          github.event_name == 'push'
+        run: |
+          curl --request POST --url https://api.github.com/repos/${{ github.repository }}/git/tags \
+          -H 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}' \
+          -H 'content-type: application/json' \
+          --data '{"tag": "${env.PLANNED_VERSION}",
+            "message": "Pipeline build tag",
+            "object": "${{ github.sha }}",
+            "type": "commit",
+            "tagger": {
+              "name": "Alice from Wonderland",
+              "email": "noreply@localhost.localdomain",
+              "date": "${{steps.timestamp.outputs.timestamp}}"
+            }'
+
+
+      - name: Create a Release
+        id: create_release
+        if: >
+          needs.validate_new_version.outputs.can_create == 'true' &&
+          needs.validate_new_version.outputs.branch_name == 'master' &&
+          github.event_name == 'push'
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{env.PLANNED_VERSION}}
+          release_name: ${{env.PLANNED_RELEASE_NAME}}
+          body_path: ${{steps.generate_changelog.outputs.release_changelog_filename}}
+          draft: false
+          prerelease: false
+
+
+      - name: Upload Release Assets
+        id: upload_release_assets
+        shell: bash
+        run: >-
+          while read artifact_filename; do
+
+            artifact=$(basename "${artifact_filename}")
+
+            echo "Processing artifact ${artifact}"
+
+          curl
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}"
+          -H "Content-Type: application/octet-stream"
+          --data-binary "@${artifact_filename}"
+          "https://uploads.github.com/repos/${{ github.repository }}/releases/${{ steps.create_release.outputs.id }}/assets?name=${artifact}&label=${artifact}"
+
+          done < "${{ steps.run_build.outputs.artifacts_list_filename }}"
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+
+  after_build:
+    name: After release process
+    runs-on: ubuntu-latest
+
+    if: always()
+
+    needs:
+      - release
+
+    steps:
+
+      - name: Send notification on release finish
+        uses: rest-gateway/notification-action@1.0.9
+        with:
+          message: |
+            <b>Workflow:</b>   ${GITHUB_WORKFLOW}
+            <b>Repository:</b> ${GITHUB_REPOSITORY}
+
+            <b>Release ${{ needs.release.outputs.app_name }} ${{ needs.release.outputs.planned_version }}:</b>
+
+            <b>Release:</b>
+            <code>https://github.com/${{ github.repository }}/releases/tag/${{ needs.release.outputs.planned_version }}</code>
+
+            <b>Pypi:</b>
+            <code>https://pypi.org/project/${{ needs.release.outputs.app_name }}/${{ needs.release.outputs.planned_version }}/</code>
+
+            <b>Release results:</b>
+            Status: ${{ needs.release.outputs.job_status }}
+
+            checkout_code: ${{ needs.release.outputs.checkout_code }}
+            setup_python: ${{ needs.release.outputs.setup_python }}
+            prepare_build_env: ${{ needs.release.outputs.prepare_build_env }}
+            run_build: ${{ needs.release.outputs.run_build }}
+            generate_changelog: ${{ needs.release.outputs.generate_changelog }}
+            create_release: ${{ needs.release.outputs.create_release }}
+            upload_release_assets: ${{ needs.release.outputs.upload_release_assets }}
+
+          recipient: "${{ secrets.NOTIFICATIONS_DEFAULT_RECIPIENT }}"
+          rest_gateway_url: "${{ secrets.REST_GATEWAY_API_URL }}"
+          rest_gateway_token: "${{ secrets.REST_GATEWAY_TOKEN }}"
+          rest_gateway_bot_name: "${{ secrets.REST_GATEWAY_BOT_NAME }}"
+
+...
