@@ -524,10 +524,30 @@ class TestReadStatStrideScan:
         assert result == _PAPER_CUT_RAW
 
     def test_no_match_returns_empty(self):
-        """All packets have wrong echo → read_stat returns b'' on timeout."""
+        """All packets have wrong echo → read_stat returns b'' on deadline expiry."""
         stub = self._make_stub([_STALE_RESPONSE])
         result = stub.read_stat("PaperCutCount", timeout=1)
         assert result == b""
+
+    def test_libusb_timeout_larger_than_deadline(self):
+        """read_response receives timeout = overall_timeout + 5000 (race guard).
+
+        Simulates the race where libusb fires its cancellation exactly as
+        the printer delivers data: the extended per-read timeout means libusb
+        will not cancel the URB while the response is still in flight.
+        """
+        received_timeouts = []
+
+        stub = _StubIBM4610()
+
+        def _capturing_read_response(size=0, timeout=2000):
+            received_timeouts.append(timeout)
+            return _PAPER_CUT_RAW
+
+        stub.read_response = _capturing_read_response
+        stub.read_stat("PaperCutCount", timeout=10_000)
+        # Each read must use timeout + 5000 to prevent the cancellation race.
+        assert all(t == 10_000 + 5_000 for t in received_timeouts)
 
     def test_stride_scan_extracts_count(self):
         """parse_stat on the extracted frame gives the correct count."""

@@ -336,8 +336,8 @@ class IBM4610(BasePrinter):
         """Send a statistics query, flush immediately, and read the response.
 
         Drains all pending unsolicited IN packets first, sends the query,
-        then loops reading packets until the one whose last byte echoes the
-        requested subcommand is received, or the timeout expires.
+        then loops reading packets until a frame whose echo byte matches the
+        requested subcommand is received, or the deadline expires.
 
         The printer continuously sends short (~8-byte) status frames on the
         interrupt IN endpoint.  After mechanical operations such as cuts the
@@ -346,7 +346,7 @@ class IBM4610(BasePrinter):
 
         Args:
             stat_type: key from :data:`~py_ibm_4610.STATISTIC_SUBCMDS`.
-            timeout:   USB read timeout in milliseconds (default 5000).
+            timeout:   overall deadline in milliseconds (default 5000).
         """
         _log.debug("read_stat: querying %r", stat_type)
         self.drain_in()
@@ -360,19 +360,34 @@ class IBM4610(BasePrinter):
         _STAT_FRAME = 21
         expected_echo = STATISTIC_SUBCMDS[stat_type][0]
         deadline = time.monotonic() + timeout / 1000.0
+        # Use a libusb per-read timeout LARGER than the overall deadline so
+        # that libusb does not cancel a URB at the exact moment the printer
+        # delivers the response.  When a cancelled URB happens to carry
+        # valid data the kernel returns ENOENT + bytes; pyusb converts this
+        # to an exception and discards the payload, making the response
+        # invisible.  With a generous libusb timeout the cancellation race
+        # never triggers.  A 5-second grace beyond the Python deadline is
+        # more than enough margin.
+        _libusb_timeout = timeout + 5_000
         while True:
-            remaining_ms = max(1, int((deadline - time.monotonic()) * 1000))
-            resp = self.read_response(timeout=remaining_ms)
+            if time.monotonic() >= deadline:
+                _log.debug("read_stat: %r deadline expired", stat_type)
+                return b""
+            resp = self.read_response(timeout=_libusb_timeout)
             if not resp:
-                _log.debug("read_stat: %r timed out waiting for stat response", stat_type)
+                _log.debug(
+                    "read_stat: %r empty response from libusb (error or "
+                    "extended timeout fired)",
+                    stat_type,
+                )
                 return b""
             # Scan all 21-byte-aligned frames in the received packet.
             for start in range(0, len(resp) - _STAT_FRAME + 1, _STAT_FRAME):
                 if resp[start + 20] == expected_echo:
                     frame = bytes(resp[start:start + _STAT_FRAME])
                     _log.debug(
-                        "read_stat: %r → %d bytes (offset %d in %d-byte packet)",
-                        stat_type, _STAT_FRAME, start, len(resp),
+                        "read_stat: %r → found at offset %d in %d-byte packet",
+                        stat_type, start, len(resp),
                     )
                     return frame
             _log.debug(
