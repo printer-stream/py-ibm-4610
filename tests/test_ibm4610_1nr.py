@@ -10,6 +10,8 @@ class _StubIBM4610_1NR(IBM4610_1NR):
     """USB-less 1NR for offline tests."""
 
     def open(self) -> "_StubIBM4610_1NR":
+        # Skip USB; call select_station directly like the real open() does
+        self.select_station(STATION_RECEIPT)
         return self
 
     def close(self) -> None:

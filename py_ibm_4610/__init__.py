@@ -21,7 +21,7 @@ from .version import __version__
 
 # Printer classes
 from .printer.base        import BasePrinter
-from .printer.ibm4610     import IBM4610
+from .printer.ibm4610     import IBM4610, parse_stat, parse_stat_with_remainder
 from .printer.ibm4610_1nr import IBM4610_1NR
 
 # Reference / demo page
@@ -184,6 +184,8 @@ __all__ = [
     "STATUS_IMAGE_SCAN_DONE", "STATUS_IMAGE_DATA",
     # statistics
     "STATISTIC_SUBCMDS",
+    "parse_stat",
+    "parse_stat_with_remainder",
     # transport
     "make_packet", "MAX_PAYLOAD",
 ]

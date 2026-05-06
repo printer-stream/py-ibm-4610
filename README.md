@@ -26,7 +26,7 @@ Also udev features must listed and verified.
 ## Quick start
 
 ```python
-from py_ibm_4610 import IBM4610
+from py_ibm_4610 import IBM4610, STATION_RECEIPT
 
 # Context manager opens and closes the USB connection automatically
 with IBM4610() as p:

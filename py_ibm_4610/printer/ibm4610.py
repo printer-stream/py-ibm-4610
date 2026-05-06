@@ -45,6 +45,73 @@ from .._transport import make_packet, MAX_PAYLOAD
 
 _log = logging.getLogger(__name__)
 
+# ---------------------------------------------------------------------------
+# Statistic response parsing
+# ---------------------------------------------------------------------------
+_MANUFACTURE_DATE_SUBCMD = bytes([0x70])
+
+
+def parse_stat(raw: bytes) -> int:
+    """Parse a raw :meth:`IBM4610.read_stat` response into an integer count.
+
+    Response layout (21 bytes for numeric stats, empirically validated)::
+
+        [0:3]   3-byte transport header  (type, len_lsb, len_msb)
+        [3:11]  8-byte printer status block
+        [11:15] count value — little-endian uint32          ← returned
+        [15:19] remainder   — little-endian uint32 (0 when not applicable)
+        [19]    response status byte (0x80 = OK)
+        [20]    subcommand echo
+
+    Validated on hardware::
+
+        >>> parse_stat(
+        ...     b'\\x01\\x06\\x00\\x00\\x00\\x01\\x0f\\x00'
+        ...     b'\\x19\\x20\\x06\\x28\\x00\\x00\\x00\\x00'
+        ...     b'\\x00\\x00\\x00\\x80\\x81'
+        ... )
+        40
+
+    Args:
+        raw: Raw bytes returned by :meth:`IBM4610.read_stat`.
+
+    Returns:
+        Integer count value.
+
+    Raises:
+        ValueError: If the response is too short to contain a count field.
+    """
+    if len(raw) < 15:
+        raise ValueError(
+            f"Stat response too short: {len(raw)} byte(s) (need ≥15)"
+        )
+    return int.from_bytes(raw[11:15], "little")
+
+
+def parse_stat_with_remainder(raw: bytes) -> tuple[int, int]:
+    """Parse a raw stat response and return ``(count, remainder)``.
+
+    Some statistics (e.g. character-printed counts) carry a *remainder*
+    fractional component alongside the main counter.  For stats that have
+    no remainder, the second element is always 0.
+
+    Args:
+        raw: Raw bytes returned by :meth:`IBM4610.read_stat`.
+
+    Returns:
+        ``(count, remainder)`` — both little-endian uint32 from the payload.
+
+    Raises:
+        ValueError: If the response is too short to contain both fields.
+    """
+    if len(raw) < 19:
+        raise ValueError(
+            f"Stat response too short: {len(raw)} byte(s) (need ≥19)"
+        )
+    count = int.from_bytes(raw[11:15], "little")
+    remainder = int.from_bytes(raw[15:19], "little")
+    return count, remainder
+
 
 class IBM4610(BasePrinter):
     """Full-capability driver for the IBM / Toshiba 4610 SureMark printer.
@@ -253,6 +320,21 @@ class IBM4610(BasePrinter):
         resp = self.read_response(timeout=timeout)
         _log.debug("read_stat: %r → %d bytes", stat_type, len(resp))
         return resp
+
+    def read_stat_value(self, stat_type: str, timeout: int = 2000) -> int:
+        """Query a statistic and return the parsed integer count.
+
+        Convenience wrapper: calls :meth:`read_stat` and passes the result
+        through :func:`parse_stat`.
+
+        Args:
+            stat_type: key from :data:`~py_ibm_4610.STATISTIC_SUBCMDS`.
+            timeout:   USB read timeout in milliseconds (default 2000).
+
+        Returns:
+            Integer count value from the printer's response.
+        """
+        return parse_stat(self.read_stat(stat_type, timeout=timeout))
 
     # ------------------------------------------------------------------
     # Station / printer control  (Gen4610CmdFactory + Print4610CmdFactory)

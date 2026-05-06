@@ -404,6 +404,76 @@ class TestStatistics:
 
 
 # ---------------------------------------------------------------------------
+# parse_stat / parse_stat_with_remainder
+# ---------------------------------------------------------------------------
+
+# Empirically captured from real IBM 4610 hardware (PaperCutCount query).
+# Byte layout:
+#   [0:3]   transport header  → type=0x01, len_lsb=0x06, len_msb=0x00
+#   [3:11]  8-byte printer status block
+#   [11:15] count (LE uint32) = 0x00000028 = 40
+#   [15:19] remainder (LE uint32) = 0
+#   [19]    response status = 0x80
+#   [20]    subcommand echo = 0x81 (PaperCutCount)
+_PAPER_CUT_RAW = (
+    b'\x01\x06\x00'           # transport header
+    b'\x00\x00\x01\x0f\x00'  # status bytes (part 1)
+    b'\x19\x20\x06'           # status bytes (part 2)
+    b'\x28\x00\x00\x00'       # count = 40 (LE uint32)
+    b'\x00\x00\x00\x00'       # remainder = 0 (LE uint32)
+    b'\x80'                   # response status
+    b'\x81'                   # subcommand echo (PaperCutCount)
+)  # 21 bytes total
+
+
+class TestParseStatHardwareCapture:
+    def test_parse_stat_returns_40(self):
+        from py_ibm_4610 import parse_stat
+        assert parse_stat(_PAPER_CUT_RAW) == 40
+
+    def test_parse_stat_with_remainder_count(self):
+        from py_ibm_4610 import parse_stat_with_remainder
+        count, _ = parse_stat_with_remainder(_PAPER_CUT_RAW)
+        assert count == 40
+
+    def test_parse_stat_with_remainder_zero(self):
+        from py_ibm_4610 import parse_stat_with_remainder
+        _, remainder = parse_stat_with_remainder(_PAPER_CUT_RAW)
+        assert remainder == 0
+
+    def test_parse_stat_nonzero_remainder(self):
+        from py_ibm_4610 import parse_stat_with_remainder
+        raw = bytearray(_PAPER_CUT_RAW)
+        raw[15] = 7   # remainder = 7
+        count, remainder = parse_stat_with_remainder(bytes(raw))
+        assert count == 40
+        assert remainder == 7
+
+    def test_parse_stat_too_short_raises(self):
+        from py_ibm_4610 import parse_stat
+        with pytest.raises(ValueError, match="too short"):
+            parse_stat(b'\x01\x06\x00' * 4)  # 12 bytes < 15
+
+    def test_parse_stat_with_remainder_too_short_raises(self):
+        from py_ibm_4610 import parse_stat_with_remainder
+        with pytest.raises(ValueError, match="too short"):
+            parse_stat_with_remainder(b'\x00' * 18)  # 18 bytes < 19
+
+    def test_parse_stat_subcommand_echo_not_validated(self):
+        # parse_stat is intentionally permissive — echo byte is informational
+        from py_ibm_4610 import parse_stat
+        raw = bytearray(_PAPER_CUT_RAW)
+        raw[20] = 0xFF  # wrong echo byte
+        assert parse_stat(bytes(raw)) == 40  # still returns count
+
+    def test_parse_stat_large_count(self):
+        from py_ibm_4610 import parse_stat
+        raw = bytearray(_PAPER_CUT_RAW)
+        raw[11:15] = (999_999).to_bytes(4, "little")
+        assert parse_stat(bytes(raw)) == 999_999
+
+
+# ---------------------------------------------------------------------------
 # print_line / print_receipt
 # ---------------------------------------------------------------------------
 

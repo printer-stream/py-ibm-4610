@@ -27,7 +27,6 @@ class IBM4610_1NR(IBM4610):
     Example::
 
         with IBM4610_1NR() as p:
-            p.select_station(STATION_RECEIPT)
             p.bold(True).text("Hello from 1NR!\\n").bold(False)
             p.feed(4).cut()
     """
@@ -45,6 +44,11 @@ class IBM4610_1NR(IBM4610):
             iface=iface,
             report_size=report_size,
         )
+
+    def open(self) -> "IBM4610_1NR":
+        super().open()
+        self.select_station(STATION_RECEIPT)
+        return self
 
     # ------------------------------------------------------------------
     # Station restriction

@@ -29,6 +29,9 @@ class BasePrinter(ABC):
     def __init__(self) -> None:
         self._buf: bytearray = bytearray()
 
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} buf={len(self._buf)}B>"
+
     # ------------------------------------------------------------------
     # Context manager
     # ------------------------------------------------------------------
