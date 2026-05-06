@@ -336,10 +336,20 @@ class IBM4610:
         return self
 
     def flush(self) -> int:
-        """Send everything accumulated with :meth:`write`, then clear the buffer."""
-        n = self.send_raw(bytes(self._buf))
+        """Send everything accumulated with :meth:`write`, then clear the buffer.
+
+        Data is chunked into MAX_PAYLOAD-byte pieces because each HID
+        SET_REPORT carries exactly REPORT_SIZE (1022) bytes — 7 header bytes
+        leaves 1015 bytes of payload per packet.
+        """
+        MAX_PAYLOAD = REPORT_SIZE - 7  # 1015 bytes of ESC/POS per packet
+        data = bytes(self._buf)
         self._buf.clear()
-        return n
+        total = 0
+        for offset in range(0, max(len(data), 1), MAX_PAYLOAD):
+            chunk = data[offset : offset + MAX_PAYLOAD]
+            total += self.send_raw(chunk)
+        return total
 
     def build(self) -> bytes:
         """Return the buffered bytes without sending, then clear the buffer."""
@@ -730,15 +740,17 @@ class IBM4610:
         """Partial paper cut.
 
         Optionally feeds *feed_lines* before cutting.
-        Selects receipt station then issues ESC m.
+        Selects receipt station, issues ESC m, then flushes the buffer.
         Matches ``Cmd4610.CUT_PAPER = [ESC c 0 2, ESC m]``.
         """
         if feed_lines > 0:
             self.feed(feed_lines)
-        return self.write(bytes([
-            0x1B, 0x63, 0x30, 0x02,  # CR_COMM — select receipt
-            0x1B, 0x6D,              # ESC m — partial cut
+        self.write(bytes([
+            0x1B, 0x63, 0x30, 0x02,  # CR_COMM -- select receipt
+            0x1B, 0x6D,              # ESC m -- partial cut
         ]))
+        self.flush()
+        return self
 
     def eject_slip(self) -> "IBM4610":
         """Eject document / slip.
