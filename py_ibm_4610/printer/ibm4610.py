@@ -25,6 +25,7 @@ Quick start::
 from __future__ import annotations
 
 import logging
+import time
 
 import usb.core
 import usb.util
@@ -263,7 +264,9 @@ class IBM4610(BasePrinter):
             _log.debug("drain_in: skipped (device not open)")
             return 0
         count = 0
-        size = self._ep_in.wMaxPacketSize
+        # Use a buffer large enough for any response packet (stat responses
+        # are 21 bytes; using wMaxPacketSize alone would trigger EOVERFLOW).
+        size = max(64, self._ep_in.wMaxPacketSize)
         while True:
             try:
                 self._dev.read(self._ep_in.bEndpointAddress, size, timeout=timeout)
@@ -281,8 +284,9 @@ class IBM4610(BasePrinter):
         ``bytes`` object on timeout.
 
         Args:
-            size:    bytes to read.  Defaults to ``ep.wMaxPacketSize``.
-                     **Must** equal the endpoint's packet size to avoid
+            size:    bytes to read.  Defaults to 64 (enough for any printer
+                     response packet including the 21-byte stat reply).
+                     Requesting less than the device sends causes
                      ``EOVERFLOW`` from libusb.
             timeout: USB read timeout in milliseconds (default 2000).
         """
@@ -291,7 +295,7 @@ class IBM4610(BasePrinter):
         if self._ep_in is None:
             raise RuntimeError("No interrupt IN endpoint found on interface.")
         if size <= 0:
-            size = self._ep_in.wMaxPacketSize
+            size = max(64, self._ep_in.wMaxPacketSize)
         _log.debug("read_response: reading up to %d bytes (timeout=%dms)", size, timeout)
         try:
             data = bytes(self._dev.read(
@@ -317,9 +321,24 @@ class IBM4610(BasePrinter):
         self.drain_in()
         self.statistic(stat_type)
         self.flush()
-        resp = self.read_response(timeout=timeout)
-        _log.debug("read_stat: %r → %d bytes", stat_type, len(resp))
-        return resp
+        # The printer may send one or more short (~8-byte) unsolicited status
+        # frames before the actual stat response (~21 bytes).  Loop until we
+        # receive a packet long enough to contain the count field (≥15 bytes)
+        # or until the caller's timeout expires.
+        deadline = time.monotonic() + timeout / 1000.0
+        while True:
+            remaining_ms = max(1, int((deadline - time.monotonic()) * 1000))
+            resp = self.read_response(timeout=remaining_ms)
+            if not resp:
+                _log.debug("read_stat: %r timed out waiting for stat response", stat_type)
+                return b""
+            if len(resp) >= 15:
+                _log.debug("read_stat: %r → %d bytes", stat_type, len(resp))
+                return resp
+            _log.debug(
+                "read_stat: discarding short IN packet (%d bytes), waiting for stat response",
+                len(resp),
+            )
 
     def read_stat_value(self, stat_type: str, timeout: int = 2000) -> int:
         """Query a statistic and return the parsed integer count.
