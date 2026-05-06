@@ -1,0 +1,2258 @@
+Compiled from "Cmd4610.java"
+public class com.ibm.posj.bus.printer.cmds.ibm4610.Cmd4610 extends com.ibm.posj.bus.printer.cmds.AbstractByteCmd {
+  public byte[] RESET_LINECNT;
+
+  public byte[] DISABLE_LINECNT;
+
+  public byte[] ROTATE_CHARS180;
+
+  public byte[] RELEASE_BUFFER;
+
+  public byte[] CANCEL_BUFFER;
+
+  public byte[] CR_SETTINGS;
+
+  public byte[] DIP_SETTINGS;
+
+  public byte[] DIL_SETTINGS;
+
+  public byte[] REINIT;
+
+  public byte[] STATUS_SENT;
+
+  public byte[] HOLD_BUFFER;
+
+  public byte[] PRINT_PDF417;
+
+  public byte[] PDF471_ECC;
+
+  public byte[] PDF417_ASPECTRATIO;
+
+  public byte[] PDF417_TRUNCATION;
+
+  public byte[] BUFFERED_EC;
+
+  public byte[] IMMEDIATE_EC;
+
+  public byte[] SET_DBCS_DOT_SPACING;
+
+  public byte[] XON_XOFF_MODE;
+
+  public byte[] ENABLE_PAGEMODE;
+
+  public byte[] DISABLE_PAGEMODE;
+
+  public byte[] PAGEMODE_POSITION;
+
+  public byte[] PAGEMODE_PRINT;
+
+  public byte[] PAGEMODE_CLEAR;
+
+  public byte[] PAGEMODE_DEFINE;
+
+  public byte[] PAGEMODE_NORMODE;
+
+  public byte[] HORIZONTAL_POSITION;
+
+  public byte[] VERTICAL_POSITION;
+
+  public byte[] SLIP_RETURN_HOME;
+
+  public byte[] COMMON_STATISTIC_CMD;
+
+  public byte[] MANUFACTURE_DATE;
+
+  public byte[] FAILED_READ_COUNT;
+
+  public byte[] TOTAL_READ_COUNT;
+
+  public byte[] FAILED_READ_COUNT_REMAINDER;
+
+  public byte[] TOTAL_READ_COUNT_REMAINDER;
+
+  public byte[] CHECK_SCANNED_COUNT;
+
+  public byte[] CHECK_SCANNED_COUNT_REMAINDER;
+
+  public byte[] CHECK_SCANNER_BRIGHTNESS_QUALITY;
+
+  public byte[] CHECK_SCANNER_CONTRAST_QUALITY;
+
+  public byte[] CHECK_SCANNER_FOCUS_QUALITY;
+
+  public byte[] CHECKS_FAILED_QUALITY_COUNT;
+
+  public com.ibm.posj.bus.printer.cmds.ibm4610.Cmd4610();
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method com/ibm/posj/bus/printer/cmds/AbstractByteCmd."<init>":()V
+       4: aload_0
+       5: iconst_2
+       6: newarray       byte
+       8: dup
+       9: iconst_0
+      10: bipush        27
+      12: bastore
+      13: dup
+      14: iconst_1
+      15: bipush        54
+      17: bastore
+      18: putfield      #2                  // Field RESET_LINECNT:[B
+      21: aload_0
+      22: iconst_2
+      23: newarray       byte
+      25: dup
+      26: iconst_0
+      27: bipush        27
+      29: bastore
+      30: dup
+      31: iconst_1
+      32: bipush        56
+      34: bastore
+      35: putfield      #3                  // Field DISABLE_LINECNT:[B
+      38: aload_0
+      39: iconst_2
+      40: newarray       byte
+      42: dup
+      43: iconst_0
+      44: bipush        27
+      46: bastore
+      47: dup
+      48: iconst_1
+      49: bipush        123
+      51: bastore
+      52: putfield      #4                  // Field ROTATE_CHARS180:[B
+      55: aload_0
+      56: iconst_3
+      57: newarray       byte
+      59: dup
+      60: iconst_0
+      61: bipush        16
+      63: bastore
+      64: dup
+      65: iconst_1
+      66: iconst_5
+      67: bastore
+      68: dup
+      69: iconst_2
+      70: bipush        49
+      72: bastore
+      73: putfield      #5                  // Field RELEASE_BUFFER:[B
+      76: aload_0
+      77: iconst_3
+      78: newarray       byte
+      80: dup
+      81: iconst_0
+      82: bipush        16
+      84: bastore
+      85: dup
+      86: iconst_1
+      87: iconst_5
+      88: bastore
+      89: dup
+      90: iconst_2
+      91: bipush        50
+      93: bastore
+      94: putfield      #6                  // Field CANCEL_BUFFER:[B
+      97: aload_0
+      98: iconst_4
+      99: newarray       byte
+     101: dup
+     102: iconst_0
+     103: bipush        27
+     105: bastore
+     106: dup
+     107: iconst_1
+     108: bipush        99
+     110: bastore
+     111: dup
+     112: iconst_2
+     113: bipush        49
+     115: bastore
+     116: dup
+     117: iconst_3
+     118: iconst_2
+     119: bastore
+     120: putfield      #7                  // Field CR_SETTINGS:[B
+     123: aload_0
+     124: iconst_4
+     125: newarray       byte
+     127: dup
+     128: iconst_0
+     129: bipush        27
+     131: bastore
+     132: dup
+     133: iconst_1
+     134: bipush        99
+     136: bastore
+     137: dup
+     138: iconst_2
+     139: bipush        49
+     141: bastore
+     142: dup
+     143: iconst_3
+     144: iconst_4
+     145: bastore
+     146: putfield      #8                  // Field DIP_SETTINGS:[B
+     149: aload_0
+     150: iconst_4
+     151: newarray       byte
+     153: dup
+     154: iconst_0
+     155: bipush        27
+     157: bastore
+     158: dup
+     159: iconst_1
+     160: bipush        99
+     162: bastore
+     163: dup
+     164: iconst_2
+     165: bipush        49
+     167: bastore
+     168: dup
+     169: iconst_3
+     170: bipush        8
+     172: bastore
+     173: putfield      #9                  // Field DIL_SETTINGS:[B
+     176: aload_0
+     177: iconst_2
+     178: newarray       byte
+     180: dup
+     181: iconst_0
+     182: bipush        27
+     184: bastore
+     185: dup
+     186: iconst_1
+     187: bipush        64
+     189: bastore
+     190: putfield      #10                 // Field REINIT:[B
+     193: aload_0
+     194: iconst_2
+     195: newarray       byte
+     197: dup
+     198: iconst_0
+     199: bipush        27
+     201: bastore
+     202: dup
+     203: iconst_1
+     204: bipush        41
+     206: bastore
+     207: putfield      #11                 // Field STATUS_SENT:[B
+     210: aload_0
+     211: iconst_2
+     212: newarray       byte
+     214: dup
+     215: iconst_0
+     216: bipush        27
+     218: bastore
+     219: dup
+     220: iconst_1
+     221: bipush        55
+     223: bastore
+     224: putfield      #12                 // Field HOLD_BUFFER:[B
+     227: aload_0
+     228: iconst_2
+     229: newarray       byte
+     231: dup
+     232: iconst_0
+     233: bipush        29
+     235: bastore
+     236: dup
+     237: iconst_1
+     238: bipush        80
+     240: bastore
+     241: putfield      #13                 // Field PRINT_PDF417:[B
+     244: aload_0
+     245: iconst_2
+     246: newarray       byte
+     248: dup
+     249: iconst_0
+     250: bipush        29
+     252: bastore
+     253: dup
+     254: iconst_1
+     255: bipush        82
+     257: bastore
+     258: putfield      #14                 // Field PDF471_ECC:[B
+     261: aload_0
+     262: iconst_2
+     263: newarray       byte
+     265: dup
+     266: iconst_0
+     267: bipush        29
+     269: bastore
+     270: dup
+     271: iconst_1
+     272: bipush        83
+     274: bastore
+     275: putfield      #15                 // Field PDF417_ASPECTRATIO:[B
+     278: aload_0
+     279: iconst_2
+     280: newarray       byte
+     282: dup
+     283: iconst_0
+     284: bipush        29
+     286: bastore
+     287: dup
+     288: iconst_1
+     289: bipush        84
+     291: bastore
+     292: putfield      #16                 // Field PDF417_TRUNCATION:[B
+     295: aload_0
+     296: iconst_4
+     297: newarray       byte
+     299: dup
+     300: iconst_0
+     301: bipush        27
+     303: bastore
+     304: dup
+     305: iconst_1
+     306: iconst_0
+     307: bastore
+     308: dup
+     309: iconst_2
+     310: bipush        -128
+     312: bastore
+     313: dup
+     314: iconst_3
+     315: iconst_0
+     316: bastore
+     317: putfield      #17                 // Field BUFFERED_EC:[B
+     320: aload_0
+     321: iconst_3
+     322: newarray       byte
+     324: dup
+     325: iconst_0
+     326: iconst_0
+     327: bastore
+     328: dup
+     329: iconst_1
+     330: bipush        -128
+     332: bastore
+     333: dup
+     334: iconst_2
+     335: iconst_0
+     336: bastore
+     337: putfield      #18                 // Field IMMEDIATE_EC:[B
+     340: aload_0
+     341: iconst_2
+     342: newarray       byte
+     344: dup
+     345: iconst_0
+     346: bipush        27
+     348: bastore
+     349: dup
+     350: iconst_1
+     351: bipush        82
+     353: bastore
+     354: putfield      #19                 // Field SET_DBCS_DOT_SPACING:[B
+     357: aload_0
+     358: aconst_null
+     359: putfield      #20                 // Field XON_XOFF_MODE:[B
+     362: aload_0
+     363: iconst_2
+     364: newarray       byte
+     366: dup
+     367: iconst_0
+     368: bipush        27
+     370: bastore
+     371: dup
+     372: iconst_1
+     373: bipush        76
+     375: bastore
+     376: putfield      #21                 // Field ENABLE_PAGEMODE:[B
+     379: aload_0
+     380: iconst_2
+     381: newarray       byte
+     383: dup
+     384: iconst_0
+     385: bipush        27
+     387: bastore
+     388: dup
+     389: iconst_1
+     390: bipush        79
+     392: bastore
+     393: putfield      #22                 // Field DISABLE_PAGEMODE:[B
+     396: aload_0
+     397: iconst_2
+     398: newarray       byte
+     400: dup
+     401: iconst_0
+     402: bipush        27
+     404: bastore
+     405: dup
+     406: iconst_1
+     407: bipush        84
+     409: bastore
+     410: putfield      #23                 // Field PAGEMODE_POSITION:[B
+     413: aload_0
+     414: iconst_2
+     415: newarray       byte
+     417: dup
+     418: iconst_0
+     419: bipush        27
+     421: bastore
+     422: dup
+     423: iconst_1
+     424: bipush        12
+     426: bastore
+     427: putfield      #24                 // Field PAGEMODE_PRINT:[B
+     430: aload_0
+     431: iconst_1
+     432: newarray       byte
+     434: dup
+     435: iconst_0
+     436: bipush        24
+     438: bastore
+     439: putfield      #25                 // Field PAGEMODE_CLEAR:[B
+     442: aload_0
+     443: iconst_2
+     444: newarray       byte
+     446: dup
+     447: iconst_0
+     448: bipush        27
+     450: bastore
+     451: dup
+     452: iconst_1
+     453: bipush        88
+     455: bastore
+     456: putfield      #26                 // Field PAGEMODE_DEFINE:[B
+     459: aload_0
+     460: iconst_1
+     461: newarray       byte
+     463: dup
+     464: iconst_0
+     465: bipush        12
+     467: bastore
+     468: putfield      #27                 // Field PAGEMODE_NORMODE:[B
+     471: aload_0
+     472: iconst_2
+     473: newarray       byte
+     475: dup
+     476: iconst_0
+     477: bipush        27
+     479: bastore
+     480: dup
+     481: iconst_1
+     482: bipush        36
+     484: bastore
+     485: putfield      #28                 // Field HORIZONTAL_POSITION:[B
+     488: aload_0
+     489: iconst_2
+     490: newarray       byte
+     492: dup
+     493: iconst_0
+     494: bipush        29
+     496: bastore
+     497: dup
+     498: iconst_1
+     499: bipush        36
+     501: bastore
+     502: putfield      #29                 // Field VERTICAL_POSITION:[B
+     505: aload_0
+     506: iconst_3
+     507: newarray       byte
+     509: dup
+     510: iconst_0
+     511: bipush        27
+     513: bastore
+     514: dup
+     515: iconst_1
+     516: bipush        60
+     518: bastore
+     519: dup
+     520: iconst_2
+     521: iconst_4
+     522: bastore
+     523: putfield      #30                 // Field SLIP_RETURN_HOME:[B
+     526: aload_0
+     527: aconst_null
+     528: putfield      #31                 // Field COMMON_STATISTIC_CMD:[B
+     531: aload_0
+     532: aconst_null
+     533: putfield      #32                 // Field MANUFACTURE_DATE:[B
+     536: aload_0
+     537: aconst_null
+     538: putfield      #33                 // Field FAILED_READ_COUNT:[B
+     541: aload_0
+     542: aconst_null
+     543: putfield      #34                 // Field TOTAL_READ_COUNT:[B
+     546: aload_0
+     547: aconst_null
+     548: putfield      #35                 // Field FAILED_READ_COUNT_REMAINDER:[B
+     551: aload_0
+     552: aconst_null
+     553: putfield      #36                 // Field TOTAL_READ_COUNT_REMAINDER:[B
+     556: aload_0
+     557: aconst_null
+     558: putfield      #37                 // Field CHECK_SCANNED_COUNT:[B
+     561: aload_0
+     562: aconst_null
+     563: putfield      #38                 // Field CHECK_SCANNED_COUNT_REMAINDER:[B
+     566: aload_0
+     567: aconst_null
+     568: putfield      #39                 // Field CHECK_SCANNER_BRIGHTNESS_QUALITY:[B
+     571: aload_0
+     572: aconst_null
+     573: putfield      #40                 // Field CHECK_SCANNER_CONTRAST_QUALITY:[B
+     576: aload_0
+     577: aconst_null
+     578: putfield      #41                 // Field CHECK_SCANNER_FOCUS_QUALITY:[B
+     581: aload_0
+     582: aconst_null
+     583: putfield      #42                 // Field CHECKS_FAILED_QUALITY_COUNT:[B
+     586: aload_0
+     587: iconst_2
+     588: newarray       byte
+     590: dup
+     591: iconst_0
+     592: bipush        27
+     594: bastore
+     595: dup
+     596: iconst_1
+     597: bipush        83
+     599: bastore
+     600: putfield      #43                 // Field MCT_READ:[B
+     603: aload_0
+     604: iconst_2
+     605: newarray       byte
+     607: dup
+     608: iconst_0
+     609: bipush        27
+     611: bastore
+     612: dup
+     613: iconst_1
+     614: bipush        77
+     616: bastore
+     617: putfield      #44                 // Field MCT_WRITE:[B
+     620: aload_0
+     621: iconst_4
+     622: newarray       byte
+     624: dup
+     625: iconst_0
+     626: bipush        27
+     628: bastore
+     629: dup
+     630: iconst_1
+     631: bipush        99
+     633: bastore
+     634: dup
+     635: iconst_2
+     636: bipush        48
+     638: bastore
+     639: dup
+     640: iconst_3
+     641: iconst_2
+     642: bastore
+     643: putfield      #45                 // Field CR_COMM:[B
+     646: aload_0
+     647: iconst_4
+     648: newarray       byte
+     650: dup
+     651: iconst_0
+     652: bipush        27
+     654: bastore
+     655: dup
+     656: iconst_1
+     657: bipush        99
+     659: bastore
+     660: dup
+     661: iconst_2
+     662: bipush        48
+     664: bastore
+     665: dup
+     666: iconst_3
+     667: iconst_4
+     668: bastore
+     669: putfield      #46                 // Field DIP_COMM:[B
+     672: aload_0
+     673: iconst_4
+     674: newarray       byte
+     676: dup
+     677: iconst_0
+     678: bipush        27
+     680: bastore
+     681: dup
+     682: iconst_1
+     683: bipush        99
+     685: bastore
+     686: dup
+     687: iconst_2
+     688: bipush        48
+     690: bastore
+     691: dup
+     692: iconst_3
+     693: bipush        8
+     695: bastore
+     696: putfield      #47                 // Field DIL_COMM:[B
+     699: aload_0
+     700: iconst_3
+     701: newarray       byte
+     703: dup
+     704: iconst_0
+     705: bipush        27
+     707: bastore
+     708: dup
+     709: iconst_1
+     710: bipush        99
+     712: bastore
+     713: dup
+     714: iconst_2
+     715: bipush        48
+     717: bastore
+     718: putfield      #48                 // Field STATION:[B
+     721: aload_0
+     722: iconst_3
+     723: newarray       byte
+     725: dup
+     726: iconst_0
+     727: iconst_0
+     728: bastore
+     729: dup
+     730: iconst_1
+     731: bipush        64
+     733: bastore
+     734: dup
+     735: iconst_2
+     736: iconst_0
+     737: bastore
+     738: putfield      #49                 // Field RESET:[B
+     741: aload_0
+     742: iconst_3
+     743: newarray       byte
+     745: dup
+     746: iconst_0
+     747: bipush        16
+     749: bastore
+     750: dup
+     751: iconst_1
+     752: iconst_5
+     753: bastore
+     754: dup
+     755: iconst_2
+     756: bipush        50
+     758: bastore
+     759: putfield      #50                 // Field CLEAR:[B
+     762: aload_0
+     763: iconst_3
+     764: newarray       byte
+     766: dup
+     767: iconst_0
+     768: bipush        16
+     770: bastore
+     771: dup
+     772: iconst_1
+     773: iconst_5
+     774: bastore
+     775: dup
+     776: iconst_2
+     777: bipush        49
+     779: bastore
+     780: putfield      #51                 // Field RESUME:[B
+     783: aload_0
+     784: bipush        7
+     786: newarray       byte
+     788: dup
+     789: iconst_0
+     790: iconst_0
+     791: bastore
+     792: dup
+     793: iconst_1
+     794: iconst_0
+     795: bastore
+     796: dup
+     797: iconst_2
+     798: iconst_0
+     799: bastore
+     800: dup
+     801: iconst_3
+     802: iconst_2
+     803: bastore
+     804: dup
+     805: iconst_4
+     806: bipush        111
+     808: bastore
+     809: dup
+     810: iconst_5
+     811: bipush        107
+     813: bastore
+     814: dup
+     815: bipush        6
+     817: bipush        10
+     819: bastore
+     820: putfield      #52                 // Field TEST_REQ:[B
+     823: aload_0
+     824: iconst_2
+     825: newarray       byte
+     827: dup
+     828: iconst_0
+     829: bipush        27
+     831: bastore
+     832: dup
+     833: iconst_1
+     834: bipush        68
+     836: bastore
+     837: putfield      #53                 // Field TAB_SET:[B
+     840: aload_0
+     841: iconst_2
+     842: newarray       byte
+     844: dup
+     845: iconst_0
+     846: bipush        27
+     848: bastore
+     849: dup
+     850: iconst_1
+     851: bipush        97
+     853: bastore
+     854: putfield      #54                 // Field SET_ALIGNMENT:[B
+     857: aload_0
+     858: iconst_2
+     859: newarray       byte
+     861: dup
+     862: iconst_0
+     863: bipush        27
+     865: bastore
+     866: dup
+     867: iconst_1
+     868: bipush        85
+     870: bastore
+     871: putfield      #55                 // Field UNI_DIRECTIONAL:[B
+     874: aload_0
+     875: iconst_3
+     876: newarray       byte
+     878: dup
+     879: iconst_0
+     880: bipush        27
+     882: bastore
+     883: dup
+     884: iconst_1
+     885: bipush        99
+     887: bastore
+     888: dup
+     889: iconst_2
+     890: bipush        52
+     892: bastore
+     893: putfield      #56                 // Field ERROR_RECOVERY:[B
+     896: aload_0
+     897: iconst_4
+     898: newarray       byte
+     900: dup
+     901: iconst_0
+     902: bipush        27
+     904: bastore
+     905: dup
+     906: iconst_1
+     907: iconst_0
+     908: bastore
+     909: dup
+     910: iconst_2
+     911: bipush        32
+     913: bastore
+     914: dup
+     915: iconst_3
+     916: iconst_0
+     917: bastore
+     918: putfield      #57                 // Field STATUS_REQUEST:[B
+     921: aload_0
+     922: iconst_2
+     923: newarray       byte
+     925: dup
+     926: iconst_0
+     927: bipush        27
+     929: bastore
+     930: dup
+     931: iconst_1
+     932: bipush        43
+     934: bastore
+     935: putfield      #58                 // Field REPRINT_CHAR:[B
+     938: aload_0
+     939: iconst_3
+     940: newarray       byte
+     942: dup
+     943: iconst_0
+     944: bipush        27
+     946: bastore
+     947: dup
+     948: iconst_1
+     949: bipush        123
+     951: bastore
+     952: dup
+     953: iconst_2
+     954: iconst_0
+     955: bastore
+     956: putfield      #59                 // Field UPSIDE_DOWN:[B
+     959: aload_0
+     960: iconst_2
+     961: newarray       byte
+     963: dup
+     964: iconst_0
+     965: bipush        27
+     967: bastore
+     968: dup
+     969: iconst_1
+     970: bipush        58
+     972: bastore
+     973: putfield      #60                 // Field FIX_FONT:[B
+     976: aload_0
+     977: iconst_2
+     978: newarray       byte
+     980: dup
+     981: iconst_0
+     982: bipush        29
+     984: bastore
+     985: dup
+     986: iconst_1
+     987: bipush        59
+     989: bastore
+     990: putfield      #61                 // Field COLOR_SELECT:[B
+     993: aload_0
+     994: iconst_2
+     995: newarray       byte
+     997: dup
+     998: iconst_0
+     999: bipush        29
+    1001: bastore
+    1002: dup
+    1003: iconst_1
+    1004: bipush        107
+    1006: bastore
+    1007: putfield      #62                 // Field BARCODE_PRINTBAR:[B
+    1010: aload_0
+    1011: iconst_2
+    1012: newarray       byte
+    1014: dup
+    1015: iconst_0
+    1016: bipush        29
+    1018: bastore
+    1019: dup
+    1020: iconst_1
+    1021: bipush        119
+    1023: bastore
+    1024: putfield      #63                 // Field BARCODE_HORIZ:[B
+    1027: aload_0
+    1028: iconst_2
+    1029: newarray       byte
+    1031: dup
+    1032: iconst_0
+    1033: bipush        29
+    1035: bastore
+    1036: dup
+    1037: iconst_1
+    1038: bipush        104
+    1040: bastore
+    1041: putfield      #64                 // Field BARCODE_VERT:[B
+    1044: aload_0
+    1045: iconst_2
+    1046: newarray       byte
+    1048: dup
+    1049: iconst_0
+    1050: bipush        29
+    1052: bastore
+    1053: dup
+    1054: iconst_1
+    1055: bipush        72
+    1057: bastore
+    1058: putfield      #65                 // Field BARCODE_HRI_POSI:[B
+    1061: aload_0
+    1062: iconst_3
+    1063: newarray       byte
+    1065: dup
+    1066: iconst_0
+    1067: bipush        27
+    1069: bastore
+    1070: dup
+    1071: iconst_1
+    1072: bipush        35
+    1074: bastore
+    1075: dup
+    1076: iconst_2
+    1077: iconst_1
+    1078: bastore
+    1079: putfield      #66                 // Field ERASE_LOGOS:[B
+    1082: aload_0
+    1083: iconst_2
+    1084: newarray       byte
+    1086: dup
+    1087: iconst_0
+    1088: bipush        27
+    1090: bastore
+    1091: dup
+    1092: iconst_1
+    1093: bipush        42
+    1095: bastore
+    1096: putfield      #67                 // Field PRINT_LOGOS:[B
+    1099: aload_0
+    1100: iconst_3
+    1101: newarray       byte
+    1103: dup
+    1104: iconst_0
+    1105: bipush        27
+    1107: bastore
+    1108: dup
+    1109: iconst_1
+    1110: bipush        42
+    1112: bastore
+    1113: dup
+    1114: iconst_2
+    1115: iconst_0
+    1116: bastore
+    1117: putfield      #68                 // Field DOWNLOAD_LOGOS:[B
+    1120: aload_0
+    1121: iconst_3
+    1122: newarray       byte
+    1124: dup
+    1125: iconst_0
+    1126: bipush        27
+    1128: bastore
+    1129: dup
+    1130: iconst_1
+    1131: bipush        35
+    1133: bastore
+    1134: dup
+    1135: iconst_2
+    1136: iconst_1
+    1137: bastore
+    1138: putfield      #69                 // Field ERASE_MESSAGES:[B
+    1141: aload_0
+    1142: iconst_2
+    1143: newarray       byte
+    1145: dup
+    1146: iconst_0
+    1147: bipush        27
+    1149: bastore
+    1150: dup
+    1151: iconst_1
+    1152: bipush        32
+    1154: bastore
+    1155: putfield      #70                 // Field INTER_CHARSPACING_SB:[B
+    1158: aload_0
+    1159: iconst_2
+    1160: newarray       byte
+    1162: dup
+    1163: iconst_0
+    1164: bipush        27
+    1166: bastore
+    1167: dup
+    1168: iconst_1
+    1169: bipush        82
+    1171: bastore
+    1172: putfield      #71                 // Field INTER_CHARSPACING_DB:[B
+    1175: aload_0
+    1176: iconst_2
+    1177: newarray       byte
+    1179: dup
+    1180: iconst_0
+    1181: bipush        27
+    1183: bastore
+    1184: dup
+    1185: iconst_1
+    1186: bipush        33
+    1188: bastore
+    1189: putfield      #72                 // Field SELECT_USER_CHARSET:[B
+    1192: aload_0
+    1193: iconst_2
+    1194: newarray       byte
+    1196: dup
+    1197: iconst_0
+    1198: bipush        27
+    1200: bastore
+    1201: dup
+    1202: iconst_1
+    1203: bipush        72
+    1205: bastore
+    1206: putfield      #73                 // Field INVERT_CHARS:[B
+    1209: aload_0
+    1210: iconst_2
+    1211: newarray       byte
+    1213: dup
+    1214: iconst_0
+    1215: bipush        27
+    1217: bastore
+    1218: dup
+    1219: iconst_1
+    1220: bipush        86
+    1222: bastore
+    1223: putfield      #74                 // Field ROTATE_CHARS90:[B
+    1226: aload_0
+    1227: iconst_3
+    1228: newarray       byte
+    1230: dup
+    1231: iconst_0
+    1232: bipush        27
+    1234: bastore
+    1235: dup
+    1236: iconst_1
+    1237: bipush        60
+    1239: bastore
+    1240: dup
+    1241: iconst_2
+    1242: iconst_5
+    1243: bastore
+    1244: putfield      #75                 // Field BEGIN_INSERTION:[B
+    1247: aload_0
+    1248: iconst_2
+    1249: newarray       byte
+    1251: dup
+    1252: iconst_0
+    1253: iconst_1
+    1254: bastore
+    1255: dup
+    1256: iconst_1
+    1257: bipush        19
+    1259: bastore
+    1260: putfield      #76                 // Field END_INSERTION:[B
+    1263: aload_0
+    1264: bipush        6
+    1266: newarray       byte
+    1268: dup
+    1269: iconst_0
+    1270: bipush        27
+    1272: bastore
+    1273: dup
+    1274: iconst_1
+    1275: bipush        99
+    1277: bastore
+    1278: dup
+    1279: iconst_2
+    1280: bipush        48
+    1282: bastore
+    1283: dup
+    1284: iconst_3
+    1285: iconst_2
+    1286: bastore
+    1287: dup
+    1288: iconst_4
+    1289: bipush        27
+    1291: bastore
+    1292: dup
+    1293: iconst_5
+    1294: bipush        109
+    1296: bastore
+    1297: putfield      #77                 // Field CUT_PAPER:[B
+    1300: aload_0
+    1301: bipush        6
+    1303: newarray       byte
+    1305: dup
+    1306: iconst_0
+    1307: bipush        27
+    1309: bastore
+    1310: dup
+    1311: iconst_1
+    1312: bipush        99
+    1314: bastore
+    1315: dup
+    1316: iconst_2
+    1317: bipush        48
+    1319: bastore
+    1320: dup
+    1321: iconst_3
+    1322: iconst_4
+    1323: bastore
+    1324: dup
+    1325: iconst_4
+    1326: bipush        27
+    1328: bastore
+    1329: dup
+    1330: iconst_5
+    1331: bipush        109
+    1333: bastore
+    1334: putfield      #78                 // Field DI_EJECT:[B
+    1337: aload_0
+    1338: iconst_2
+    1339: newarray       byte
+    1341: dup
+    1342: iconst_0
+    1343: bipush        27
+    1345: bastore
+    1346: dup
+    1347: iconst_1
+    1348: bipush        112
+    1350: bastore
+    1351: putfield      #79                 // Field PULSE_DRAWER:[B
+    1354: aload_0
+    1355: iconst_2
+    1356: newarray       byte
+    1358: dup
+    1359: iconst_0
+    1360: bipush        27
+    1362: bastore
+    1363: dup
+    1364: iconst_1
+    1365: bipush        7
+    1367: bastore
+    1368: putfield      #80                 // Field BEEPER:[B
+    1371: aload_0
+    1372: iconst_2
+    1373: newarray       byte
+    1375: dup
+    1376: iconst_0
+    1377: bipush        27
+    1379: bastore
+    1380: dup
+    1381: iconst_1
+    1382: bipush        51
+    1384: bastore
+    1385: putfield      #81                 // Field LINE_SPACING:[B
+    1388: aload_0
+    1389: iconst_2
+    1390: newarray       byte
+    1392: dup
+    1393: iconst_0
+    1394: bipush        27
+    1396: bastore
+    1397: dup
+    1398: iconst_1
+    1399: bipush        67
+    1401: bastore
+    1402: putfield      #82                 // Field FORMFEED_LENGTH:[B
+    1405: aload_0
+    1406: iconst_3
+    1407: newarray       byte
+    1409: dup
+    1410: iconst_0
+    1411: bipush        27
+    1413: bastore
+    1414: dup
+    1415: iconst_1
+    1416: bipush        99
+    1418: bastore
+    1419: dup
+    1420: iconst_2
+    1421: bipush        53
+    1423: bastore
+    1424: putfield      #83                 // Field BUTTON_ENABLE:[B
+    1427: aload_0
+    1428: iconst_2
+    1429: newarray       byte
+    1431: dup
+    1432: iconst_0
+    1433: bipush        27
+    1435: bastore
+    1436: dup
+    1437: iconst_1
+    1438: bipush        47
+    1440: bastore
+    1441: putfield      #84                 // Field PRINT_QUALITY:[B
+    1444: aload_0
+    1445: iconst_2
+    1446: newarray       byte
+    1448: dup
+    1449: iconst_0
+    1450: bipush        27
+    1452: bastore
+    1453: dup
+    1454: iconst_1
+    1455: bipush        73
+    1457: bastore
+    1458: putfield      #85                 // Field MICR_READ:[B
+    1461: aload_0
+    1462: iconst_2
+    1463: newarray       byte
+    1465: dup
+    1466: iconst_0
+    1467: bipush        27
+    1469: bastore
+    1470: dup
+    1471: iconst_1
+    1472: bipush        53
+    1474: bastore
+    1475: putfield      #86                 // Field FLIP_CHECK:[B
+    1478: aload_0
+    1479: iconst_3
+    1480: newarray       byte
+    1482: dup
+    1483: iconst_0
+    1484: bipush        27
+    1486: bastore
+    1487: dup
+    1488: iconst_1
+    1489: bipush        60
+    1491: bastore
+    1492: dup
+    1493: iconst_2
+    1494: iconst_1
+    1495: bastore
+    1496: putfield      #87                 // Field OPEN_JAWS:[B
+    1499: aload_0
+    1500: bipush        12
+    1502: newarray       byte
+    1504: dup
+    1505: iconst_0
+    1506: bipush        27
+    1508: bastore
+    1509: dup
+    1510: iconst_1
+    1511: bipush        99
+    1513: bastore
+    1514: dup
+    1515: iconst_2
+    1516: bipush        48
+    1518: bastore
+    1519: dup
+    1520: iconst_3
+    1521: iconst_4
+    1522: bastore
+    1523: dup
+    1524: iconst_4
+    1525: bipush        27
+    1527: bastore
+    1528: dup
+    1529: iconst_5
+    1530: bipush        102
+    1532: bastore
+    1533: dup
+    1534: bipush        6
+    1536: iconst_2
+    1537: bastore
+    1538: dup
+    1539: bipush        7
+    1541: iconst_1
+    1542: bastore
+    1543: dup
+    1544: bipush        8
+    1546: bipush        27
+    1548: bastore
+    1549: dup
+    1550: bipush        9
+    1552: bipush        99
+    1554: bastore
+    1555: dup
+    1556: bipush        10
+    1558: bipush        48
+    1560: bastore
+    1561: dup
+    1562: bipush        11
+    1564: iconst_4
+    1565: bastore
+    1566: putfield      #88                 // Field REGISTER_DOC:[B
+    1569: aload_0
+    1570: iconst_3
+    1571: newarray       byte
+    1573: dup
+    1574: iconst_0
+    1575: bipush        27
+    1577: bastore
+    1578: dup
+    1579: iconst_1
+    1580: bipush        60
+    1582: bastore
+    1583: dup
+    1584: iconst_2
+    1585: iconst_5
+    1586: bastore
+    1587: putfield      #89                 // Field GRAB_SLIP:[B
+    1590: aload_0
+    1591: bipush        8
+    1593: newarray       byte
+    1595: dup
+    1596: iconst_0
+    1597: bipush        27
+    1599: bastore
+    1600: dup
+    1601: iconst_1
+    1602: bipush        99
+    1604: bastore
+    1605: dup
+    1606: iconst_2
+    1607: bipush        48
+    1609: bastore
+    1610: dup
+    1611: iconst_3
+    1612: iconst_4
+    1613: bastore
+    1614: dup
+    1615: iconst_4
+    1616: bipush        27
+    1618: bastore
+    1619: dup
+    1620: iconst_5
+    1621: bipush        102
+    1623: bastore
+    1624: dup
+    1625: bipush        6
+    1627: iconst_2
+    1628: bastore
+    1629: dup
+    1630: bipush        7
+    1632: iconst_0
+    1633: bastore
+    1634: putfield      #90                 // Field END_REGISTER_DOC:[B
+    1637: aload_0
+    1638: iconst_2
+    1639: newarray       byte
+    1641: dup
+    1642: iconst_0
+    1643: bipush        27
+    1645: bastore
+    1646: dup
+    1647: iconst_1
+    1648: bipush        62
+    1650: bastore
+    1651: putfield      #91                 // Field START_SCAN:[B
+    1654: aload_0
+    1655: iconst_2
+    1656: newarray       byte
+    1658: dup
+    1659: iconst_0
+    1660: bipush        27
+    1662: bastore
+    1663: dup
+    1664: iconst_1
+    1665: bipush        48
+    1667: bastore
+    1668: putfield      #92                 // Field PRINT_SCANNED_IMG:[B
+    1671: aload_0
+    1672: iconst_3
+    1673: newarray       byte
+    1675: dup
+    1676: iconst_0
+    1677: bipush        29
+    1679: bastore
+    1680: dup
+    1681: iconst_1
+    1682: bipush        99
+    1684: bastore
+    1685: dup
+    1686: iconst_2
+    1687: bipush        48
+    1689: bastore
+    1690: putfield      #93                 // Field SCANNER_CALIB:[B
+    1693: aload_0
+    1694: iconst_2
+    1695: newarray       byte
+    1697: dup
+    1698: iconst_0
+    1699: bipush        27
+    1701: bastore
+    1702: dup
+    1703: iconst_1
+    1704: bipush        57
+    1706: bastore
+    1707: putfield      #94                 // Field RETRIEVE_IMAGE:[B
+    1710: aload_0
+    1711: iconst_4
+    1712: newarray       byte
+    1714: dup
+    1715: iconst_0
+    1716: bipush        29
+    1718: bastore
+    1719: dup
+    1720: iconst_1
+    1721: bipush        78
+    1723: bastore
+    1724: dup
+    1725: iconst_2
+    1726: iconst_1
+    1727: bastore
+    1728: dup
+    1729: iconst_3
+    1730: iconst_0
+    1731: bastore
+    1732: putfield      #95                 // Field GET_NEXT_IMG_LOC:[B
+    1735: aload_0
+    1736: iconst_4
+    1737: newarray       byte
+    1739: dup
+    1740: iconst_0
+    1741: bipush        29
+    1743: bastore
+    1744: dup
+    1745: iconst_1
+    1746: bipush        78
+    1748: bastore
+    1749: dup
+    1750: iconst_2
+    1751: iconst_1
+    1752: bastore
+    1753: dup
+    1754: iconst_3
+    1755: iconst_1
+    1756: bastore
+    1757: putfield      #96                 // Field GET_FIRST_UNREAD_IMG_LOC:[B
+    1760: aload_0
+    1761: iconst_2
+    1762: newarray       byte
+    1764: dup
+    1765: iconst_0
+    1766: bipush        27
+    1768: bastore
+    1769: dup
+    1770: iconst_1
+    1771: bipush        65
+    1773: bastore
+    1774: putfield      #97                 // Field STORE_SCANNED_IMG:[B
+    1777: aload_0
+    1778: iconst_2
+    1779: newarray       byte
+    1781: dup
+    1782: iconst_0
+    1783: bipush        29
+    1785: bastore
+    1786: dup
+    1787: iconst_1
+    1788: bipush        42
+    1790: bastore
+    1791: putfield      #98                 // Field SET_BITMAP:[B
+    1794: aload_0
+    1795: iconst_2
+    1796: newarray       byte
+    1798: dup
+    1799: iconst_0
+    1800: bipush        29
+    1802: bastore
+    1803: dup
+    1804: iconst_1
+    1805: bipush        58
+    1807: bastore
+    1808: putfield      #99                 // Field SET_LOGO:[B
+    1811: aload_0
+    1812: iconst_2
+    1813: newarray       byte
+    1815: dup
+    1816: iconst_0
+    1817: bipush        29
+    1819: bastore
+    1820: dup
+    1821: iconst_1
+    1822: bipush        47
+    1824: bastore
+    1825: putfield      #100                // Field PRINT_SET_BITMAP:[B
+    1828: aload_0
+    1829: iconst_2
+    1830: newarray       byte
+    1832: dup
+    1833: iconst_0
+    1834: bipush        29
+    1836: bastore
+    1837: dup
+    1838: iconst_1
+    1839: bipush        94
+    1841: bastore
+    1842: putfield      #101                // Field PRINT_SET_LOGO:[B
+    1845: aload_0
+    1846: iconst_2
+    1847: newarray       byte
+    1849: dup
+    1850: iconst_0
+    1851: bipush        27
+    1853: bastore
+    1854: dup
+    1855: iconst_1
+    1856: bipush        46
+    1858: bastore
+    1859: putfield      #102                // Field CONTINUATION_CMD:[B
+    1862: aload_0
+    1863: iconst_3
+    1864: newarray       byte
+    1866: dup
+    1867: iconst_0
+    1868: iconst_0
+    1869: bastore
+    1870: dup
+    1871: iconst_1
+    1872: iconst_0
+    1873: bastore
+    1874: dup
+    1875: iconst_2
+    1876: iconst_1
+    1877: bastore
+    1878: putfield      #103                // Field DEVICE_INFO:[B
+    1881: aload_0
+    1882: iconst_4
+    1883: newarray       byte
+    1885: dup
+    1886: iconst_0
+    1887: bipush        27
+    1889: bastore
+    1890: dup
+    1891: iconst_1
+    1892: iconst_0
+    1893: bastore
+    1894: dup
+    1895: iconst_2
+    1896: iconst_0
+    1897: bastore
+    1898: dup
+    1899: iconst_3
+    1900: iconst_1
+    1901: bastore
+    1902: putfield      #104                // Field BUFFERED_DEV_INFO:[B
+    1905: aload_0
+    1906: iconst_2
+    1907: newarray       byte
+    1909: dup
+    1910: iconst_0
+    1911: bipush        27
+    1913: bastore
+    1914: dup
+    1915: iconst_1
+    1916: bipush        60
+    1918: bastore
+    1919: putfield      #105                // Field RETURN_HOME:[B
+    1922: aload_0
+    1923: iconst_3
+    1924: newarray       byte
+    1926: dup
+    1927: iconst_0
+    1928: bipush        27
+    1930: bastore
+    1931: dup
+    1932: iconst_1
+    1933: bipush        83
+    1935: bastore
+    1936: dup
+    1937: iconst_2
+    1938: bipush        10
+    1940: bastore
+    1941: putfield      #106                // Field SET_CHASE_MODE:[B
+    1944: aload_0
+    1945: iconst_3
+    1946: newarray       byte
+    1948: dup
+    1949: iconst_0
+    1950: bipush        27
+    1952: bastore
+    1953: dup
+    1954: iconst_1
+    1955: bipush        37
+    1957: bastore
+    1958: dup
+    1959: iconst_2
+    1960: iconst_0
+    1961: bastore
+    1962: putfield      #107                // Field RESIDENT_CHAR_SET:[B
+    1965: aload_0
+    1966: iconst_3
+    1967: newarray       byte
+    1969: dup
+    1970: iconst_0
+    1971: bipush        27
+    1973: bastore
+    1974: dup
+    1975: iconst_1
+    1976: bipush        37
+    1978: bastore
+    1979: dup
+    1980: iconst_2
+    1981: iconst_1
+    1982: bastore
+    1983: putfield      #108                // Field USER_CHAR_SET:[B
+    1986: aload_0
+    1987: iconst_2
+    1988: newarray       byte
+    1990: dup
+    1991: iconst_0
+    1992: bipush        27
+    1994: bastore
+    1995: dup
+    1996: iconst_1
+    1997: bipush        116
+    1999: bastore
+    2000: putfield      #109                // Field SELECT_CODE_PAGE:[B
+    2003: aload_0
+    2004: iconst_2
+    2005: newarray       byte
+    2007: dup
+    2008: iconst_0
+    2009: bipush        27
+    2011: bastore
+    2012: dup
+    2013: iconst_1
+    2014: bipush        38
+    2016: bastore
+    2017: putfield      #110                // Field DOWNLOAD_FONT:[B
+    2020: aload_0
+    2021: iconst_2
+    2022: newarray       byte
+    2024: dup
+    2025: iconst_0
+    2026: bipush        27
+    2028: bastore
+    2029: dup
+    2030: iconst_1
+    2031: bipush        40
+    2033: bastore
+    2034: putfield      #111                // Field DOWNLOAD_DBCS_FONT:[B
+    2037: aload_0
+    2038: iconst_3
+    2039: newarray       byte
+    2041: dup
+    2042: iconst_0
+    2043: bipush        27
+    2045: bastore
+    2046: dup
+    2047: iconst_1
+    2048: bipush        99
+    2050: bastore
+    2051: dup
+    2052: iconst_2
+    2053: bipush        49
+    2055: bastore
+    2056: putfield      #112                // Field PRINT_STATION_SETTING:[B
+    2059: aload_0
+    2060: iconst_2
+    2061: newarray       byte
+    2063: dup
+    2064: iconst_0
+    2065: bipush        27
+    2067: bastore
+    2068: dup
+    2069: iconst_1
+    2070: bipush        92
+    2072: bastore
+    2073: putfield      #113                // Field SET_RELATIVE_POS:[B
+    2076: aload_0
+    2077: iconst_2
+    2078: newarray       byte
+    2080: dup
+    2081: iconst_0
+    2082: bipush        27
+    2084: bastore
+    2085: dup
+    2086: iconst_1
+    2087: bipush        36
+    2089: bastore
+    2090: putfield      #114                // Field SET_LEFT_MARGIN_POS:[B
+    2093: aload_0
+    2094: iconst_2
+    2095: newarray       byte
+    2097: dup
+    2098: iconst_0
+    2099: bipush        27
+    2101: bastore
+    2102: dup
+    2103: iconst_1
+    2104: bipush        71
+    2106: bastore
+    2107: putfield      #115                // Field EMPHASIZE_MODE:[B
+    2110: aload_0
+    2111: iconst_2
+    2112: newarray       byte
+    2114: dup
+    2115: iconst_0
+    2116: bipush        27
+    2118: bastore
+    2119: dup
+    2120: iconst_1
+    2121: bipush        45
+    2123: bastore
+    2124: putfield      #116                // Field UNDERLINE_MODE:[B
+    2127: aload_0
+    2128: iconst_2
+    2129: newarray       byte
+    2131: dup
+    2132: iconst_0
+    2133: bipush        27
+    2135: bastore
+    2136: dup
+    2137: iconst_1
+    2138: bipush        87
+    2140: bastore
+    2141: putfield      #117                // Field DOUBLE_WIDE_MODE:[B
+    2144: aload_0
+    2145: iconst_2
+    2146: newarray       byte
+    2148: dup
+    2149: iconst_0
+    2150: bipush        27
+    2152: bastore
+    2153: dup
+    2154: iconst_1
+    2155: bipush        104
+    2157: bastore
+    2158: putfield      #118                // Field DOUBLE_HIGH_MODE:[B
+    2161: aload_0
+    2162: iconst_2
+    2163: newarray       byte
+    2165: dup
+    2166: iconst_0
+    2167: bipush        27
+    2169: bastore
+    2170: dup
+    2171: iconst_1
+    2172: bipush        72
+    2174: bastore
+    2175: putfield      #119                // Field INVERT_MODE:[B
+    2178: aload_0
+    2179: bipush        18
+    2181: newarray       byte
+    2183: dup
+    2184: iconst_0
+    2185: bipush        27
+    2187: bastore
+    2188: dup
+    2189: iconst_1
+    2190: bipush        95
+    2192: bastore
+    2193: dup
+    2194: iconst_2
+    2195: iconst_0
+    2196: bastore
+    2197: dup
+    2198: iconst_3
+    2199: bipush        27
+    2201: bastore
+    2202: dup
+    2203: iconst_4
+    2204: bipush        71
+    2206: bastore
+    2207: dup
+    2208: iconst_5
+    2209: iconst_0
+    2210: bastore
+    2211: dup
+    2212: bipush        6
+    2214: bipush        27
+    2216: bastore
+    2217: dup
+    2218: bipush        7
+    2220: bipush        87
+    2222: bastore
+    2223: dup
+    2224: bipush        8
+    2226: iconst_0
+    2227: bastore
+    2228: dup
+    2229: bipush        9
+    2231: bipush        27
+    2233: bastore
+    2234: dup
+    2235: bipush        10
+    2237: bipush        104
+    2239: bastore
+    2240: dup
+    2241: bipush        11
+    2243: iconst_0
+    2244: bastore
+    2245: dup
+    2246: bipush        12
+    2248: bipush        27
+    2250: bastore
+    2251: dup
+    2252: bipush        13
+    2254: bipush        72
+    2256: bastore
+    2257: dup
+    2258: bipush        14
+    2260: iconst_0
+    2261: bastore
+    2262: dup
+    2263: bipush        15
+    2265: bipush        27
+    2267: bastore
+    2268: dup
+    2269: bipush        16
+    2271: bipush        45
+    2273: bastore
+    2274: dup
+    2275: bipush        17
+    2277: iconst_0
+    2278: bastore
+    2279: putfield      #120                // Field NORMAL_MODE:[B
+    2282: aload_0
+    2283: iconst_2
+    2284: newarray       byte
+    2286: dup
+    2287: iconst_0
+    2288: bipush        27
+    2290: bastore
+    2291: dup
+    2292: iconst_1
+    2293: bipush        33
+    2295: bastore
+    2296: putfield      #121                // Field SELECT_FONT_FACE:[B
+    2299: aload_0
+    2300: iconst_2
+    2301: newarray       byte
+    2303: dup
+    2304: iconst_0
+    2305: bipush        27
+    2307: bastore
+    2308: dup
+    2309: iconst_1
+    2310: bipush        32
+    2312: bastore
+    2313: putfield      #122                // Field SET_DOT_SPACING:[B
+    2316: aload_0
+    2317: iconst_2
+    2318: newarray       byte
+    2320: dup
+    2321: iconst_0
+    2322: bipush        27
+    2324: bastore
+    2325: dup
+    2326: iconst_1
+    2327: bipush        82
+    2329: bastore
+    2330: putfield      #19                 // Field SET_DBCS_DOT_SPACING:[B
+    2333: aload_0
+    2334: iconst_2
+    2335: newarray       byte
+    2337: dup
+    2338: iconst_0
+    2339: bipush        27
+    2341: bastore
+    2342: dup
+    2343: iconst_1
+    2344: bipush        101
+    2346: bastore
+    2347: putfield      #123                // Field FEED_REVERSE:[B
+    2350: aload_0
+    2351: iconst_2
+    2352: newarray       byte
+    2354: dup
+    2355: iconst_0
+    2356: bipush        29
+    2358: bastore
+    2359: dup
+    2360: iconst_1
+    2361: bipush        33
+    2363: bastore
+    2364: putfield      #124                // Field FONT_SCALE:[B
+    2367: aload_0
+    2368: iconst_2
+    2369: newarray       byte
+    2371: dup
+    2372: iconst_0
+    2373: bipush        27
+    2375: bastore
+    2376: dup
+    2377: iconst_1
+    2378: bipush        114
+    2380: bastore
+    2381: putfield      #125                // Field FONT_COLOR:[B
+    2384: aload_0
+    2385: iconst_2
+    2386: newarray       byte
+    2388: dup
+    2389: iconst_0
+    2390: bipush        29
+    2392: bastore
+    2393: dup
+    2394: iconst_1
+    2395: bipush        59
+    2397: bastore
+    2398: putfield      #126                // Field FONT_COLOR_MODE:[B
+    2401: aload_0
+    2402: iconst_2
+    2403: newarray       byte
+    2405: dup
+    2406: iconst_0
+    2407: bipush        27
+    2409: bastore
+    2410: dup
+    2411: iconst_1
+    2412: bipush        74
+    2414: bastore
+    2415: putfield      #127                // Field FEED_UNITS:[B
+    2418: aload_0
+    2419: iconst_3
+    2420: newarray       byte
+    2422: dup
+    2423: iconst_0
+    2424: bipush        27
+    2426: bastore
+    2427: dup
+    2428: iconst_1
+    2429: bipush        35
+    2431: bastore
+    2432: dup
+    2433: iconst_2
+    2434: iconst_1
+    2435: bastore
+    2436: putfield      #128                // Field ERASE_FLASH_DL_GRAPHICS:[B
+    2439: aload_0
+    2440: iconst_3
+    2441: newarray       byte
+    2443: dup
+    2444: iconst_0
+    2445: bipush        27
+    2447: bastore
+    2448: dup
+    2449: iconst_1
+    2450: bipush        35
+    2452: bastore
+    2453: dup
+    2454: iconst_2
+    2455: iconst_2
+    2456: bastore
+    2457: putfield      #129                // Field ERASE_FLASH_PRE_MESSAGES:[B
+    2460: aload_0
+    2461: iconst_3
+    2462: newarray       byte
+    2464: dup
+    2465: iconst_0
+    2466: bipush        27
+    2468: bastore
+    2469: dup
+    2470: iconst_1
+    2471: bipush        35
+    2473: bastore
+    2474: dup
+    2475: iconst_2
+    2476: iconst_3
+    2477: bastore
+    2478: putfield      #130                // Field ERASE_FLASH_USR_DEF_IMPACT_CHAR_SETS:[B
+    2481: aload_0
+    2482: iconst_3
+    2483: newarray       byte
+    2485: dup
+    2486: iconst_0
+    2487: bipush        27
+    2489: bastore
+    2490: dup
+    2491: iconst_1
+    2492: bipush        35
+    2494: bastore
+    2495: dup
+    2496: iconst_2
+    2497: iconst_4
+    2498: bastore
+    2499: putfield      #131                // Field ERASE_FLASH_USR_DEF_THERMAL_CHAR_SETS:[B
+    2502: aload_0
+    2503: iconst_3
+    2504: newarray       byte
+    2506: dup
+    2507: iconst_0
+    2508: bipush        27
+    2510: bastore
+    2511: dup
+    2512: iconst_1
+    2513: bipush        35
+    2515: bastore
+    2516: dup
+    2517: iconst_2
+    2518: iconst_5
+    2519: bastore
+    2520: putfield      #132                // Field ERASE_FLASH_USR_FLA_STORAGE:[B
+    2523: aload_0
+    2524: iconst_3
+    2525: newarray       byte
+    2527: dup
+    2528: iconst_0
+    2529: bipush        27
+    2531: bastore
+    2532: dup
+    2533: iconst_1
+    2534: bipush        35
+    2536: bastore
+    2537: dup
+    2538: iconst_2
+    2539: bipush        6
+    2541: bastore
+    2542: putfield      #133                // Field ERASE_FLASH_ALL_DBL_BYTE_CHARS:[B
+    2545: aload_0
+    2546: iconst_3
+    2547: newarray       byte
+    2549: dup
+    2550: iconst_0
+    2551: bipush        27
+    2553: bastore
+    2554: dup
+    2555: iconst_1
+    2556: bipush        35
+    2558: bastore
+    2559: dup
+    2560: iconst_2
+    2561: bipush        8
+    2563: bastore
+    2564: putfield      #134                // Field ERASE_FLASH_CHECK_IMAGES:[B
+    2567: aload_0
+    2568: iconst_2
+    2569: newarray       byte
+    2571: dup
+    2572: iconst_0
+    2573: bipush        27
+    2575: bastore
+    2576: dup
+    2577: iconst_1
+    2578: bipush        81
+    2580: bastore
+    2581: putfield      #31                 // Field COMMON_STATISTIC_CMD:[B
+    2584: aload_0
+    2585: iconst_1
+    2586: newarray       byte
+    2588: dup
+    2589: iconst_0
+    2590: bipush        112
+    2592: bastore
+    2593: putfield      #32                 // Field MANUFACTURE_DATE:[B
+    2596: aload_0
+    2597: iconst_1
+    2598: newarray       byte
+    2600: dup
+    2601: iconst_0
+    2602: bipush        -116
+    2604: bastore
+    2605: putfield      #135                // Field FORM_INSERTION_COUNT:[B
+    2608: aload_0
+    2609: iconst_1
+    2610: newarray       byte
+    2612: dup
+    2613: iconst_0
+    2614: bipush        -106
+    2616: bastore
+    2617: putfield      #136                // Field FORM_INSERTION_COUNT_REMAINDER:[B
+    2620: aload_0
+    2621: iconst_1
+    2622: newarray       byte
+    2624: dup
+    2625: iconst_0
+    2626: bipush        -118
+    2628: bastore
+    2629: putfield      #137                // Field HOME_ERROR_COUNT:[B
+    2632: aload_0
+    2633: iconst_1
+    2634: newarray       byte
+    2636: dup
+    2637: iconst_0
+    2638: bipush        -127
+    2640: bastore
+    2641: putfield      #138                // Field PAPER_CUT_COUNT:[B
+    2644: aload_0
+    2645: iconst_1
+    2646: newarray       byte
+    2648: dup
+    2649: iconst_0
+    2650: bipush        -109
+    2652: bastore
+    2653: putfield      #139                // Field PAPER_CUT_COUNT_REMAINDER:[B
+    2656: aload_0
+    2657: iconst_1
+    2658: newarray       byte
+    2660: dup
+    2661: iconst_0
+    2662: bipush        -122
+    2664: bastore
+    2665: putfield      #140                // Field FAILED_PAPER_CUT_COUNT:[B
+    2668: aload_0
+    2669: iconst_1
+    2670: newarray       byte
+    2672: dup
+    2673: iconst_0
+    2674: bipush        -123
+    2676: bastore
+    2677: putfield      #141                // Field RECEIPT_COVER_OPEN_COUNT:[B
+    2680: aload_0
+    2681: iconst_1
+    2682: newarray       byte
+    2684: dup
+    2685: iconst_0
+    2686: bipush        -121
+    2688: bastore
+    2689: putfield      #142                // Field SLIP_CHARACTER_PRINTED_COUNT:[B
+    2692: aload_0
+    2693: iconst_1
+    2694: newarray       byte
+    2696: dup
+    2697: iconst_0
+    2698: bipush        -108
+    2700: bastore
+    2701: putfield      #143                // Field SLIP_CHARACTER_PRINTED_COUNT_REMAINDER:[B
+    2704: aload_0
+    2705: iconst_1
+    2706: newarray       byte
+    2708: dup
+    2709: iconst_0
+    2710: bipush        -117
+    2712: bastore
+    2713: putfield      #144                // Field SLIP_COVER_OPEN_COUNT:[B
+    2716: aload_0
+    2717: iconst_1
+    2718: newarray       byte
+    2720: dup
+    2721: iconst_0
+    2722: bipush        -126
+    2724: bastore
+    2725: putfield      #145                // Field RECEIPT_CHARACTER_PRINTED_COUNT_HIGH:[B
+    2728: aload_0
+    2729: iconst_1
+    2730: newarray       byte
+    2732: dup
+    2733: iconst_0
+    2734: bipush        -125
+    2736: bastore
+    2737: putfield      #146                // Field RECEIPT_CHARACTER_PRINTED_COUNT_LOW:[B
+    2740: aload_0
+    2741: iconst_1
+    2742: newarray       byte
+    2744: dup
+    2745: iconst_0
+    2746: bipush        -112
+    2748: bastore
+    2749: putfield      #147                // Field PRINT_SIDE_CHANGE_COUNT:[B
+    2752: aload_0
+    2753: iconst_1
+    2754: newarray       byte
+    2756: dup
+    2757: iconst_0
+    2758: bipush        -102
+    2760: bastore
+    2761: putfield      #148                // Field PRINT_SIDE_CHANGE_COUNT_REMAINDER:[B
+    2764: aload_0
+    2765: iconst_1
+    2766: newarray       byte
+    2768: dup
+    2769: iconst_0
+    2770: bipush        -111
+    2772: bastore
+    2773: putfield      #149                // Field FAILED_PRINT_SIDE_CHANGE_COUNT:[B
+    2776: aload_0
+    2777: iconst_1
+    2778: newarray       byte
+    2780: dup
+    2781: iconst_0
+    2782: bipush        -104
+    2784: bastore
+    2785: putfield      #150                // Field FAILED_PRINT_SIDE_CHANGE_COUNT_REMAINDER:[B
+    2788: aload_0
+    2789: iconst_1
+    2790: newarray       byte
+    2792: dup
+    2793: iconst_0
+    2794: bipush        -124
+    2796: bastore
+    2797: putfield      #151                // Field RECEIPT_LINE_FEED_COUNT:[B
+    2800: aload_0
+    2801: iconst_1
+    2802: newarray       byte
+    2804: dup
+    2805: iconst_0
+    2806: bipush        -110
+    2808: bastore
+    2809: putfield      #152                // Field RECEIPT_LINE_FEED_COUNT_REMAINDER:[B
+    2812: aload_0
+    2813: iconst_1
+    2814: newarray       byte
+    2816: dup
+    2817: iconst_0
+    2818: bipush        -120
+    2820: bastore
+    2821: putfield      #153                // Field SLIP_LINE_FEED_COUNT:[B
+    2824: aload_0
+    2825: iconst_1
+    2826: newarray       byte
+    2828: dup
+    2829: iconst_0
+    2830: bipush        -107
+    2832: bastore
+    2833: putfield      #154                // Field SLIP_LINE_FEED_COUNT_REMAINDER:[B
+    2836: aload_0
+    2837: iconst_1
+    2838: newarray       byte
+    2840: dup
+    2841: iconst_0
+    2842: bipush        -40
+    2844: bastore
+    2845: putfield      #155                // Field BARCODE_PRINTED_COUNT:[B
+    2848: aload_0
+    2849: iconst_1
+    2850: newarray       byte
+    2852: dup
+    2853: iconst_0
+    2854: bipush        -99
+    2856: bastore
+    2857: putfield      #156                // Field BARCODE_PRINTED_COUNT_REMAINDER:[B
+    2860: aload_0
+    2861: iconst_1
+    2862: newarray       byte
+    2864: dup
+    2865: iconst_0
+    2866: bipush        -39
+    2868: bastore
+    2869: putfield      #157                // Field MAXIMUM_TEMP_REACHED_COUNT:[B
+    2872: aload_0
+    2873: iconst_1
+    2874: newarray       byte
+    2876: dup
+    2877: iconst_0
+    2878: bipush        -46
+    2880: bastore
+    2881: putfield      #158                // Field NVRAM_WRITE_COUNT:[B
+    2884: aload_0
+    2885: iconst_1
+    2886: newarray       byte
+    2888: dup
+    2889: iconst_0
+    2890: bipush        -113
+    2892: bastore
+    2893: putfield      #33                 // Field FAILED_READ_COUNT:[B
+    2896: aload_0
+    2897: iconst_1
+    2898: newarray       byte
+    2900: dup
+    2901: iconst_0
+    2902: bipush        -103
+    2904: bastore
+    2905: putfield      #35                 // Field FAILED_READ_COUNT_REMAINDER:[B
+    2908: aload_0
+    2909: iconst_1
+    2910: newarray       byte
+    2912: dup
+    2913: iconst_0
+    2914: bipush        -115
+    2916: bastore
+    2917: putfield      #34                 // Field TOTAL_READ_COUNT:[B
+    2920: aload_0
+    2921: iconst_1
+    2922: newarray       byte
+    2924: dup
+    2925: iconst_0
+    2926: bipush        -101
+    2928: bastore
+    2929: putfield      #36                 // Field TOTAL_READ_COUNT_REMAINDER:[B
+    2932: aload_0
+    2933: iconst_1
+    2934: newarray       byte
+    2936: dup
+    2937: iconst_0
+    2938: bipush        -45
+    2940: bastore
+    2941: putfield      #37                 // Field CHECK_SCANNED_COUNT:[B
+    2944: aload_0
+    2945: iconst_1
+    2946: newarray       byte
+    2948: dup
+    2949: iconst_0
+    2950: bipush        -98
+    2952: bastore
+    2953: putfield      #38                 // Field CHECK_SCANNED_COUNT_REMAINDER:[B
+    2956: aload_0
+    2957: iconst_1
+    2958: newarray       byte
+    2960: dup
+    2961: iconst_0
+    2962: bipush        109
+    2964: bastore
+    2965: putfield      #39                 // Field CHECK_SCANNER_BRIGHTNESS_QUALITY:[B
+    2968: aload_0
+    2969: iconst_1
+    2970: newarray       byte
+    2972: dup
+    2973: iconst_0
+    2974: bipush        109
+    2976: bastore
+    2977: putfield      #40                 // Field CHECK_SCANNER_CONTRAST_QUALITY:[B
+    2980: aload_0
+    2981: iconst_1
+    2982: newarray       byte
+    2984: dup
+    2985: iconst_0
+    2986: bipush        110
+    2988: bastore
+    2989: putfield      #41                 // Field CHECK_SCANNER_FOCUS_QUALITY:[B
+    2992: aload_0
+    2993: iconst_1
+    2994: newarray       byte
+    2996: dup
+    2997: iconst_0
+    2998: bipush        -44
+    3000: bastore
+    3001: putfield      #42                 // Field CHECKS_FAILED_QUALITY_COUNT:[B
+    3004: return
+
+  public com.ibm.posj.util.DevBus getBusType();
+    Code:
+       0: getstatic     #159                // Field com/ibm/posj/util/DevBuses.HID_DEVBUS:Lcom/ibm/posj/util/DevBus;
+       3: areturn
+}

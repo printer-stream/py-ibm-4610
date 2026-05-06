@@ -1,0 +1,178 @@
+Compiled from "IBM4610PrinterCmdConst.java"
+public interface com.ibm.posj.IBM4610PrinterCmdConst extends com.ibm.posj.POSPrinterCmdConst {
+  public static final byte LEFT_TO_RIGHT_TOPLEFT;
+
+  public static final byte BOTTOM_TO_TOP_BOTTOMLEFT;
+
+  public static final byte RIGHT_TO_LEFT_BOTTOMRIGHT;
+
+  public static final byte TOP_TO_BOTTOM_TOPRIGHT;
+
+  public static final byte SLIP_FONTA;
+
+  public static final byte SLIP_FONTB;
+
+  public static final byte SLIP_PAGE2;
+
+  public static final byte SLIP_FONT_WIDTH;
+
+  public static final byte SLIP_FONT_HEIGHT;
+
+  public static final byte REC_FONTA;
+
+  public static final byte REC_FONTB;
+
+  public static final byte REC_FONTC;
+
+  public static final byte REC_FONTA_WIDTH;
+
+  public static final byte REC_FONTB_WIDTH;
+
+  public static final byte REC_FONTC_WIDTH;
+
+  public static final byte REC_FONTA_HEIGHT;
+
+  public static final byte REC_FONTB_HEIGHT;
+
+  public static final byte REC_FONTC_HEIGHT;
+
+  public static final byte RESIDENT_CS;
+
+  public static final byte NONRESIDENT_CS;
+
+  public static final byte UDF_PAGE1;
+
+  public static final byte UDF_PAGE2;
+
+  public static final byte UDF_PAGE3;
+
+  public static final byte UDF_PAGE4;
+
+  public static final byte FM_IMPACT_CS;
+
+  public static final byte FM_THERM_CS;
+
+  public static final byte FM_DBCS;
+
+  public static final byte DEFAULT_SPACING;
+
+  public static final byte REC_DOT_MIN;
+
+  public static final byte REC_DOT_MAX;
+
+  public static final byte SLIP_DOT_MIN;
+
+  public static final byte SLIP_DOT_MAX;
+
+  public static final byte REC_DBCS_DOT_MIN;
+
+  public static final byte REC_DBCS_DOT_MAX;
+
+  public static final byte SLIP_DBCS_DOT_MIN;
+
+  public static final byte SLIP_DBCS_DOT_MAX;
+
+  public static final int ER_RELEASE_AFTER_CORRECTION;
+
+  public static final int ER_AUTO_RETRY_AFTER_HOME_ERROR;
+
+  public static final int ER_WAIT_FOR_DOCUMENT;
+
+  public static final int ER_RELEASE_AFTER_FLIP_ERROR;
+
+  public static final byte[][] FONT_TYPE_TABLE;
+
+  public static final byte FLASH_SECTOR_EIGHT;
+
+  static {};
+    Code:
+       0: iconst_5
+       1: anewarray     #1                  // class "[B"
+       4: dup
+       5: iconst_0
+       6: iconst_3
+       7: newarray       byte
+       9: dup
+      10: iconst_0
+      11: iconst_2
+      12: bastore
+      13: dup
+      14: iconst_1
+      15: iconst_0
+      16: bastore
+      17: dup
+      18: iconst_2
+      19: bipush        10
+      21: bastore
+      22: aastore
+      23: dup
+      24: iconst_1
+      25: iconst_3
+      26: newarray       byte
+      28: dup
+      29: iconst_0
+      30: iconst_2
+      31: bastore
+      32: dup
+      33: iconst_1
+      34: iconst_1
+      35: bastore
+      36: dup
+      37: iconst_2
+      38: bipush        12
+      40: bastore
+      41: aastore
+      42: dup
+      43: iconst_2
+      44: iconst_3
+      45: newarray       byte
+      47: dup
+      48: iconst_0
+      49: iconst_2
+      50: bastore
+      51: dup
+      52: iconst_1
+      53: iconst_2
+      54: bastore
+      55: dup
+      56: iconst_2
+      57: bipush        8
+      59: bastore
+      60: aastore
+      61: dup
+      62: iconst_3
+      63: iconst_3
+      64: newarray       byte
+      66: dup
+      67: iconst_0
+      68: iconst_4
+      69: bastore
+      70: dup
+      71: iconst_1
+      72: iconst_0
+      73: bastore
+      74: dup
+      75: iconst_2
+      76: bipush        7
+      78: bastore
+      79: aastore
+      80: dup
+      81: iconst_4
+      82: iconst_3
+      83: newarray       byte
+      85: dup
+      86: iconst_0
+      87: iconst_4
+      88: bastore
+      89: dup
+      90: iconst_1
+      91: iconst_1
+      92: bastore
+      93: dup
+      94: iconst_2
+      95: bipush        7
+      97: bastore
+      98: aastore
+      99: putstatic     #2                  // Field FONT_TYPE_TABLE:[[B
+     102: return
+}

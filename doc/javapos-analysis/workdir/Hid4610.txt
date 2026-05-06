@@ -1,0 +1,1317 @@
+Compiled from "Hid4610PrinterHandleImp.java"
+public class com.ibm.posj.bus.hid.Hid4610PrinterHandleImp extends com.ibm.posj.bus.hid.HidPOSPrinterHandleImp implements com.ibm.posj.bus.hid.HidHandleImp,com.ibm.posj.bus.IBM4610PrinterHandleImp,com.ibm.posj.flash.FlashHandleImpVisitable {
+  private com.ibm.posj.bus.hid.Hid4610PrinterHandleImp$StatusDaemon sdaemon;
+
+  private byte feature1;
+
+  private byte feature2;
+
+  private com.ibm.posj.bus.printer.IBM4610Utility util;
+
+  private boolean initialized;
+
+  private com.ibm.posj.printer.ibm4610.IBM4610Writer writer;
+
+  private com.ibm.posj.printer.IBMPrinterImp printerImp;
+
+  private static com.ibm.posj.IBM4610PrinterCmd$Factory factory;
+
+  protected static final java.lang.Integer CashDrawerA;
+
+  protected static final java.lang.Integer CashDrawerB;
+
+  private static final boolean RAW_BYTE_SUBMIT;
+
+  private static final int USB_STATUS_SIZE;
+
+  private static final byte ADAPTER_HEADER_SIZE;
+
+  private static final byte PRINTER_DATA_HEADER_SIZE;
+
+  private static final byte PRINTER_STATUS_BYTES_SIZE;
+
+  private static final int INIT_MAX_WAIT;
+
+  private static final int PRINTER_DATA_MAX;
+
+  private static final int PRINTER_DATA_ALT;
+
+  private static final int SHORT_CMD;
+
+  private static final int LONG_CMD;
+
+  private static final int REPORT_ID;
+
+  private static int MAX_HANG_CNT;
+
+  private boolean formerMod4;
+
+  private byte hangCnt;
+
+  private java.util.List currPDE;
+
+  com.ibm.posj.bus.PrinterPacket packet;
+
+  public static byte[] transfer;
+
+  public com.ibm.posj.bus.hid.Hid4610PrinterHandleImp(com.ibm.posj.HandleKey, com.ibm.hid.HidDevice, byte);
+    Code:
+       0: aload_0
+       1: aload_1
+       2: aload_2
+       3: invokespecial #1                  // Method com/ibm/posj/bus/hid/HidPOSPrinterHandleImp."<init>":(Lcom/ibm/posj/HandleKey;Lcom/ibm/hid/HidDevice;)V
+       6: aload_0
+       7: new           #2                  // class com/ibm/posj/bus/hid/Hid4610PrinterHandleImp$StatusDaemon
+      10: dup
+      11: aload_0
+      12: invokespecial #3                  // Method com/ibm/posj/bus/hid/Hid4610PrinterHandleImp$StatusDaemon."<init>":(Lcom/ibm/posj/bus/hid/Hid4610PrinterHandleImp;)V
+      15: putfield      #4                  // Field sdaemon:Lcom/ibm/posj/bus/hid/Hid4610PrinterHandleImp$StatusDaemon;
+      18: aload_0
+      19: iconst_0
+      20: putfield      #5                  // Field feature1:B
+      23: aload_0
+      24: iconst_0
+      25: putfield      #6                  // Field feature2:B
+      28: aload_0
+      29: aconst_null
+      30: putfield      #7                  // Field util:Lcom/ibm/posj/bus/printer/IBM4610Utility;
+      33: aload_0
+      34: iconst_0
+      35: putfield      #8                  // Field initialized:Z
+      38: aload_0
+      39: iconst_0
+      40: putfield      #9                  // Field formerMod4:Z
+      43: aload_0
+      44: iconst_0
+      45: putfield      #10                 // Field hangCnt:B
+      48: aload_0
+      49: new           #11                 // class java/util/ArrayList
+      52: dup
+      53: iconst_2
+      54: invokespecial #12                 // Method java/util/ArrayList."<init>":(I)V
+      57: putfield      #13                 // Field currPDE:Ljava/util/List;
+      60: aload_0
+      61: new           #14                 // class com/ibm/posj/bus/printer/IBM4610Utility
+      64: dup
+      65: iload_3
+      66: aload_0
+      67: invokevirtual #15                 // Method getTracer:()Lcom/ibm/jutil/tracing/Tracer;
+      70: invokespecial #16                 // Method com/ibm/posj/bus/printer/IBM4610Utility."<init>":(BLcom/ibm/jutil/tracing/Tracer;)V
+      73: putfield      #7                  // Field util:Lcom/ibm/posj/bus/printer/IBM4610Utility;
+      76: new           #17                 // class com/ibm/posj/IBM4610PrinterCmd$Factory
+      79: dup
+      80: new           #18                 // class com/ibm/posj/bus/printer/cmds/ibm4610/Print4610CmdFactory
+      83: dup
+      84: sipush        1015
+      87: new           #19                 // class com/ibm/posj/bus/printer/cmds/ibm4610/Cmd4610
+      90: dup
+      91: invokespecial #20                 // Method com/ibm/posj/bus/printer/cmds/ibm4610/Cmd4610."<init>":()V
+      94: aload_0
+      95: getfield      #7                  // Field util:Lcom/ibm/posj/bus/printer/IBM4610Utility;
+      98: invokevirtual #21                 // Method com/ibm/posj/bus/printer/IBM4610Utility.isLineFlag:()Z
+     101: invokespecial #22                 // Method com/ibm/posj/bus/printer/cmds/ibm4610/Print4610CmdFactory."<init>":(ILcom/ibm/posj/bus/printer/cmds/AbstractByteCmd;Z)V
+     104: invokespecial #23                 // Method com/ibm/posj/IBM4610PrinterCmd$Factory."<init>":(Lcom/ibm/posj/bus/printer/cmds/PrintCmdFactory;)V
+     107: putstatic     #24                 // Field factory:Lcom/ibm/posj/IBM4610PrinterCmd$Factory;
+     110: aload_0
+     111: getfield      #25                 // Field statusAccum:Lcom/ibm/jutil/tasks/SubmitTaskScheduler;
+     114: invokevirtual #26                 // Method com/ibm/jutil/tasks/SubmitTaskScheduler.stop:()V
+     117: aload_0
+     118: aconst_null
+     119: putfield      #25                 // Field statusAccum:Lcom/ibm/jutil/tasks/SubmitTaskScheduler;
+     122: aload_0
+     123: getfield      #4                  // Field sdaemon:Lcom/ibm/posj/bus/hid/Hid4610PrinterHandleImp$StatusDaemon;
+     126: invokevirtual #27                 // Method com/ibm/posj/bus/hid/Hid4610PrinterHandleImp$StatusDaemon.start:()V
+     129: return
+
+  public boolean isStatusPending();
+    Code:
+       0: aload_0
+       1: getfield      #25                 // Field statusAccum:Lcom/ibm/jutil/tasks/SubmitTaskScheduler;
+       4: invokevirtual #28                 // Method com/ibm/jutil/tasks/SubmitTaskScheduler.isEmpty:()Z
+       7: ifne          14
+      10: iconst_1
+      11: goto          15
+      14: iconst_0
+      15: ireturn
+
+  public void accept(com.ibm.posj.flash.FlashPrinterHandleImpVisitor);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: invokevirtual #29                 // Method com/ibm/posj/flash/FlashPrinterHandleImpVisitor.visit4610PosPrinter:(Lcom/ibm/posj/bus/POSPrinterHandleImp;)V
+       5: return
+
+  public void submit(com.ibm.posj.HandleCmd) throws com.ibm.posj.HandleException;
+    Code:
+       0: aload_1
+       1: instanceof    #30                 // class com/ibm/posj/SystemCmd$DirectWriteCmd
+       4: ifeq          40
+       7: aload_0
+       8: getfield      #31                 // Field packet:Lcom/ibm/posj/bus/PrinterPacket;
+      11: invokevirtual #32                 // Method com/ibm/posj/bus/PrinterPacket.format:()Lcom/ibm/jutil/ByteBuffer;
+      14: astore_2
+      15: aload_2
+      16: aload_1
+      17: invokeinterface #33,  1           // InterfaceMethod com/ibm/posj/HandleCmd.toBytes:()[B
+      22: invokevirtual #34                 // Method com/ibm/jutil/ByteBuffer.append:([B)Lcom/ibm/jutil/ByteBuffer;
+      25: pop
+      26: aload_0
+      27: aload_2
+      28: aload_2
+      29: invokevirtual #35                 // Method com/ibm/jutil/ByteBuffer.getByteCount:()I
+      32: invokevirtual #36                 // Method transport:(Lcom/ibm/jutil/ByteBuffer;I)V
+      35: aload_2
+      36: invokevirtual #37                 // Method com/ibm/jutil/ByteBuffer.recycle:()V
+      39: return
+      40: aload_0
+      41: aload_1
+      42: invokespecial #38                 // Method com/ibm/posj/bus/hid/HidPOSPrinterHandleImp.submit:(Lcom/ibm/posj/HandleCmd;)V
+      45: return
+
+  public java.util.List respondToFreeze();
+    Code:
+       0: aload_0
+       1: dup
+       2: getfield      #10                 // Field hangCnt:B
+       5: iconst_1
+       6: iadd
+       7: i2b
+       8: putfield      #10                 // Field hangCnt:B
+      11: getstatic     #39                 // Field MAX_HANG_CNT:I
+      14: aload_0
+      15: getfield      #10                 // Field hangCnt:B
+      18: if_icmpgt     28
+      21: aload_0
+      22: aconst_null
+      23: invokevirtual #40                 // Method hidDeviceDisconnected:(Lcom/ibm/hid/DisconnectEvent;)V
+      26: aconst_null
+      27: areturn
+      28: getstatic     #24                 // Field factory:Lcom/ibm/posj/IBM4610PrinterCmd$Factory;
+      31: invokevirtual #41                 // Method com/ibm/posj/IBM4610PrinterCmd$Factory.getPrintCmdFactory:()Lcom/ibm/posj/bus/printer/cmds/PrintCmdFactory;
+      34: invokevirtual #42                 // Method com/ibm/posj/bus/printer/cmds/PrintCmdFactory.getCmdBytes:()Lcom/ibm/posj/bus/printer/cmds/AbstractByteCmd;
+      37: checkcast     #19                 // class com/ibm/posj/bus/printer/cmds/ibm4610/Cmd4610
+      40: astore_1
+      41: aload_0
+      42: getfield      #31                 // Field packet:Lcom/ibm/posj/bus/PrinterPacket;
+      45: invokevirtual #32                 // Method com/ibm/posj/bus/PrinterPacket.format:()Lcom/ibm/jutil/ByteBuffer;
+      48: astore_2
+      49: aload_2
+      50: aload_1
+      51: getfield      #43                 // Field com/ibm/posj/bus/printer/cmds/ibm4610/Cmd4610.STATUS_REQUEST:[B
+      54: invokevirtual #34                 // Method com/ibm/jutil/ByteBuffer.append:([B)Lcom/ibm/jutil/ByteBuffer;
+      57: pop
+      58: aload_0
+      59: aload_2
+      60: aload_2
+      61: invokevirtual #35                 // Method com/ibm/jutil/ByteBuffer.getByteCount:()I
+      64: invokevirtual #36                 // Method transport:(Lcom/ibm/jutil/ByteBuffer;I)V
+      67: goto          77
+      70: astore_2
+      71: goto          77
+      74: astore_3
+      75: aload_3
+      76: athrow
+      77: aconst_null
+      78: areturn
+    Exception table:
+       from    to  target type
+          41    67    70   Class java/lang/Exception
+          41    67    74   any
+          70    71    74   any
+          74    75    74   any
+
+  public void setFormerMod4(boolean);
+    Code:
+       0: aload_0
+       1: iload_1
+       2: putfield      #9                  // Field formerMod4:Z
+       5: return
+
+  public void processExtraData(com.ibm.posj.printer.event.PrintStatus);
+    Code:
+       0: aload_0
+       1: invokevirtual #45                 // Method isTracerOn:()Z
+       4: ifeq          13
+       7: aload_0
+       8: ldc           #46                 // String GetExtra Data
+      10: invokevirtual #47                 // Method traceNormal:(Ljava/lang/String;)V
+      13: aload_0
+      14: getfield      #13                 // Field currPDE:Ljava/util/List;
+      17: invokeinterface #48,  1           // InterfaceMethod java/util/List.isEmpty:()Z
+      22: ifne          45
+      25: aload_0
+      26: aload_0
+      27: getfield      #13                 // Field currPDE:Ljava/util/List;
+      30: iconst_0
+      31: invokeinterface #49,  2           // InterfaceMethod java/util/List.remove:(I)Ljava/lang/Object;
+      36: checkcast     #50                 // class com/ibm/posj/printer/event/PrintDataEvent
+      39: invokevirtual #51                 // Method firePrintDataEvent:(Lcom/ibm/posj/printer/event/PrintDataEvent;)V
+      42: goto          58
+      45: aload_0
+      46: invokevirtual #45                 // Method isTracerOn:()Z
+      49: ifeq          58
+      52: aload_0
+      53: ldc           #52                 // String This should never happen!!! No data to remove in processExtraData
+      55: invokevirtual #47                 // Method traceNormal:(Ljava/lang/String;)V
+      58: return
+
+  public com.ibm.posj.bus.HandleImp getMainHandleImp();
+    Code:
+       0: aload_0
+       1: areturn
+
+  public void accept(com.ibm.posj.bus.hid.HidHandleImpVisitor);
+    Code:
+       0: aload_1
+       1: aload_0
+       2: invokeinterface #53,  2           // InterfaceMethod com/ibm/posj/bus/hid/HidHandleImpVisitor.visitHid4610PrinterHandleImp:(Lcom/ibm/posj/bus/hid/Hid4610PrinterHandleImp;)V
+       7: return
+
+  public boolean isComposite();
+    Code:
+       0: iconst_1
+       1: ireturn
+
+  public boolean isCompositeParent();
+    Code:
+       0: iconst_1
+       1: ireturn
+
+  public com.ibm.posj.printer.event.PrintStatus createPrintStatus(byte[]);
+    Code:
+       0: aload_1
+       1: arraylength
+       2: iconst_5
+       3: isub
+       4: istore_2
+       5: aload_0
+       6: invokevirtual #45                 // Method isTracerOn:()Z
+       9: ifeq          35
+      12: aload_0
+      13: new           #54                 // class java/lang/StringBuffer
+      16: dup
+      17: invokespecial #55                 // Method java/lang/StringBuffer."<init>":()V
+      20: ldc           #56                 // String createPrintStatus bytes to copy-->
+      22: invokevirtual #57                 // Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+      25: iload_2
+      26: invokevirtual #58                 // Method java/lang/StringBuffer.append:(I)Ljava/lang/StringBuffer;
+      29: invokevirtual #59                 // Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+      32: invokevirtual #60                 // Method traceMaximum:(Ljava/lang/String;)V
+      35: aload_1
+      36: iconst_5
+      37: aload_1
+      38: iconst_0
+      39: iload_2
+      40: invokestatic  #61                 // Method java/lang/System.arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V
+      43: aload_0
+      44: invokestatic  #62                 // Method com/ibm/posj/printer/event/P4610Status.getPrintStatusFactory:(Ljava/lang/Object;)Lcom/ibm/posj/printer/event/PrintStatus$PrintStatusFactory;
+      47: astore_3
+      48: aload_3
+      49: aload_1
+      50: aload_0
+      51: invokevirtual #63                 // Method getHandle:()Lcom/ibm/posj/Handle;
+      54: checkcast     #64                 // class com/ibm/posj/POSPrinterHandle
+      57: invokeinterface #65,  1           // InterfaceMethod com/ibm/posj/POSPrinterHandle.getPrinterLogHelper:()Lcom/ibm/jutil/logging/LogHelper;
+      62: invokevirtual #66                 // Method com/ibm/posj/printer/event/PrintStatus$PrintStatusFactory.createPrintStatus:([BLcom/ibm/jutil/logging/LogHelper;)Lcom/ibm/posj/printer/event/PrintStatus;
+      65: astore        4
+      67: aload         4
+      69: areturn
+
+  public com.ibm.posj.printer.event.PrintStatus createPrintStatus(byte[], boolean);
+    Code:
+       0: aload_1
+       1: arraylength
+       2: iconst_3
+       3: isub
+       4: istore_3
+       5: aload_1
+       6: iconst_3
+       7: aload_1
+       8: iconst_0
+       9: iload_3
+      10: invokestatic  #61                 // Method java/lang/System.arraycopy:(Ljava/lang/Object;ILjava/lang/Object;II)V
+      13: aload_0
+      14: invokestatic  #62                 // Method com/ibm/posj/printer/event/P4610Status.getPrintStatusFactory:(Ljava/lang/Object;)Lcom/ibm/posj/printer/event/PrintStatus$PrintStatusFactory;
+      17: astore        4
+      19: aload         4
+      21: aload_1
+      22: aconst_null
+      23: invokevirtual #66                 // Method com/ibm/posj/printer/event/PrintStatus$PrintStatusFactory.createPrintStatus:([BLcom/ibm/jutil/logging/LogHelper;)Lcom/ibm/posj/printer/event/PrintStatus;
+      26: astore        5
+      28: aload         5
+      30: areturn
+
+  public synchronized com.ibm.posj.printer.PrinterWriter getWriter();
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field util:Lcom/ibm/posj/bus/printer/IBM4610Utility;
+       4: aload_0
+       5: invokevirtual #15                 // Method getTracer:()Lcom/ibm/jutil/tracing/Tracer;
+       8: invokevirtual #67                 // Method com/ibm/posj/bus/printer/IBM4610Utility.setTracer:(Lcom/ibm/jutil/tracing/Tracer;)V
+      11: aload_0
+      12: getfield      #68                 // Field writer:Lcom/ibm/posj/printer/ibm4610/IBM4610Writer;
+      15: ifnonnull     65
+      18: aload_0
+      19: new           #69                 // class com/ibm/posj/bus/PrinterPacket
+      22: dup
+      23: aload_0
+      24: getstatic     #70                 // Field transfer:[B
+      27: sipush        1015
+      30: invokespecial #71                 // Method com/ibm/posj/bus/PrinterPacket."<init>":(Lcom/ibm/posj/bus/PrinterPacket$Transport;[BI)V
+      33: putfield      #31                 // Field packet:Lcom/ibm/posj/bus/PrinterPacket;
+      36: aload_0
+      37: aload_0
+      38: getfield      #7                  // Field util:Lcom/ibm/posj/bus/printer/IBM4610Utility;
+      41: aload_0
+      42: aload_0
+      43: getfield      #31                 // Field packet:Lcom/ibm/posj/bus/PrinterPacket;
+      46: aload_0
+      47: invokevirtual #63                 // Method getHandle:()Lcom/ibm/posj/Handle;
+      50: checkcast     #64                 // class com/ibm/posj/POSPrinterHandle
+      53: getstatic     #24                 // Field factory:Lcom/ibm/posj/IBM4610PrinterCmd$Factory;
+      56: invokevirtual #72                 // Method com/ibm/posj/bus/printer/IBM4610Utility.createWriter:(Lcom/ibm/posj/bus/PrinterBusWriter;Lcom/ibm/posj/bus/PrinterPacket;Lcom/ibm/posj/POSPrinterHandle;Lcom/ibm/posj/POSPrinterCmd$Factory;)Lcom/ibm/posj/printer/PrinterWriter;
+      59: checkcast     #73                 // class com/ibm/posj/printer/ibm4610/IBM4610Writer
+      62: putfield      #68                 // Field writer:Lcom/ibm/posj/printer/ibm4610/IBM4610Writer;
+      65: aload_0
+      66: getfield      #68                 // Field writer:Lcom/ibm/posj/printer/ibm4610/IBM4610Writer;
+      69: areturn
+
+  public java.util.Iterator getSecondaryHandleImps();
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field util:Lcom/ibm/posj/bus/printer/IBM4610Utility;
+       4: invokevirtual #74                 // Method com/ibm/posj/bus/printer/IBM4610Utility.getSecondaryHandleImps:()Ljava/util/Iterator;
+       7: areturn
+
+  public void transport(com.ibm.jutil.ByteBuffer, int) throws com.ibm.posj.HandleException;
+    Code:
+       0: iload_2
+       1: ifeq          61
+       4: aload_1
+       5: invokevirtual #75                 // Method com/ibm/jutil/ByteBuffer.getBytesRef:()[B
+       8: astore_3
+       9: iinc          2, -3
+      12: aload_3
+      13: iconst_1
+      14: iload_2
+      15: i2b
+      16: bastore
+      17: aload_3
+      18: iconst_2
+      19: iload_2
+      20: bipush        8
+      22: ishr
+      23: i2b
+      24: bastore
+      25: aload_3
+      26: iconst_0
+      27: iconst_2
+      28: bastore
+      29: iload_2
+      30: sipush        255
+      33: if_icmpge     48
+      36: aload_0
+      37: aload_1
+      38: iload_2
+      39: iconst_3
+      40: iadd
+      41: iconst_0
+      42: invokespecial #76                 // Method com/ibm/posj/bus/hid/HidPOSPrinterHandleImp.transport:(Lcom/ibm/jutil/ByteBuffer;IZ)V
+      45: goto          61
+      48: aload_3
+      49: iconst_0
+      50: iconst_1
+      51: bastore
+      52: aload_0
+      53: aload_1
+      54: iload_2
+      55: iconst_3
+      56: iadd
+      57: iconst_0
+      58: invokespecial #76                 // Method com/ibm/posj/bus/hid/HidPOSPrinterHandleImp.transport:(Lcom/ibm/jutil/ByteBuffer;IZ)V
+      61: return
+
+  protected com.ibm.posj.printer.event.PrintStatus doHidRead() throws com.ibm.posj.HandleException;
+    Code:
+       0: invokestatic  #77                 // Method com/ibm/jutil/ByteBuffer.getByteBufferFactory:()Lcom/ibm/jutil/ByteBuffer$ByteBufferFactory;
+       3: invokevirtual #78                 // Method com/ibm/jutil/ByteBuffer$ByteBufferFactory.createByteBuffer:()Lcom/ibm/jutil/ByteBuffer;
+       6: astore_1
+       7: aload_0
+       8: invokevirtual #45                 // Method isTracerOn:()Z
+      11: ifeq          20
+      14: aload_0
+      15: ldc           #79                 // String ----------------Transport raw--------------------
+      17: invokevirtual #47                 // Method traceNormal:(Ljava/lang/String;)V
+      20: aload_0
+      21: iconst_0
+      22: invokevirtual #80                 // Method setAsyncMode:(Z)V
+      25: aload_0
+      26: aload_1
+      27: iconst_0
+      28: iconst_1
+      29: invokespecial #76                 // Method com/ibm/posj/bus/hid/HidPOSPrinterHandleImp.transport:(Lcom/ibm/jutil/ByteBuffer;IZ)V
+      32: aload_0
+      33: iconst_1
+      34: invokevirtual #80                 // Method setAsyncMode:(Z)V
+      37: aload_0
+      38: invokevirtual #63                 // Method getHandle:()Lcom/ibm/posj/Handle;
+      41: invokeinterface #81,  1           // InterfaceMethod com/ibm/posj/Handle.isDirectIOMode:()Z
+      46: ifeq          84
+      49: aload_0
+      50: invokevirtual #82                 // Method getPrintStatusDataEvent:()Lcom/ibm/jutil/ByteBuffer;
+      53: invokevirtual #83                 // Method com/ibm/jutil/ByteBuffer.getBytes:()[B
+      56: astore_2
+      57: aload_2
+      58: iconst_0
+      59: iconst_m1
+      60: bastore
+      61: aload_0
+      62: invokevirtual #63                 // Method getHandle:()Lcom/ibm/posj/Handle;
+      65: invokeinterface #84,  1           // InterfaceMethod com/ibm/posj/Handle.getEventHelper:()Lcom/ibm/posj/Handle$EventHelper;
+      70: new           #85                 // class com/ibm/posj/event/DirectIOEvent
+      73: dup
+      74: aload_0
+      75: aload_2
+      76: invokespecial #86                 // Method com/ibm/posj/event/DirectIOEvent."<init>":(Ljava/lang/Object;[B)V
+      79: invokeinterface #87,  2           // InterfaceMethod com/ibm/posj/Handle$EventHelper.fireDirectIOEvent:(Lcom/ibm/posj/event/DirectIOEvent;)V
+      84: goto          103
+      87: astore_2
+      88: aload_0
+      89: invokevirtual #45                 // Method isTracerOn:()Z
+      92: ifeq          103
+      95: aload_0
+      96: invokevirtual #15                 // Method getTracer:()Lcom/ibm/jutil/tracing/Tracer;
+      99: aload_2
+     100: invokevirtual #88                 // Method com/ibm/jutil/tracing/Tracer.print:(Ljava/lang/Exception;)V
+     103: aload_0
+     104: invokevirtual #63                 // Method getHandle:()Lcom/ibm/posj/Handle;
+     107: invokeinterface #81,  1           // InterfaceMethod com/ibm/posj/Handle.isDirectIOMode:()Z
+     112: ifne          145
+     115: aload_0
+     116: invokevirtual #82                 // Method getPrintStatusDataEvent:()Lcom/ibm/jutil/ByteBuffer;
+     119: astore_2
+     120: aload_0
+     121: getfield      #13                 // Field currPDE:Ljava/util/List;
+     124: aload_0
+     125: aload_2
+     126: invokevirtual #89                 // Method createPrintDataEvent:(Lcom/ibm/jutil/ByteBuffer;)Lcom/ibm/posj/printer/event/PrintDataEvent;
+     129: invokeinterface #90,  2           // InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z
+     134: pop
+     135: aload_0
+     136: aload_2
+     137: invokevirtual #83                 // Method com/ibm/jutil/ByteBuffer.getBytes:()[B
+     140: iconst_1
+     141: invokevirtual #91                 // Method createPrintStatus:([BZ)Lcom/ibm/posj/printer/event/PrintStatus;
+     144: areturn
+     145: aconst_null
+     146: areturn
+    Exception table:
+       from    to  target type
+          37    84    87   Class java/lang/Exception
+
+  public synchronized void init() throws com.ibm.posj.HandleException;
+    Code:
+       0: aload_0
+       1: getfield      #8                  // Field initialized:Z
+       4: iconst_1
+       5: if_icmpne     9
+       8: return
+       9: aload_0
+      10: iconst_1
+      11: putfield      #8                  // Field initialized:Z
+      14: aload_0
+      15: invokespecial #92                 // Method com/ibm/posj/bus/hid/HidPOSPrinterHandleImp.init:()V
+      18: aload_0
+      19: getfield      #7                  // Field util:Lcom/ibm/posj/bus/printer/IBM4610Utility;
+      22: aload_0
+      23: aload_0
+      24: getfield      #93                 // Field imp:Lcom/ibm/posj/printer/IBMPrinterImp;
+      27: aload_0
+      28: invokevirtual #94                 // Method getReinitCmds:()Lcom/ibm/posj/POSPrinterCmd;
+      31: sipush        10000
+      34: invokevirtual #95                 // Method com/ibm/posj/bus/printer/IBM4610Utility.init:(Lcom/ibm/posj/bus/HandleImp;Lcom/ibm/posj/printer/IBMPrinterImp;Lcom/ibm/posj/POSPrinterCmd;I)V
+      37: aload_0
+      38: invokevirtual #96                 // Method getPrinterHandleState:()Lcom/ibm/posj/printer/PrinterHandleState;
+      41: checkcast     #97                 // class com/ibm/posj/printer/IBMPrinterState
+      44: aload_0
+      45: getfield      #9                  // Field formerMod4:Z
+      48: invokevirtual #98                 // Method com/ibm/posj/printer/IBMPrinterState.setFormerMod4:(Z)V
+      51: return
+
+  public com.ibm.posj.POSPrinterCmd$Factory getPrintCmdFactory();
+    Code:
+       0: getstatic     #24                 // Field factory:Lcom/ibm/posj/IBM4610PrinterCmd$Factory;
+       3: areturn
+
+  public com.ibm.posj.printer.event.PrintDataEvent createPrintDataEvent(com.ibm.jutil.ByteBuffer);
+    Code:
+       0: aload_0
+       1: invokevirtual #45                 // Method isTracerOn:()Z
+       4: ifeq          42
+       7: aload_0
+       8: new           #54                 // class java/lang/StringBuffer
+      11: dup
+      12: invokespecial #55                 // Method java/lang/StringBuffer."<init>":()V
+      15: ldc           #99                 // String createPrintDataEvent -
+      17: invokevirtual #57                 // Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+      20: aload_1
+      21: invokevirtual #75                 // Method com/ibm/jutil/ByteBuffer.getBytesRef:()[B
+      24: iconst_0
+      25: aload_1
+      26: invokevirtual #75                 // Method com/ibm/jutil/ByteBuffer.getBytesRef:()[B
+      29: arraylength
+      30: invokestatic  #100                // Method com/ibm/jutil/Util.toFormatedHexString:([BII)Ljava/lang/String;
+      33: invokevirtual #57                 // Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+      36: invokevirtual #59                 // Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+      39: invokevirtual #47                 // Method traceNormal:(Ljava/lang/String;)V
+      42: invokestatic  #77                 // Method com/ibm/jutil/ByteBuffer.getByteBufferFactory:()Lcom/ibm/jutil/ByteBuffer$ByteBufferFactory;
+      45: iconst_3
+      46: invokevirtual #101                // Method com/ibm/jutil/ByteBuffer$ByteBufferFactory.createByteBuffer:(I)Lcom/ibm/jutil/ByteBuffer;
+      49: astore_2
+      50: aload_2
+      51: aload_1
+      52: invokevirtual #75                 // Method com/ibm/jutil/ByteBuffer.getBytesRef:()[B
+      55: iconst_0
+      56: iconst_0
+      57: iconst_3
+      58: invokevirtual #102                // Method com/ibm/jutil/ByteBuffer.copy:([BIII)Lcom/ibm/jutil/ByteBuffer;
+      61: pop
+      62: aload_2
+      63: invokevirtual #75                 // Method com/ibm/jutil/ByteBuffer.getBytesRef:()[B
+      66: astore_3
+      67: aload_3
+      68: iconst_2
+      69: baload
+      70: aload_3
+      71: iconst_1
+      72: baload
+      73: invokestatic  #103                // Method com/ibm/jutil/Util.toInt:(BB)I
+      76: istore        4
+      78: aload_2
+      79: invokevirtual #37                 // Method com/ibm/jutil/ByteBuffer.recycle:()V
+      82: invokestatic  #77                 // Method com/ibm/jutil/ByteBuffer.getByteBufferFactory:()Lcom/ibm/jutil/ByteBuffer$ByteBufferFactory;
+      85: bipush        8
+      87: invokevirtual #101                // Method com/ibm/jutil/ByteBuffer$ByteBufferFactory.createByteBuffer:(I)Lcom/ibm/jutil/ByteBuffer;
+      90: astore        5
+      92: aload         5
+      94: aload_1
+      95: invokevirtual #75                 // Method com/ibm/jutil/ByteBuffer.getBytesRef:()[B
+      98: iconst_0
+      99: iconst_0
+     100: bipush        8
+     102: invokevirtual #102                // Method com/ibm/jutil/ByteBuffer.copy:([BIII)Lcom/ibm/jutil/ByteBuffer;
+     105: pop
+     106: iconst_3
+     107: istore        6
+     109: aload_0
+     110: aload         5
+     112: invokevirtual #75                 // Method com/ibm/jutil/ByteBuffer.getBytesRef:()[B
+     115: iconst_1
+     116: invokevirtual #91                 // Method createPrintStatus:([BZ)Lcom/ibm/posj/printer/event/PrintStatus;
+     119: astore        7
+     121: iload         4
+     123: bipush        8
+     125: isub
+     126: istore        4
+     128: invokestatic  #77                 // Method com/ibm/jutil/ByteBuffer.getByteBufferFactory:()Lcom/ibm/jutil/ByteBuffer$ByteBufferFactory;
+     131: iload         4
+     133: invokevirtual #101                // Method com/ibm/jutil/ByteBuffer$ByteBufferFactory.createByteBuffer:(I)Lcom/ibm/jutil/ByteBuffer;
+     136: astore        8
+     138: iinc          6, 8
+     141: aload         8
+     143: aload_1
+     144: invokevirtual #75                 // Method com/ibm/jutil/ByteBuffer.getBytesRef:()[B
+     147: iload         6
+     149: iconst_0
+     150: iload         4
+     152: invokevirtual #102                // Method com/ibm/jutil/ByteBuffer.copy:([BIII)Lcom/ibm/jutil/ByteBuffer;
+     155: pop
+     156: aload_0
+     157: getfield      #7                  // Field util:Lcom/ibm/posj/bus/printer/IBM4610Utility;
+     160: aload         7
+     162: invokevirtual #104                // Method com/ibm/posj/bus/printer/IBM4610Utility.getPrinterDataType:(Lcom/ibm/posj/printer/event/PrintStatus;)I
+     165: istore        6
+     167: iconst_1
+     168: iload         6
+     170: if_icmpne     195
+     173: aload_0
+     174: aload         8
+     176: invokevirtual #75                 // Method com/ibm/jutil/ByteBuffer.getBytesRef:()[B
+     179: iconst_2
+     180: baload
+     181: putfield      #5                  // Field feature1:B
+     184: aload_0
+     185: aload         8
+     187: invokevirtual #75                 // Method com/ibm/jutil/ByteBuffer.getBytesRef:()[B
+     190: iconst_3
+     191: baload
+     192: putfield      #6                  // Field feature2:B
+     195: aload_0
+     196: invokevirtual #45                 // Method isTracerOn:()Z
+     199: ifeq          220
+     202: aload_0
+     203: aload         8
+     205: invokevirtual #75                 // Method com/ibm/jutil/ByteBuffer.getBytesRef:()[B
+     208: iconst_0
+     209: aload         8
+     211: invokevirtual #35                 // Method com/ibm/jutil/ByteBuffer.getByteCount:()I
+     214: invokestatic  #100                // Method com/ibm/jutil/Util.toFormatedHexString:([BII)Ljava/lang/String;
+     217: invokevirtual #47                 // Method traceNormal:(Ljava/lang/String;)V
+     220: aload         7
+     222: invokevirtual #105                // Method com/ibm/posj/printer/event/PrintStatus.recycle:()V
+     225: aload         5
+     227: invokevirtual #37                 // Method com/ibm/jutil/ByteBuffer.recycle:()V
+     230: new           #50                 // class com/ibm/posj/printer/event/PrintDataEvent
+     233: dup
+     234: aload_0
+     235: iload         6
+     237: aload         8
+     239: invokespecial #106                // Method com/ibm/posj/printer/event/PrintDataEvent."<init>":(Ljava/lang/Object;ILcom/ibm/jutil/ByteBuffer;)V
+     242: areturn
+
+  public void distributeStatus(com.ibm.posj.printer.event.PrintStatus);
+    Code:
+       0: aconst_null
+       1: astore_2
+       2: aload_1
+       3: invokevirtual #107                // Method com/ibm/posj/printer/event/PrintStatus.getData:()[B
+       6: iconst_0
+       7: baload
+       8: ifne          39
+      11: aload_1
+      12: invokevirtual #107                // Method com/ibm/posj/printer/event/PrintStatus.getData:()[B
+      15: iconst_1
+      16: baload
+      17: ifne          39
+      20: aload_1
+      21: invokevirtual #107                // Method com/ibm/posj/printer/event/PrintStatus.getData:()[B
+      24: iconst_2
+      25: baload
+      26: ifne          39
+      29: aload_1
+      30: invokevirtual #107                // Method com/ibm/posj/printer/event/PrintStatus.getData:()[B
+      33: iconst_3
+      34: baload
+      35: ifne          39
+      38: return
+      39: aload_0
+      40: invokevirtual #45                 // Method isTracerOn:()Z
+      43: ifeq          81
+      46: aload_0
+      47: new           #54                 // class java/lang/StringBuffer
+      50: dup
+      51: invokespecial #55                 // Method java/lang/StringBuffer."<init>":()V
+      54: ldc           #108                // String distributeStatus ps.isExtendedData()-->
+      56: invokevirtual #57                 // Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+      59: aload_1
+      60: invokevirtual #109                // Method com/ibm/posj/printer/event/PrintStatus.isExtendedData:()Z
+      63: invokevirtual #110                // Method java/lang/StringBuffer.append:(Z)Ljava/lang/StringBuffer;
+      66: ldc           #111                // String
+      68: invokevirtual #57                 // Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+      71: aload_1
+      72: invokevirtual #112                // Method java/lang/StringBuffer.append:(Ljava/lang/Object;)Ljava/lang/StringBuffer;
+      75: invokevirtual #59                 // Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+      78: invokevirtual #60                 // Method traceMaximum:(Ljava/lang/String;)V
+      81: aload_1
+      82: invokevirtual #109                // Method com/ibm/posj/printer/event/PrintStatus.isExtendedData:()Z
+      85: ifeq          118
+      88: aload_0
+      89: invokevirtual #113                // Method doHidRead:()Lcom/ibm/posj/printer/event/PrintStatus;
+      92: astore_2
+      93: aload_1
+      94: invokevirtual #105                // Method com/ibm/posj/printer/event/PrintStatus.recycle:()V
+      97: aload_2
+      98: astore_1
+      99: goto          118
+     102: astore_3
+     103: aload_0
+     104: invokevirtual #45                 // Method isTracerOn:()Z
+     107: ifeq          118
+     110: aload_0
+     111: invokevirtual #15                 // Method getTracer:()Lcom/ibm/jutil/tracing/Tracer;
+     114: aload_3
+     115: invokevirtual #88                 // Method com/ibm/jutil/tracing/Tracer.print:(Ljava/lang/Exception;)V
+     118: aload_0
+     119: getfield      #7                  // Field util:Lcom/ibm/posj/bus/printer/IBM4610Utility;
+     122: aload_0
+     123: invokevirtual #63                 // Method getHandle:()Lcom/ibm/posj/Handle;
+     126: aload_1
+     127: invokevirtual #114                // Method com/ibm/posj/bus/printer/IBM4610Utility.subDeviceDistribute:(Lcom/ibm/posj/Handle;Lcom/ibm/posj/printer/event/PrintStatus;)V
+     130: return
+    Exception table:
+       from    to  target type
+          88    99   102   Class java/lang/Exception
+
+  public void addDevice(com.ibm.posj.HandleKey, com.ibm.posj.bus.PrinterSubDevices);
+    Code:
+       0: aload_0
+       1: getfield      #7                  // Field util:Lcom/ibm/posj/bus/printer/IBM4610Utility;
+       4: aload_1
+       5: aload_2
+       6: invokevirtual #115                // Method com/ibm/posj/bus/printer/IBM4610Utility.addDevice:(Lcom/ibm/posj/HandleKey;Lcom/ibm/posj/bus/PrinterSubDevices;)V
+       9: return
+
+  public void clearBuffers() throws com.ibm.posj.HandleException;
+    Code:
+       0: getstatic     #24                 // Field factory:Lcom/ibm/posj/IBM4610PrinterCmd$Factory;
+       3: invokevirtual #41                 // Method com/ibm/posj/IBM4610PrinterCmd$Factory.getPrintCmdFactory:()Lcom/ibm/posj/bus/printer/cmds/PrintCmdFactory;
+       6: invokevirtual #42                 // Method com/ibm/posj/bus/printer/cmds/PrintCmdFactory.getCmdBytes:()Lcom/ibm/posj/bus/printer/cmds/AbstractByteCmd;
+       9: checkcast     #19                 // class com/ibm/posj/bus/printer/cmds/ibm4610/Cmd4610
+      12: astore_1
+      13: aload_0
+      14: getfield      #31                 // Field packet:Lcom/ibm/posj/bus/PrinterPacket;
+      17: invokevirtual #32                 // Method com/ibm/posj/bus/PrinterPacket.format:()Lcom/ibm/jutil/ByteBuffer;
+      20: astore_2
+      21: aload_2
+      22: aload_1
+      23: getfield      #116                // Field com/ibm/posj/bus/printer/cmds/ibm4610/Cmd4610.CLEAR:[B
+      26: iconst_0
+      27: aload_1
+      28: getfield      #116                // Field com/ibm/posj/bus/printer/cmds/ibm4610/Cmd4610.CLEAR:[B
+      31: arraylength
+      32: invokevirtual #117                // Method com/ibm/jutil/ByteBuffer.append:([BII)Lcom/ibm/jutil/ByteBuffer;
+      35: pop
+      36: aload_0
+      37: aload_2
+      38: aload_2
+      39: invokevirtual #35                 // Method com/ibm/jutil/ByteBuffer.getByteCount:()I
+      42: invokevirtual #36                 // Method transport:(Lcom/ibm/jutil/ByteBuffer;I)V
+      45: return
+
+  public byte getFeatureByte1();
+    Code:
+       0: aload_0
+       1: getfield      #5                  // Field feature1:B
+       4: ireturn
+
+  public byte getFeatureByte2();
+    Code:
+       0: aload_0
+       1: getfield      #6                  // Field feature2:B
+       4: ireturn
+
+  public void rawSubmit(byte[]) throws com.ibm.posj.HandleException;
+    Code:
+       0: aload_0
+       1: getfield      #31                 // Field packet:Lcom/ibm/posj/bus/PrinterPacket;
+       4: invokevirtual #32                 // Method com/ibm/posj/bus/PrinterPacket.format:()Lcom/ibm/jutil/ByteBuffer;
+       7: astore_2
+       8: aload_2
+       9: aload_1
+      10: iconst_0
+      11: aload_1
+      12: arraylength
+      13: invokevirtual #117                // Method com/ibm/jutil/ByteBuffer.append:([BII)Lcom/ibm/jutil/ByteBuffer;
+      16: pop
+      17: aload_0
+      18: aload_2
+      19: aload_2
+      20: invokevirtual #35                 // Method com/ibm/jutil/ByteBuffer.getByteCount:()I
+      23: invokevirtual #36                 // Method transport:(Lcom/ibm/jutil/ByteBuffer;I)V
+      26: return
+
+  protected byte getReportID();
+    Code:
+       0: bipush        53
+       2: ireturn
+
+  protected void submitResetCmd() throws com.ibm.posj.HandleException;
+    Code:
+       0: return
+
+  protected boolean parseUSBStatus(byte[]);
+    Code:
+       0: aload_1
+       1: iconst_1
+       2: baload
+       3: bipush        112
+       5: if_icmpne     10
+       8: iconst_0
+       9: ireturn
+      10: aload_1
+      11: iconst_1
+      12: baload
+      13: bipush        114
+      15: if_icmpne     20
+      18: iconst_0
+      19: ireturn
+      20: iconst_1
+      21: ireturn
+
+  protected com.ibm.posj.POSPrinterCmd getReinitCmds();
+    Code:
+       0: invokestatic  #118                // Method com/ibm/posj/PosSystemManager.getInstance:()Lcom/ibm/posj/PosSystem;
+       3: invokeinterface #119,  1          // InterfaceMethod com/ibm/posj/PosSystem.getProperties:()Lcom/ibm/posj/PosSystem$Properties;
+       8: ldc           #120                // String usb.4610.EC
+      10: invokeinterface #121,  2          // InterfaceMethod com/ibm/posj/PosSystem$Properties.isPropertyDefined:(Ljava/lang/String;)Z
+      15: ifne          22
+      18: iconst_1
+      19: goto          23
+      22: iconst_0
+      23: istore_1
+      24: getstatic     #24                 // Field factory:Lcom/ibm/posj/IBM4610PrinterCmd$Factory;
+      27: iload_1
+      28: invokevirtual #122                // Method com/ibm/posj/IBM4610PrinterCmd$Factory.createEnableLineCntCmd:(Z)Lcom/ibm/posj/POSPrinterCmd;
+      31: astore_2
+      32: aload_2
+      33: getstatic     #24                 // Field factory:Lcom/ibm/posj/IBM4610PrinterCmd$Factory;
+      36: invokevirtual #123                // Method com/ibm/posj/IBM4610PrinterCmd$Factory.createResetLineCntCmd:()Lcom/ibm/posj/POSPrinterCmd;
+      39: invokeinterface #124,  2          // InterfaceMethod com/ibm/posj/POSPrinterCmd.appendPOSPrinterCmd:(Lcom/ibm/posj/POSPrinterCmd;)V
+      44: aload_2
+      45: getstatic     #24                 // Field factory:Lcom/ibm/posj/IBM4610PrinterCmd$Factory;
+      48: iconst_1
+      49: iconst_0
+      50: iconst_0
+      51: iconst_0
+      52: invokevirtual #125                // Method com/ibm/posj/IBM4610PrinterCmd$Factory.createErrorRecoveryCmd:(ZZZZ)Lcom/ibm/posj/POSPrinterCmd;
+      55: invokeinterface #124,  2          // InterfaceMethod com/ibm/posj/POSPrinterCmd.appendPOSPrinterCmd:(Lcom/ibm/posj/POSPrinterCmd;)V
+      60: aload_2
+      61: areturn
+
+  protected com.ibm.jutil.ByteBuffer getReinitRawCmds();
+    Code:
+       0: invokestatic  #118                // Method com/ibm/posj/PosSystemManager.getInstance:()Lcom/ibm/posj/PosSystem;
+       3: invokeinterface #119,  1          // InterfaceMethod com/ibm/posj/PosSystem.getProperties:()Lcom/ibm/posj/PosSystem$Properties;
+       8: ldc           #120                // String usb.4610.EC
+      10: invokeinterface #121,  2          // InterfaceMethod com/ibm/posj/PosSystem$Properties.isPropertyDefined:(Ljava/lang/String;)Z
+      15: istore_1
+      16: bipush        10
+      18: newarray       byte
+      20: dup
+      21: iconst_0
+      22: bipush        27
+      24: bastore
+      25: dup
+      26: iconst_1
+      27: bipush        41
+      29: bastore
+      30: dup
+      31: iconst_2
+      32: iconst_0
+      33: bastore
+      34: dup
+      35: iconst_3
+      36: bipush        27
+      38: bastore
+      39: dup
+      40: iconst_4
+      41: bipush        99
+      43: bastore
+      44: dup
+      45: iconst_5
+      46: bipush        52
+      48: bastore
+      49: dup
+      50: bipush        6
+      52: bipush        8
+      54: bastore
+      55: dup
+      56: bipush        7
+      58: bipush        27
+      60: bastore
+      61: dup
+      62: bipush        8
+      64: bipush        56
+      66: bastore
+      67: dup
+      68: bipush        9
+      70: iconst_0
+      71: bastore
+      72: astore_2
+      73: iload_1
+      74: ifeq          84
+      77: aload_2
+      78: aload_2
+      79: arraylength
+      80: iconst_1
+      81: isub
+      82: iconst_1
+      83: bastore
+      84: invokestatic  #77                 // Method com/ibm/jutil/ByteBuffer.getByteBufferFactory:()Lcom/ibm/jutil/ByteBuffer$ByteBufferFactory;
+      87: aload_2
+      88: arraylength
+      89: getstatic     #70                 // Field transfer:[B
+      92: arraylength
+      93: iadd
+      94: invokevirtual #101                // Method com/ibm/jutil/ByteBuffer$ByteBufferFactory.createByteBuffer:(I)Lcom/ibm/jutil/ByteBuffer;
+      97: astore_3
+      98: aload_3
+      99: getstatic     #70                 // Field transfer:[B
+     102: invokevirtual #34                 // Method com/ibm/jutil/ByteBuffer.append:([B)Lcom/ibm/jutil/ByteBuffer;
+     105: pop
+     106: aload_3
+     107: aload_2
+     108: invokevirtual #34                 // Method com/ibm/jutil/ByteBuffer.append:([B)Lcom/ibm/jutil/ByteBuffer;
+     111: pop
+     112: aload_3
+     113: areturn
+
+  protected void reinitialize() throws com.ibm.posj.HandleException;
+    Code:
+       0: aload_0
+       1: invokevirtual #126                // Method getSecondaryHandleImps:()Ljava/util/Iterator;
+       4: astore_1
+       5: aload_1
+       6: invokeinterface #127,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      11: ifeq          53
+      14: aload_1
+      15: invokeinterface #128,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      20: checkcast     #129                // class com/ibm/posj/bus/PrinterSubDevices
+      23: astore_2
+      24: aload_2
+      25: aconst_null
+      26: invokeinterface #130,  2          // InterfaceMethod com/ibm/posj/bus/PrinterSubDevices.onLine:(Ljava/lang/Object;)V
+      31: goto          50
+      34: astore_3
+      35: aload_0
+      36: invokevirtual #45                 // Method isTracerOn:()Z
+      39: ifeq          50
+      42: aload_0
+      43: invokevirtual #15                 // Method getTracer:()Lcom/ibm/jutil/tracing/Tracer;
+      46: aload_3
+      47: invokevirtual #88                 // Method com/ibm/jutil/tracing/Tracer.print:(Ljava/lang/Exception;)V
+      50: goto          5
+      53: aload_0
+      54: getfield      #8                  // Field initialized:Z
+      57: ifeq          166
+      60: aload_0
+      61: invokevirtual #45                 // Method isTracerOn:()Z
+      64: ifeq          73
+      67: aload_0
+      68: ldc           #131                // String Online handling
+      70: invokevirtual #47                 // Method traceNormal:(Ljava/lang/String;)V
+      73: aload_0
+      74: iconst_1
+      75: invokevirtual #132                // Method setHandleOnline:(Z)V
+      78: aload_0
+      79: invokevirtual #133                // Method getReinitRawCmds:()Lcom/ibm/jutil/ByteBuffer;
+      82: astore_2
+      83: invokestatic  #77                 // Method com/ibm/jutil/ByteBuffer.getByteBufferFactory:()Lcom/ibm/jutil/ByteBuffer$ByteBufferFactory;
+      86: invokevirtual #78                 // Method com/ibm/jutil/ByteBuffer$ByteBufferFactory.createByteBuffer:()Lcom/ibm/jutil/ByteBuffer;
+      89: astore_3
+      90: aload_3
+      91: getstatic     #70                 // Field transfer:[B
+      94: invokevirtual #34                 // Method com/ibm/jutil/ByteBuffer.append:([B)Lcom/ibm/jutil/ByteBuffer;
+      97: pop
+      98: aload_3
+      99: new           #19                 // class com/ibm/posj/bus/printer/cmds/ibm4610/Cmd4610
+     102: dup
+     103: invokespecial #20                 // Method com/ibm/posj/bus/printer/cmds/ibm4610/Cmd4610."<init>":()V
+     106: getfield      #134                // Field com/ibm/posj/bus/printer/cmds/ibm4610/Cmd4610.REINIT:[B
+     109: invokevirtual #34                 // Method com/ibm/jutil/ByteBuffer.append:([B)Lcom/ibm/jutil/ByteBuffer;
+     112: pop
+     113: aload_0
+     114: aload_3
+     115: aload_3
+     116: invokevirtual #35                 // Method com/ibm/jutil/ByteBuffer.getByteCount:()I
+     119: invokevirtual #36                 // Method transport:(Lcom/ibm/jutil/ByteBuffer;I)V
+     122: ldc2_w        #135                // long 2000l
+     125: invokestatic  #137                // Method com/ibm/jutil/SleepPolicy.sleep:(J)V
+     128: aload_3
+     129: invokevirtual #37                 // Method com/ibm/jutil/ByteBuffer.recycle:()V
+     132: aload_0
+     133: aload_2
+     134: aload_2
+     135: invokevirtual #35                 // Method com/ibm/jutil/ByteBuffer.getByteCount:()I
+     138: invokevirtual #36                 // Method transport:(Lcom/ibm/jutil/ByteBuffer;I)V
+     141: ldc2_w        #138                // long 1300l
+     144: invokestatic  #137                // Method com/ibm/jutil/SleepPolicy.sleep:(J)V
+     147: aload_2
+     148: invokevirtual #37                 // Method com/ibm/jutil/ByteBuffer.recycle:()V
+     151: goto          166
+     154: astore_3
+     155: new           #140                // class com/ibm/posj/HandleException
+     158: dup
+     159: ldc           #141                // String Could not reinit printer
+     161: aload_3
+     162: invokespecial #142                // Method com/ibm/posj/HandleException."<init>":(Ljava/lang/String;Ljava/lang/Exception;)V
+     165: athrow
+     166: return
+    Exception table:
+       from    to  target type
+          24    31    34   Class java/lang/Exception
+          83   151   154   Class java/lang/Exception
+
+  protected void hidExceptionEventOccurred(com.ibm.hid.HidExceptionEvent);
+    Code:
+       0: aload_0
+       1: invokevirtual #126                // Method getSecondaryHandleImps:()Ljava/util/Iterator;
+       4: astore_2
+       5: aload_2
+       6: invokeinterface #127,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      11: ifeq          65
+      14: aload_2
+      15: invokeinterface #128,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      20: checkcast     #129                // class com/ibm/posj/bus/PrinterSubDevices
+      23: astore_3
+      24: aconst_null
+      25: aload_3
+      26: invokeinterface #143,  1          // InterfaceMethod com/ibm/posj/bus/PrinterSubDevices.getHandleKey:()Lcom/ibm/posj/HandleKey;
+      31: if_acmpeq     62
+      34: aload_3
+      35: aload_1
+      36: invokeinterface #144,  2          // InterfaceMethod com/ibm/posj/bus/PrinterSubDevices.busException:(Ljava/lang/Object;)V
+      41: goto          62
+      44: astore        4
+      46: aload_0
+      47: invokevirtual #45                 // Method isTracerOn:()Z
+      50: ifeq          62
+      53: aload_0
+      54: invokevirtual #15                 // Method getTracer:()Lcom/ibm/jutil/tracing/Tracer;
+      57: aload         4
+      59: invokevirtual #88                 // Method com/ibm/jutil/tracing/Tracer.print:(Ljava/lang/Exception;)V
+      62: goto          5
+      65: aload_0
+      66: aload_1
+      67: invokespecial #145                // Method com/ibm/posj/bus/hid/HidPOSPrinterHandleImp.hidExceptionEventOccurred:(Lcom/ibm/hid/HidExceptionEvent;)V
+      70: return
+    Exception table:
+       from    to  target type
+          34    41    44   Class java/lang/Exception
+
+  protected void hidDeviceDisconnected(com.ibm.hid.DisconnectEvent);
+    Code:
+       0: aload_0
+       1: invokevirtual #126                // Method getSecondaryHandleImps:()Ljava/util/Iterator;
+       4: astore_2
+       5: aload_2
+       6: invokeinterface #127,  1          // InterfaceMethod java/util/Iterator.hasNext:()Z
+      11: ifeq          115
+      14: aload_2
+      15: invokeinterface #128,  1          // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+      20: checkcast     #129                // class com/ibm/posj/bus/PrinterSubDevices
+      23: astore_3
+      24: aload_0
+      25: invokevirtual #45                 // Method isTracerOn:()Z
+      28: ifeq          54
+      31: aload_0
+      32: new           #54                 // class java/lang/StringBuffer
+      35: dup
+      36: invokespecial #55                 // Method java/lang/StringBuffer."<init>":()V
+      39: ldc           #146                // String >--set offline
+      41: invokevirtual #57                 // Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+      44: aload_3
+      45: invokevirtual #112                // Method java/lang/StringBuffer.append:(Ljava/lang/Object;)Ljava/lang/StringBuffer;
+      48: invokevirtual #59                 // Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+      51: invokevirtual #47                 // Method traceNormal:(Ljava/lang/String;)V
+      54: aload_3
+      55: aload_1
+      56: invokeinterface #147,  2          // InterfaceMethod com/ibm/posj/bus/PrinterSubDevices.offLine:(Ljava/lang/Object;)V
+      61: aload_0
+      62: invokevirtual #45                 // Method isTracerOn:()Z
+      65: ifeq          91
+      68: aload_0
+      69: new           #54                 // class java/lang/StringBuffer
+      72: dup
+      73: invokespecial #55                 // Method java/lang/StringBuffer."<init>":()V
+      76: ldc           #148                // String <--set offline
+      78: invokevirtual #57                 // Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+      81: aload_3
+      82: invokevirtual #112                // Method java/lang/StringBuffer.append:(Ljava/lang/Object;)Ljava/lang/StringBuffer;
+      85: invokevirtual #59                 // Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+      88: invokevirtual #47                 // Method traceNormal:(Ljava/lang/String;)V
+      91: goto          112
+      94: astore        4
+      96: aload_0
+      97: invokevirtual #45                 // Method isTracerOn:()Z
+     100: ifeq          112
+     103: aload_0
+     104: invokevirtual #15                 // Method getTracer:()Lcom/ibm/jutil/tracing/Tracer;
+     107: aload         4
+     109: invokevirtual #88                 // Method com/ibm/jutil/tracing/Tracer.print:(Ljava/lang/Exception;)V
+     112: goto          5
+     115: aload_0
+     116: aload_1
+     117: invokespecial #149                // Method com/ibm/posj/bus/hid/HidPOSPrinterHandleImp.hidDeviceDisconnected:(Lcom/ibm/hid/DisconnectEvent;)V
+     120: return
+    Exception table:
+       from    to  target type
+          24    91    94   Class java/lang/Exception
+
+  protected com.ibm.posj.printer.IBMPrinterImp getPrinterImp();
+    Code:
+       0: aconst_null
+       1: aload_0
+       2: getfield      #150                // Field printerImp:Lcom/ibm/posj/printer/IBMPrinterImp;
+       5: if_acmpne     50
+       8: aload_0
+       9: invokevirtual #63                 // Method getHandle:()Lcom/ibm/posj/Handle;
+      12: checkcast     #151                // class com/ibm/posj/DefaultPOSPrinterHandle
+      15: astore_1
+      16: aload_0
+      17: aload_0
+      18: getfield      #7                  // Field util:Lcom/ibm/posj/bus/printer/IBM4610Utility;
+      21: aload_0
+      22: invokevirtual #152                // Method getWriter:()Lcom/ibm/posj/printer/PrinterWriter;
+      25: aload_1
+      26: invokevirtual #153                // Method com/ibm/posj/bus/printer/IBM4610Utility.createPrinterImp:(Lcom/ibm/posj/printer/PrinterWriter;Lcom/ibm/posj/DefaultPOSPrinterHandle;)Lcom/ibm/posj/printer/IBMPrinterImp;
+      29: putfield      #150                // Field printerImp:Lcom/ibm/posj/printer/IBMPrinterImp;
+      32: aload_0
+      33: getfield      #7                  // Field util:Lcom/ibm/posj/bus/printer/IBM4610Utility;
+      36: aload_0
+      37: getfield      #150                // Field printerImp:Lcom/ibm/posj/printer/IBMPrinterImp;
+      40: invokevirtual #154                // Method com/ibm/posj/printer/IBMPrinterImp.getHandleKey:()Lcom/ibm/posj/HandleKey;
+      43: aload_0
+      44: getfield      #150                // Field printerImp:Lcom/ibm/posj/printer/IBMPrinterImp;
+      47: invokevirtual #115                // Method com/ibm/posj/bus/printer/IBM4610Utility.addDevice:(Lcom/ibm/posj/HandleKey;Lcom/ibm/posj/bus/PrinterSubDevices;)V
+      50: aload_0
+      51: getfield      #150                // Field printerImp:Lcom/ibm/posj/printer/IBMPrinterImp;
+      54: areturn
+
+  protected void firePrintDataEvent(com.ibm.posj.printer.event.PrintDataEvent);
+    Code:
+       0: aload_0
+       1: invokevirtual #155                // Method getPrinterImp:()Lcom/ibm/posj/printer/IBMPrinterImp;
+       4: aload_1
+       5: invokevirtual #156                // Method com/ibm/posj/printer/IBMPrinterImp.receivePrintDataEvent:(Lcom/ibm/posj/printer/event/PrintDataEvent;)V
+       8: aload_0
+       9: getfield      #7                  // Field util:Lcom/ibm/posj/bus/printer/IBM4610Utility;
+      12: aload_1
+      13: invokevirtual #157                // Method com/ibm/posj/bus/printer/IBM4610Utility.firePrintDataEvent:(Lcom/ibm/posj/printer/event/PrintDataEvent;)V
+      16: return
+
+  protected void reportEventOccurred(com.ibm.hid.ReportEvent);
+    Code:
+       0: aconst_null
+       1: aload_1
+       2: if_acmpeq     13
+       5: aconst_null
+       6: aload_1
+       7: invokevirtual #158                // Method com/ibm/hid/ReportEvent.getData:()[B
+      10: if_acmpne     14
+      13: return
+      14: aload_0
+      15: invokevirtual #45                 // Method isTracerOn:()Z
+      18: ifeq          90
+      21: aload_0
+      22: new           #54                 // class java/lang/StringBuffer
+      25: dup
+      26: invokespecial #55                 // Method java/lang/StringBuffer."<init>":()V
+      29: ldc           #159                // String Printer reportEvent
+      31: invokevirtual #57                 // Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+      34: invokestatic  #160                // Method java/lang/Thread.currentThread:()Ljava/lang/Thread;
+      37: invokevirtual #161                // Method java/lang/Thread.getName:()Ljava/lang/String;
+      40: invokevirtual #57                 // Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+      43: invokevirtual #59                 // Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+      46: invokevirtual #47                 // Method traceNormal:(Ljava/lang/String;)V
+      49: aload_0
+      50: new           #54                 // class java/lang/StringBuffer
+      53: dup
+      54: invokespecial #55                 // Method java/lang/StringBuffer."<init>":()V
+      57: ldc           #162                // String Status post->
+      59: invokevirtual #57                 // Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+      62: aload_1
+      63: invokevirtual #158                // Method com/ibm/hid/ReportEvent.getData:()[B
+      66: invokestatic  #163                // Method com/ibm/jutil/Util.toFormatedHexString:([B)Ljava/lang/String;
+      69: invokevirtual #57                 // Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+      72: ldc           #111                // String
+      74: invokevirtual #57                 // Method java/lang/StringBuffer.append:(Ljava/lang/String;)Ljava/lang/StringBuffer;
+      77: aload_1
+      78: invokevirtual #158                // Method com/ibm/hid/ReportEvent.getData:()[B
+      81: invokevirtual #112                // Method java/lang/StringBuffer.append:(Ljava/lang/Object;)Ljava/lang/StringBuffer;
+      84: invokevirtual #59                 // Method java/lang/StringBuffer.toString:()Ljava/lang/String;
+      87: invokevirtual #60                 // Method traceMaximum:(Ljava/lang/String;)V
+      90: aconst_null
+      91: aload_0
+      92: invokevirtual #63                 // Method getHandle:()Lcom/ibm/posj/Handle;
+      95: if_acmpeq     155
+      98: aload_0
+      99: invokevirtual #63                 // Method getHandle:()Lcom/ibm/posj/Handle;
+     102: invokeinterface #81,  1           // InterfaceMethod com/ibm/posj/Handle.isDirectIOMode:()Z
+     107: ifeq          155
+     110: invokestatic  #77                 // Method com/ibm/jutil/ByteBuffer.getByteBufferFactory:()Lcom/ibm/jutil/ByteBuffer$ByteBufferFactory;
+     113: aload_1
+     114: invokevirtual #158                // Method com/ibm/hid/ReportEvent.getData:()[B
+     117: arraylength
+     118: invokevirtual #101                // Method com/ibm/jutil/ByteBuffer$ByteBufferFactory.createByteBuffer:(I)Lcom/ibm/jutil/ByteBuffer;
+     121: astore_2
+     122: aload_0
+     123: invokevirtual #63                 // Method getHandle:()Lcom/ibm/posj/Handle;
+     126: invokeinterface #84,  1           // InterfaceMethod com/ibm/posj/Handle.getEventHelper:()Lcom/ibm/posj/Handle$EventHelper;
+     131: new           #85                 // class com/ibm/posj/event/DirectIOEvent
+     134: dup
+     135: aload_0
+     136: aload_2
+     137: aload_1
+     138: invokevirtual #158                // Method com/ibm/hid/ReportEvent.getData:()[B
+     141: invokevirtual #34                 // Method com/ibm/jutil/ByteBuffer.append:([B)Lcom/ibm/jutil/ByteBuffer;
+     144: invokevirtual #83                 // Method com/ibm/jutil/ByteBuffer.getBytes:()[B
+     147: invokespecial #86                 // Method com/ibm/posj/event/DirectIOEvent."<init>":(Ljava/lang/Object;[B)V
+     150: invokeinterface #87,  2           // InterfaceMethod com/ibm/posj/Handle$EventHelper.fireDirectIOEvent:(Lcom/ibm/posj/event/DirectIOEvent;)V
+     155: aload_0
+     156: aload_1
+     157: invokevirtual #158                // Method com/ibm/hid/ReportEvent.getData:()[B
+     160: invokevirtual #164                // Method parseUSBStatus:([B)Z
+     163: ifeq          177
+     166: aload_0
+     167: getfield      #4                  // Field sdaemon:Lcom/ibm/posj/bus/hid/Hid4610PrinterHandleImp$StatusDaemon;
+     170: aload_1
+     171: invokevirtual #158                // Method com/ibm/hid/ReportEvent.getData:()[B
+     174: invokevirtual #165                // Method com/ibm/posj/bus/hid/Hid4610PrinterHandleImp$StatusDaemon.add:([B)V
+     177: aload_0
+     178: invokevirtual #45                 // Method isTracerOn:()Z
+     181: ifeq          190
+     184: aload_0
+     185: ldc           #166                // String Printer reportEvent exit
+     187: invokevirtual #47                 // Method traceNormal:(Ljava/lang/String;)V
+     190: goto          202
+     193: astore_2
+     194: aload_0
+     195: invokevirtual #15                 // Method getTracer:()Lcom/ibm/jutil/tracing/Tracer;
+     198: aload_2
+     199: invokevirtual #88                 // Method com/ibm/jutil/tracing/Tracer.print:(Ljava/lang/Exception;)V
+     202: return
+    Exception table:
+       from    to  target type
+           0    13   193   Class java/lang/Exception
+          14   190   193   Class java/lang/Exception
+
+  static {};
+    Code:
+       0: aconst_null
+       1: putstatic     #24                 // Field factory:Lcom/ibm/posj/IBM4610PrinterCmd$Factory;
+       4: new           #167                // class java/lang/Integer
+       7: dup
+       8: iconst_0
+       9: invokespecial #168                // Method java/lang/Integer."<init>":(I)V
+      12: putstatic     #169                // Field CashDrawerA:Ljava/lang/Integer;
+      15: new           #167                // class java/lang/Integer
+      18: dup
+      19: iconst_1
+      20: invokespecial #168                // Method java/lang/Integer."<init>":(I)V
+      23: putstatic     #170                // Field CashDrawerB:Ljava/lang/Integer;
+      26: iconst_3
+      27: putstatic     #39                 // Field MAX_HANG_CNT:I
+      30: bipush        7
+      32: newarray       byte
+      34: dup
+      35: iconst_0
+      36: iconst_1
+      37: bastore
+      38: dup
+      39: iconst_1
+      40: iconst_0
+      41: bastore
+      42: dup
+      43: iconst_2
+      44: iconst_0
+      45: bastore
+      46: dup
+      47: iconst_3
+      48: iconst_1
+      49: bastore
+      50: dup
+      51: iconst_4
+      52: iconst_0
+      53: bastore
+      54: dup
+      55: iconst_5
+      56: iconst_0
+      57: bastore
+      58: dup
+      59: bipush        6
+      61: iconst_0
+      62: bastore
+      63: putstatic     #70                 // Field transfer:[B
+      66: return
+}

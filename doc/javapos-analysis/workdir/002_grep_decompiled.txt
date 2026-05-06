@@ -1,0 +1,178 @@
+posj_src/com/ibm/hid/HidConst.java:5:   byte HID_GET_REPORT_REQUEST = 1;
+posj_src/com/ibm/hid/HidConst.java:10:   byte HID_SET_REPORT_REQUEST = 9;
+posj_src/com/ibm/hid/HidConst.java:14:   byte HID_GET_REPORT_REQUESTTYPE = -95;
+posj_src/com/ibm/hid/HidConst.java:18:   byte HID_SET_REPORT_REQUESTTYPE = 33;
+posj_src/com/ibm/hid/HidConst.java:22:   byte HID_DESCRIPTOR_TYPE_REPORT = 34;
+posj_src/com/ibm/hid/HidConst.java:24:   byte HID_REPORT_TYPE_INPUT = 1;
+posj_src/com/ibm/hid/HidConst.java:25:   byte HID_REPORT_TYPE_OUTPUT = 2;
+posj_src/com/ibm/hid/HidConst.java:26:   byte HID_REPORT_TYPE_FEATURE = 3;
+posj_src/com/ibm/hid/HidConst.java:28:   byte HID_PROTOCOL_TYPE_REPORT = 1;
+posj_src/com/ibm/hid/HidConst.java:29:   byte HID_REPORT_ID_UNUSED = 0;
+posj_src/com/ibm/posj/bus/hid/javaxusb/HidDeviceUsbAdapter.java:63:   public static final short REPORT_INITIAL_LENGTH = 511;
+posj_src/com/ibm/posj/bus/hid/javaxusb/HidDeviceUsbAdapter.java:64:   public static final short REPORT_INCREMENT_LENGTH = 255;
+posj_src/com/ibm/posj/bus/hid/javaxusb/HidDeviceUsbAdapter.java:347:            traceMsg = "HID_GET_REPORT : " + traceMsg;
+posj_src/com/ibm/posj/bus/hid/javaxusb/UsbHandleImpFactory.java:85:   private static byte PRINTER_REPORT_ID = 53;
+posj_src/com/ibm/posj/bus/hid/javaxusb/UsbHandleImpFactory.java:695:         hd.getReport((byte)3, PRINTER_REPORT_ID);
+posj_src/com/ibm/posj/bus/hid/javaxusbold/AbstractUsbInitializer.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/DefaultUsbInterfacePolicy.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/DeferredUsbInitializer$1.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/DeferredUsbInitializer.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/HidDeviceUsbAdapter$1.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/HidDeviceUsbAdapter$2.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/HidDeviceUsbAdapter$3.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/HidDeviceUsbAdapter$4.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/HidDeviceUsbAdapter.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/HidDeviceUsbAdapter.java:54:   protected static final short REPORT_INITIAL_LENGTH = 511;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/HidDeviceUsbAdapter.java:55:   protected static final short REPORT_INCREMENT_LENGTH = 255;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/HidDeviceUsbAdapter.java:301:                  this.submitTraceBuffer.append("HID_GET_REPORT_REQUESTTYPE<--");
+posj_src/com/ibm/posj/bus/hid/javaxusbold/HidDeviceUsbFactory.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/IBM4610PrinterInitializer.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/IBM4689PrinterInitializer.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/POSKeyboardInitializer.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/PosUsbConst.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/ProtocolConverterInitializer.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/UsbHandleImpFactory$1.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/UsbHandleImpFactory$2.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/UsbHandleImpFactory$3.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/UsbHandleImpFactory.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/UsbHandlePopulator.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/UsbInitializationManager$1.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/UsbInitializationManager.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/UsbInitializer.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/javaxusbold/UsbUtil.java:1:package com.ibm.posj.bus.hid.javaxusbold;
+posj_src/com/ibm/posj/bus/hid/Hid4610PrinterHandleImp.java:64:   private static final int REPORT_ID = 53;
+posj_src/com/ibm/posj/bus/hid/Hid4610PrinterHandleImp.java:70:   public static byte[] transfer = new byte[]{1, 0, 0, 1, 0, 0, 0};
+posj_src/com/ibm/posj/bus/hid/Hid4610PrinterHandleImp.java:176:         this.packet = new PrinterPacket(this, transfer, 1015);
+posj_src/com/ibm/posj/bus/hid/Hid4610PrinterHandleImp.java:189:         byte[] transfer = bytes.getBytesRef();
+posj_src/com/ibm/posj/bus/hid/Hid4610PrinterHandleImp.java:191:         transfer[1] = (byte)len;
+posj_src/com/ibm/posj/bus/hid/Hid4610PrinterHandleImp.java:192:         transfer[2] = (byte)(len >> 8);
+posj_src/com/ibm/posj/bus/hid/Hid4610PrinterHandleImp.java:193:         transfer[0] = 2;
+posj_src/com/ibm/posj/bus/hid/Hid4610PrinterHandleImp.java:197:            transfer[0] = 1;
+posj_src/com/ibm/posj/bus/hid/Hid4610PrinterHandleImp.java:354:      ByteBuffer b = ByteBuffer.getByteBufferFactory().createByteBuffer(RAW_REINIT.length + transfer.length);
+posj_src/com/ibm/posj/bus/hid/Hid4610PrinterHandleImp.java:355:      b.append(transfer);
+posj_src/com/ibm/posj/bus/hid/Hid4610PrinterHandleImp.java:385:            reset.append(transfer);
+posj_src/com/ibm/posj/bus/hid/Hid4689PrinterHandleImp.java:40:   private static final int REPORT_ID = 50;
+posj_src/com/ibm/posj/bus/hid/Hid4689PrinterHandleImp.java:64:   public static byte[] transfer = new byte[]{1};
+posj_src/com/ibm/posj/bus/hid/Hid4689PrinterHandleImp.java:153:         this.packet = new PrinterPacket(this, transfer, 1500);
+posj_src/com/ibm/posj/bus/hid/Hid4689PrinterHandleImp.java:166:         byte[] transfer = bytes.getBytesRef();
+posj_src/com/ibm/posj/bus/hid/Hid4689PrinterHandleImp.java:167:         transfer[0] = 1;
+posj_src/com/ibm/posj/bus/hid/HidMSRHandleImp.java:37:   public static final String MSR_USB_FEATURE_REPORT_CMD_NAME = "Get feature report";
+posj_src/com/ibm/posj/bus/hid/HidScaleHandleImp.java:55:   public static final byte[] SCALE_REPORT_CONFIG_CMD = new byte[]{33, 0};
+posj_src/com/ibm/posj/bus/hid/HidScaleHandleImp.java:446:            HidScaleHandleImp.this.submitSetReportRequestCmd("ReportConfigCmd", (byte)2, HidScaleHandleImp.SCALE_REPORT_CONFIG_CMD);
+posj_src/com/ibm/posj/bus/hid/HidScannerHandleImp.java:53:   public static final byte[] REPORT_SCANNER_CMD = new byte[]{33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+posj_src/com/ibm/posj/bus/hid/HidScannerHandleImp.java:54:   public static final byte[] REPORT_JAN13_TWO_LABEL_SCANNER_CMD = new byte[]{52, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+posj_src/com/ibm/posj/bus/hid/HidScannerHandleImp.java:381:               " REPORT_SCANNER_CONFIGURATION : " + Util.toFormatedHexString(HidScannerHandleImp.this.getRetryHelper().getLastResponse())
+posj_src/com/ibm/posj/bus/hid/HidScannerHandleImp.java:459:         cmd.setCmdBytes(HidScannerHandleImp.REPORT_SCANNER_CMD);
+posj_src/com/ibm/posj/bus/hid/HidScannerHandleImp.java:477:         cmd.setCmdBytes(HidScannerHandleImp.REPORT_JAN13_TWO_LABEL_SCANNER_CMD);
+posj_src/com/ibm/posj/bus/printer/cmds/ibm4610/Font4610CmdFactory.java:231:   public PrintCmd createBoldCmd(POSPrinterCmd.BoldCmd boldCmd) {
+posj_src/com/ibm/posj/bus/printer/cmds/ibm4610/Font4610CmdFactory.java:232:      byte active = (byte)(boldCmd.isActive() ? 1 : 0);
+posj_src/com/ibm/posj/bus/printer/cmds/ibm4610/Font4610CmdFactory.java:233:      PrintCmd printerCmd = this.factory.createCmd(boldCmd);
+posj_src/com/ibm/posj/bus/printer/cmds/ibm4610/Font4610CmdFactory.java:344:   public PrintCmd createFontColorCmd(POSPrinterCmd.FontColorCmd fontColorCmd) {
+posj_src/com/ibm/posj/bus/printer/cmds/ibm4610/Font4610CmdFactory.java:345:      PrintCmd printerCmd = this.factory.createCmd(fontColorCmd);
+posj_src/com/ibm/posj/bus/printer/cmds/ibm4610/Font4610CmdFactory.java:347:      printerCmd.appendCmd(fontColorCmd.getFontColor());
+posj_src/com/ibm/posj/bus/printer/cmds/ibm4610/Print4610CmdFactory.java:18:   private FontCmdFactory font;
+posj_src/com/ibm/posj/bus/printer/cmds/ibm4610/Print4610CmdFactory.java:29:      this.font = new Font4610CmdFactory(this);
+posj_src/com/ibm/posj/bus/printer/cmds/ibm4610/Print4610CmdFactory.java:79:      return this.font;
+posj_src/com/ibm/posj/bus/printer/cmds/ibm4689/Font4689CmdFactory.java:126:   public PrintCmd createBoldCmd(POSPrinterCmd.BoldCmd boldCmd) throws HandleException {
+posj_src/com/ibm/posj/bus/printer/cmds/ibm4689/Font4689CmdFactory.java:127:      return this.factory.createCmd(boldCmd);
+posj_src/com/ibm/posj/bus/printer/cmds/ibm4689/Print4689CmdFactory.java:15:   private FontCmdFactory font;
+posj_src/com/ibm/posj/bus/printer/cmds/ibm4689/Print4689CmdFactory.java:23:      this.font = new Font4689CmdFactory(this);
+posj_src/com/ibm/posj/bus/printer/cmds/ibm4689/Print4689CmdFactory.java:61:      return this.font;
+posj_src/com/ibm/posj/bus/printer/cmds/sureone/PrintSureoneCmdFactory.java:15:   private FontCmdFactory font;
+posj_src/com/ibm/posj/bus/printer/cmds/sureone/PrintSureoneCmdFactory.java:23:      this.font = new FontSureoneCmdFactory(this);
+posj_src/com/ibm/posj/bus/printer/cmds/sureone/PrintSureoneCmdFactory.java:57:      return this.font;
+posj_src/com/ibm/posj/bus/rs232/Rs2324610PrinterHandleImp.java:71:   public static byte[] transfer = new byte[0];
+posj_src/com/ibm/posj/bus/rs232/Rs2324610PrinterHandleImp.java:121:         PrinterPacket packet = new PrinterPacket(this, transfer, PRINTER_DATA_MAX);
+posj_src/com/ibm/posj/bus/rs232/Rs232IntegratedLineScannerInfoHelper.java:127:   private static final byte[] REPORT_SCANNER_CMD_BYTES = null;
+posj_src/com/ibm/posj/bus/rs232/Rs232IntegratedLineScannerInfoHelper.java:190:      return REPORT_SCANNER_CMD_BYTES;
+posj_src/com/ibm/posj/bus/rs232/Rs232SureonePrinterHandleImp.java:97:         byte[] transfer = new byte[0];
+posj_src/com/ibm/posj/bus/rs232/Rs232SureonePrinterHandleImp.java:98:         PrinterPacket packet = new PrinterPacket(this, transfer, 1607);
+posj_src/com/ibm/posj/bus/rs485/Rs4854610PrinterHandleImp.java:50:   public static byte[] transfer = new byte[0];
+posj_src/com/ibm/posj/bus/rs485/Rs4854610PrinterHandleImp.java:248:         PrinterPacket packet = new PrinterPacket(this, transfer, this.PRINTER_DATA_MAX);
+posj_src/com/ibm/posj/bus/rs485/Rs4854689PrinterHandleImp.java:52:   public static byte[] transfer = new byte[0];
+posj_src/com/ibm/posj/bus/rs485/Rs4854689PrinterHandleImp.java:235:         PrinterPacket packet = new PrinterPacket(this, transfer, 1400);
+posj_src/com/ibm/posj/bus/rs485/Rs485APALineDisplayHandleImp.java:249:                  Rs485APALineDisplayHandleImp.this.handleException = new HandleException("VFDII/APA Hardware does not have the selected font set");
+posj_src/com/ibm/posj/bus/rs485/Rs485HandlePopulator.java:67:   private final byte[] SCANNER_REPORT_CONFIG_CMD = new byte[]{33};
+posj_src/com/ibm/posj/bus/rs485/Rs485HandlePopulator.java:759:                     this.submitScannerCmd(device, this.SCANNER_REPORT_CONFIG_CMD, buffer);
+posj_src/com/ibm/posj/bus/rs485/Rs485ScaleHandleImp.java:55:   public static final byte[] SCALE_REPORT_CONFIG_CMD = new byte[]{33};
+posj_src/com/ibm/posj/bus/rs485/Rs485ScaleHandleImp.java:473:               Rs485ScaleHandleImp.this.submitSync(Rs485ScaleHandleImp.SCALE_REPORT_CONFIG_CMD);
+posj_src/com/ibm/posj/bus/PrinterPacket.java:56:   public void resetHeader() {
+posj_src/com/ibm/posj/bus/PrinterPacket.java:111:   public void setHeader(ByteBuffer newHead) throws NullPointerException {
+posj_src/com/ibm/posj/printer/ibm4610/IBM4610CmdFilterV.java:34:   public void visitBoldCmd(POSPrinterCmd.BoldCmd boldCmd) {
+posj_src/com/ibm/posj/printer/ibm4610/IBM4610CmdFilterV.java:36:      if (boldCmd.isActive()) {
+posj_src/com/ibm/posj/printer/ibm4610/IBM4610CmdFilterV.java:89:   public void visitFontColorCmd(POSPrinterCmd.FontColorCmd fontc) {
+posj_src/com/ibm/posj/printer/ibm4610/IBM4610CmdFilterV.java:91:      if (fontc.getFontColor() != 0) {
+posj_src/com/ibm/posj/printer/ibm4610/IBM4610Imp.java:430:         this.fontTable = IBM4610PrinterCmdConst.FONT_TYPE_TABLE;
+posj_src/com/ibm/posj/printer/ibm4689/IBM4689Imp.java:302:         this.fontTable = IBM4689PrinterCmdConst.FONT_TYPE_TABLE;
+posj_src/com/ibm/posj/printer/parser/ibm4689/Printer4689PropertiesManager.java:7:   private boolean bold = false;
+posj_src/com/ibm/posj/printer/parser/ibm4689/Printer4689PropertiesManager.java:22:      this.bold = false;
+posj_src/com/ibm/posj/printer/parser/ibm4689/Printer4689PropertiesManager.java:33:      this.bold = propMngr.bold;
+posj_src/com/ibm/posj/printer/parser/ibm4689/Printer4689PropertiesManager.java:42:      return this.bold;
+posj_src/com/ibm/posj/printer/parser/ibm4689/Printer4689PropertiesManager.java:45:   public void setBold(boolean bold) {
+posj_src/com/ibm/posj/printer/parser/ibm4689/Printer4689PropertiesManager.java:47:         this.trace("seting bold");
+posj_src/com/ibm/posj/printer/parser/ibm4689/Printer4689PropertiesManager.java:51:      this.bold = bold;
+posj_src/com/ibm/posj/printer/parser/DefaultPrinterEscCmdProcessor.java:178:      public void visitBoldCmd(POSPrinterCmd.BoldCmd boldCmd) {
+posj_src/com/ibm/posj/printer/parser/DefaultPrinterEscCmdProcessor.java:179:         this.posPrinterCmd = this.factory.createBoldCmd(boldCmd.isActive());
+posj_src/com/ibm/posj/printer/parser/DefaultPrinterEscCmdProcessor.java:182:      public void visitFontColorCmd(POSPrinterCmd.FontColorCmd fontColorCmd) {
+posj_src/com/ibm/posj/printer/parser/DefaultPrinterEscCmdProcessor.java:183:         this.posPrinterCmd = this.factory.createFontColorCmd(fontColorCmd.getFontColor());
+posj_src/com/ibm/posj/printer/parser/DefaultPrinterEscCmdProcessor.java:1243:         byte fontWideMagnification = this.parserState.getFontWideMagnification(cmd.getStation());
+posj_src/com/ibm/posj/printer/parser/DefaultPrinterEscCmdProcessor.java:1244:         byte fontHighMagnification = this.parserState.getFontHighMagnification(cmd.getStation());
+posj_src/com/ibm/posj/printer/parser/DefaultPrinterEscCmdProcessor.java:1246:            fontWideMagnification = 1;
+posj_src/com/ibm/posj/printer/parser/DefaultPrinterEscCmdProcessor.java:1247:            fontHighMagnification = 1;
+posj_src/com/ibm/posj/printer/parser/DefaultPrinterEscCmdProcessor.java:1249:            fontWideMagnification = 2;
+posj_src/com/ibm/posj/printer/parser/DefaultPrinterEscCmdProcessor.java:1251:            fontHighMagnification = 2;
+posj_src/com/ibm/posj/printer/parser/DefaultPrinterEscCmdProcessor.java:1253:            fontWideMagnification = 2;
+posj_src/com/ibm/posj/printer/parser/DefaultPrinterEscCmdProcessor.java:1254:            fontHighMagnification = 2;
+posj_src/com/ibm/posj/printer/parser/DefaultPrinterEscCmdProcessor.java:1257:         this.parserState.setFontWideMagnification(cmd.getStation(), fontWideMagnification);
+posj_src/com/ibm/posj/printer/parser/DefaultPrinterEscCmdProcessor.java:1258:         this.parserState.setFontHighMagnification(cmd.getStation(), fontHighMagnification);
+posj_src/com/ibm/posj/printer/sureone/IBMSureoneImp.java:337:         this.fontTable = IBMSureonePrinterCmdConst.FONT_TYPE_TABLE;
+posj_src/com/ibm/posj/printer/IBMPrinterState.java:29:   protected byte[][] fontTable = (byte[][])null;
+posj_src/com/ibm/posj/printer/IBMPrinterState.java:469:      for (int i = 0; i < this.fontTable.length; i++) {
+posj_src/com/ibm/posj/printer/IBMPrinterState.java:470:         if (this.fontTable[i][0] == station) {
+posj_src/com/ibm/posj/printer/IBMPrinterState.java:480:         return this.fontTable[station][typeFace];
+posj_src/com/ibm/posj/ram/AbstractRamDevice.java:154:      this.transfer(handle, this.ramData, true);
+posj_src/com/ibm/posj/ram/AbstractRamDevice.java:171:      this.transfer(handle, this.ramData, false);
+posj_src/com/ibm/posj/ram/AbstractRamDevice.java:294:   private void transfer(int handle, AbstractRamDevice.RamData ramData, boolean write) throws IllegalArgumentException {
+posj_src/com/ibm/posj/ram/AbstractRamDevice.java:310:      int transferedBytes = 0;
+posj_src/com/ibm/posj/ram/AbstractRamDevice.java:329:            transferedBytes += bytesToTransferOnThisBlock;
+posj_src/com/ibm/posj/ram/AbstractRamDevice.java:330:            bytesToTransfer = count - transferedBytes;
+posj_src/com/ibm/posj/ram/AbstractRamDevice.java:331:            offset += transferedBytes;
+posj_src/com/ibm/posj/ram/AbstractRamDevice.java:338:      ramData.setTransferedBytes(transferedBytes);
+posj_src/com/ibm/posj/ram/AbstractRamDevice.java:392:      private int transferedBytes = 0;
+posj_src/com/ibm/posj/ram/AbstractRamDevice.java:420:         return this.transferedBytes;
+posj_src/com/ibm/posj/ram/AbstractRamDevice.java:436:         this.transferedBytes = bytes;
+posj_src/com/ibm/posj/scanner/DefaultScannerCmdStrategy.java:28:   public static final byte[] REPORT_SCANNER_CMD = new byte[]{33, 0};
+posj_src/com/ibm/posj/scanner/DefaultScannerCmdStrategy.java:29:   public static final byte[] REPORT_JAN13_TWO_LABEL_SCANNER_CMD = new byte[]{52, 0};
+posj_src/com/ibm/posj/scanner/DefaultScannerCmdStrategy.java:142:         cmdBytes[i] = REPORT_SCANNER_CMD[i];
+posj_src/com/ibm/posj/scanner/DefaultScannerCmdStrategy.java:162:         cmdBytes[i] = REPORT_JAN13_TWO_LABEL_SCANNER_CMD[i];
+posj_src/com/ibm/posj/scanner/Scanner1520CmdStrategy.java:12:   public static byte[] SCN_1520_REPORT_SCANNER_CMD = null;
+posj_src/com/ibm/posj/scanner/Scanner1520CmdStrategy.java:13:   public static byte[] SCN_1520_REPORT_JAN13_TWO_LABEL_SCANNER_CMD = null;
+posj_src/com/ibm/posj/scanner/Scanner1520CmdStrategy.java:152:      return SCN_1520_REPORT_SCANNER_CMD;
+posj_src/com/ibm/posj/scanner/Scanner1520CmdStrategy.java:160:      return SCN_1520_REPORT_JAN13_TWO_LABEL_SCANNER_CMD;
+posj_src/com/ibm/posj/scanner/Scanner4500CmdStrategy.java:9:   public static final byte[] SCN_4500_REPORT_SCANNER_CMD = null;
+posj_src/com/ibm/posj/scanner/Scanner4500CmdStrategy.java:10:   public static final byte[] SCN_4500_REPORT_JAN13_TWO_LABEL_SCANNER_CMD = null;
+posj_src/com/ibm/posj/scanner/Scanner4500CmdStrategy.java:126:      return SCN_4500_REPORT_SCANNER_CMD;
+posj_src/com/ibm/posj/scanner/Scanner4500CmdStrategy.java:134:      return SCN_4500_REPORT_JAN13_TWO_LABEL_SCANNER_CMD;
+posj_src/com/ibm/posj/scanner/Scanner4501CmdStrategy.java:8:   public static final byte[] SCN_4501_REPORT_SCANNER_CMD = new byte[]{49, 0};
+posj_src/com/ibm/posj/scanner/Scanner4501CmdStrategy.java:10:   public static final byte[] SCN_4501_REPORT_JAN13_TWO_LABEL_SCANNER_CMD = null;
+posj_src/com/ibm/posj/scanner/Scanner4501CmdStrategy.java:206:      return SCN_4501_REPORT_SCANNER_CMD;
+posj_src/com/ibm/posj/scanner/Scanner4501CmdStrategy.java:214:      return SCN_4501_REPORT_JAN13_TWO_LABEL_SCANNER_CMD;
+posj_src/com/ibm/posj/scanner/Scanner4687CmdStrategy.java:9:   public static final byte[] SCN_4687_REPORT_SCANNER_CMD = null;
+posj_src/com/ibm/posj/scanner/Scanner4687CmdStrategy.java:10:   public static final byte[] SCN_4687_REPORT_JAN13_TWO_LABEL_SCANNER_CMD = null;
+posj_src/com/ibm/posj/scanner/Scanner4687CmdStrategy.java:92:      return SCN_4687_REPORT_SCANNER_CMD;
+posj_src/com/ibm/posj/scanner/Scanner4687CmdStrategy.java:100:      return SCN_4687_REPORT_JAN13_TWO_LABEL_SCANNER_CMD;
+posj_src/com/ibm/posj/scanner/Scanner4696CmdStrategy.java:12:   public static final byte[] SCN_4696_REPORT_JAN13_TWO_LABEL_SCANNER_CMD = null;
+posj_src/com/ibm/posj/util/DefaultPOSPrinterCmdV.java:65:   public void visitBoldCmd(POSPrinterCmd.BoldCmd boldCmd) {
+posj_src/com/ibm/posj/util/DefaultPOSPrinterCmdV.java:66:      this.visit(boldCmd);
+posj_src/com/ibm/posj/util/DefaultPOSPrinterCmdV.java:89:   public void visitFontColorCmd(POSPrinterCmd.FontColorCmd fontColorCmd) {
+posj_src/com/ibm/posj/util/DefaultPOSPrinterCmdV.java:90:      this.visit(fontColorCmd);
+posj_src/com/ibm/posj/DefaultPOSPrinterCmd.java:764:      public void visitBoldCmd(POSPrinterCmd.BoldCmd boldCmd) {
+posj_src/com/ibm/posj/DefaultScaleCmd.java:117:         super(factory, "REPORT_CONFIG_SCALE_CMD", 1103);
+posj_src/com/ibm/posj/DefaultScannerCmd.java:183:         super(factory, "REPORT_JAN13_TWO_LABEL_SCANNER_CMD", 907);
+posj_src/com/ibm/posj/DefaultScannerCmd.java:193:         super(factory, "REPORT_SCANNER_CMD", 906);
+posj_src/com/ibm/posj/ScaleHandleConst.java:7:   int REPORT_CONFIG_SCALE_CMD_CODE = 1103;
+posj_src/com/ibm/posj/ScaleHandleConst.java:13:   String REPORT_CONFIG_SCALE_CMD_NAME = "REPORT_CONFIG_SCALE_CMD";
+posj_src/com/ibm/posj/ScannerHandleConst.java:10:   int REPORT_SCANNER_CMD_CODE = 906;
+posj_src/com/ibm/posj/ScannerHandleConst.java:11:   int REPORT_JAN13_TWO_LABEL_SCANNER_CMD_CODE = 907;
+posj_src/com/ibm/posj/ScannerHandleConst.java:19:   String REPORT_SCANNER_CMD_NAME = "REPORT_SCANNER_CMD";
+posj_src/com/ibm/posj/ScannerHandleConst.java:20:   String REPORT_JAN13_TWO_LABEL_SCANNER_CMD_NAME = "REPORT_JAN13_TWO_LABEL_SCANNER_CMD";

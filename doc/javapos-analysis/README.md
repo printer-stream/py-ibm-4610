@@ -10,7 +10,7 @@ sudo dnf install -y java-17-openjdk wget
 ## Step 1 — Get the JAR
 
 ```bash
-mkdir ~/ibm-4610 && cd ~/ibm-4610
+mkdir ./workdir && cd ./workdir
 
 wget "https://github.com/ByINTI/AuxiliarTotem/raw/master/Programas%20Totem/PinPad/Auttar/kit-distribuicao-CTFClient-03.02.01-D03/program%20files/Auttar/CTFClient/ibmjpos/Lib/posj.jar"
 ```
@@ -19,7 +19,7 @@ wget "https://github.com/ByINTI/AuxiliarTotem/raw/master/Programas%20Totem/PinPa
 
 ```bash
 # List all classes related to printer, HID, 4610
-jar tf posj.jar | grep -i "hid\|print\|4610\|suremark\|transport\|station" | sort
+jar tf posj.jar | grep -i "hid\|print\|4610\|suremark\|transport\|station" | sort > 001_jar_tf_grep_sort.txt
 ```
 
 Key packages to know:
@@ -65,7 +65,7 @@ mkdir posj_src
 java -jar vineflower-1.10.1.jar posj.jar posj_src/
 
 # Then grep the source for what you need
-grep -rn "bold\|italic\|font\|setHeader\|transfer\|REPORT" posj_src/ --include="*.java" | less
+grep -rn "bold\|italic\|font\|setHeader\|transfer\|REPORT" posj_src/ --include="*.java" > 002_grep_decompiled.txt
 ```
 
 ## Step 5 — USB monitoring (for cross-checking)

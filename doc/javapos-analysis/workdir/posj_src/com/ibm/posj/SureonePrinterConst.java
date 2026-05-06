@@ -1,0 +1,12 @@
+package com.ibm.posj;
+
+public interface SureonePrinterConst {
+   int STATUS_SIZE = 1;
+   int NORMAL_SUREONE_VPARITY_ERR = 257;
+   int NORMAL_SUREONE_FRAMING_ERR = 258;
+   int NORMAL_SUREONE_MECH_ERR = 260;
+   int NORMAL_SUREONE_PAPER_EMPTY = 264;
+   int NORMAL_SUREONE_BUFFER_EMPTY = 288;
+   int NORMAL_SUREONE_OVERFLOW = 320;
+   int NORMAL_SUREONE_CD_STATUS = 384;
+}
