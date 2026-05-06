@@ -338,13 +338,16 @@ class IBM4610(BasePrinter):
             if not resp:
                 _log.debug("read_stat: %r timed out waiting for stat response", stat_type)
                 return b""
-            if len(resp) >= 15 and resp[-1] == expected_echo:
+            if len(resp) >= 21 and resp[20] == expected_echo:
                 _log.debug("read_stat: %r → %d bytes", stat_type, len(resp))
                 return resp
             _log.debug(
                 "read_stat: discarding non-stat IN packet "
-                "(%d bytes, last=0x%02x, want echo=0x%02x)",
-                len(resp), resp[-1], expected_echo,
+                "(%d bytes, byte[20]=0x%02x, want echo=0x%02x, hex=%s)",
+                len(resp),
+                resp[20] if len(resp) >= 21 else 0xFF,
+                expected_echo,
+                resp[:24].hex(),
             )
 
     def read_stat_value(self, stat_type: str, timeout: int = 5000) -> int:
