@@ -28,49 +28,74 @@ Ab5 = 831;  A5  = 880
 # ---------------------------------------------------------------------------
 s, e, q, dq, h = 1, 2, 3, 4, 6
 
+# REST: frequency=0 maps to the lowest note at minimum volume (vol=1).
+# True silence is not supported by the ESC BEL command — this is as
+# close as the hardware gets.
+REST = 0
+
 # ---------------------------------------------------------------------------
 # Super Mario Bros. Ground Theme (main melody)
 # Rests are omitted — notes play back-to-back in the printer's command buffer.
 # ---------------------------------------------------------------------------
 MELODY = [
     # -- Intro --
-    (E5, e), (E5, e), (E5, e), (C5, e), (E5, q), (G5, q), (G4, q),
+    (E5, e), (REST, s), (E5, e), (REST, s), (E5, e), (REST, e),
+    (C5, e), (E5, q), (REST, s), (G5, q), (REST, q), (G4, q),
 
     # -- A phrase --
-    (C5, q), (G4, e), (E4, q), (A4, q), (B4, q), (Bb4, e), (A4, q),
+    (REST, q),
+    (C5, q), (REST, e), (G4, e), (REST, q),
+    (E4, q), (REST, q),
+    (A4, q), (REST, q), (B4, q), (REST, s), (Bb4, e), (A4, q),
 
     # -- B phrase --
-    (G4, e), (E5, e), (G5, e), (A5, q), (F5, e), (G5, e),
-    (E5, q), (C5, e), (D5, e), (B4, h),
+    (G4, e), (E5, e), (G5, e), (A5, q), (REST, s), (F5, e), (G5, e),
+    (REST, s), (E5, q), (REST, s), (C5, e), (D5, e), (B4, h),
 
     # -- A phrase (repeat) --
-    (C5, q), (G4, e), (E4, q), (A4, q), (B4, q), (Bb4, e), (A4, q),
+    (REST, q),
+    (C5, q), (REST, e), (G4, e), (REST, q),
+    (E4, q), (REST, q),
+    (A4, q), (REST, q), (B4, q), (REST, s), (Bb4, e), (A4, q),
 
     # -- B phrase (repeat) --
-    (G4, e), (E5, e), (G5, e), (A5, q), (F5, e), (G5, e),
-    (E5, q), (C5, e), (D5, e), (B4, h),
+    (G4, e), (E5, e), (G5, e), (A5, q), (REST, s), (F5, e), (G5, e),
+    (REST, s), (E5, q), (REST, s), (C5, e), (D5, e), (B4, h),
 
     # -- C phrase (underground feel) --
-    (G5, e), (Fs5, e), (F5, e), (Eb5, q), (E5, e),
-    (Ab4, e), (A4, e), (C5, e), (A4, e), (C5, e), (D5, e),
+    (REST, s),
+    (G5, e), (REST, s), (Fs5, e), (F5, e), (REST, s),
+    (Eb5, q), (REST, s), (E5, e), (REST, s),
+    (Ab4, e), (A4, e), (C5, e), (REST, s), (A4, e), (C5, e), (D5, e),
 
     # -- D phrase --
-    (G5, e), (Fs5, e), (F5, e), (Eb5, q), (E5, e),
-    (C5, e), (C5, e), (C5, h),
+    (REST, s),
+    (G5, e), (REST, s), (Fs5, e), (F5, e), (REST, s),
+    (Eb5, q), (REST, s), (E5, e), (REST, s),
+    (C5, e), (REST, s), (C5, e), (C5, h),
 
     # -- C phrase (repeat) --
-    (G5, e), (Fs5, e), (F5, e), (Eb5, q), (E5, e),
-    (Ab4, e), (A4, e), (C5, e), (A4, e), (C5, e), (D5, e),
+    (REST, s),
+    (G5, e), (REST, s), (Fs5, e), (F5, e), (REST, s),
+    (Eb5, q), (REST, s), (E5, e), (REST, s),
+    (Ab4, e), (A4, e), (C5, e), (REST, s), (A4, e), (C5, e), (D5, e),
 
     # -- Ending run --
-    (Eb5, q), (D5, q), (C5, h),
+    (REST, s), (Eb5, q), (REST, s), (D5, q), (REST, s), (C5, h),
 ]
 
 
 def play(p: IBM4610, melody: list, volume: int = 80) -> None:
-    """Buffer all notes then flush once — printer plays them sequentially."""
+    """Buffer all notes then flush once — printer plays them sequentially.
+
+    Tuples with frequency=REST (0) are sent as minimum-volume lowest-note
+    beeps — the closest approximation to silence the ESC BEL command allows.
+    """
     for freq, dur in melody:
-        p.beep(duration_100ms=dur, frequency=freq, volume=volume)
+        if freq == REST:
+            p.beep(duration_100ms=dur, frequency=1, volume=1)
+        else:
+            p.beep(duration_100ms=dur, frequency=freq, volume=volume)
     p.flush()
 
 
