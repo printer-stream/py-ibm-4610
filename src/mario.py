@@ -85,20 +85,23 @@ MELODY = [
 
 
 def play(p: IBM4610, melody: list, volume: int = 80) -> None:
-    """Play melody note-by-note with true silence for REST entries.
+    """Play melody with absolute-deadline scheduling to prevent timing drift.
 
-    Each note is flushed immediately so the printer starts it right away.
-    REST entries sleep on the host side without sending any beep command,
-    producing true silence for the rest duration.
+    Each note/rest is assigned an absolute start time.  The host sleeps until
+    that deadline rather than sleeping a relative duration — any USB overhead
+    or sleep overshoot is automatically absorbed into the next sleep, so drift
+    never accumulates across the melody.
     """
     tick = 0.1   # seconds per duration unit (100 ms)
+    deadline = time.monotonic()
     for freq, dur in melody:
-        if freq == REST:
-            time.sleep(dur * tick)
-        else:
+        deadline += dur * tick
+        if freq != REST:
             p.beep(duration_100ms=dur, frequency=freq, volume=volume)
             p.flush()
-            time.sleep(dur * tick)
+        remaining = deadline - time.monotonic()
+        if remaining > 0:
+            time.sleep(remaining)
 
 
 def main() -> None:
