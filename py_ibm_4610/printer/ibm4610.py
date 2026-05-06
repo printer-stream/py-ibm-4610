@@ -187,6 +187,16 @@ class IBM4610(BasePrinter):
         if self._dev.is_kernel_driver_active(self._iface):
             _log.debug("Detaching kernel driver from interface %d", self._iface)
             self._dev.detach_kernel_driver(self._iface)
+        # Ensure the device is in a configured state before claiming the
+        # interface.  On Linux, if the device was just enumerated or came
+        # back from USB suspend, it may not be configured yet, which causes
+        # ctrl_transfer to time out even though claim_interface succeeds.
+        try:
+            self._dev.set_configuration()
+            _log.debug("USB configuration set")
+        except usb.core.USBError as exc:
+            # Device is already configured (common case) — ignore.
+            _log.debug("set_configuration skipped: %s", exc)
         usb.util.claim_interface(self._dev, self._iface)
         _log.debug("Interface %d claimed", self._iface)
 
@@ -237,14 +247,23 @@ class IBM4610(BasePrinter):
             raise RuntimeError("Printer not open — call open() or use a 'with' block.")
         _log.debug("send_raw: %d payload bytes", len(data))
         pkt = make_packet(data, self._report_size)
-        transferred = self._dev.ctrl_transfer(
-            bmRequestType=0x21,           # HID, host→device, interface
-            bRequest=0x09,                # SET_REPORT
-            wValue=0x0201,                # Output report, Report ID 1
-            wIndex=self._iface,
-            data_or_wLength=pkt,
-            timeout=5000,
-        )
+        try:
+            transferred = self._dev.ctrl_transfer(
+                bmRequestType=0x21,           # HID, host→device, interface
+                bRequest=0x09,                # SET_REPORT
+                wValue=0x0201,                # Output report, Report ID 1
+                wIndex=self._iface,
+                data_or_wLength=pkt,
+                timeout=5000,
+            )
+        except usb.core.USBTimeoutError as exc:
+            raise RuntimeError(
+                "USB control transfer timed out — the printer is not "
+                "responding.  Close and reopen the connection "
+                "(p.close(); p.open()) and try again.  If the problem "
+                "persists, check that no other process holds the USB "
+                "interface (e.g. a kernel HID driver)."
+            ) from exc
         _log.debug("send_raw: %d wire bytes transferred", transferred)
         return transferred
 
@@ -273,7 +292,13 @@ class IBM4610(BasePrinter):
                 count += 1
             except Exception:
                 break
-        _log.debug("drain_in: discarded %d stale IN packet(s)", count)
+        if count == 0:
+            _log.warning(
+                "drain_in: 0 packets — printer may not be sending status "
+                "frames (USB state issue or kernel driver active)"
+            )
+        else:
+            _log.debug("drain_in: discarded %d stale IN packet(s)", count)
         return count
 
     def read_response(self, size: int = 0, timeout: int = 2000) -> bytes:
