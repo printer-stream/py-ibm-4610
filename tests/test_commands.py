@@ -474,6 +474,71 @@ class TestParseStatHardwareCapture:
 
 
 # ---------------------------------------------------------------------------
+# read_stat stride-scan (multi-response packet handling)
+# ---------------------------------------------------------------------------
+
+# A stale ReceiptLineFeedCount (echo=0x84) response with count=7,
+# prepended before the real PaperCutCount (echo=0x81) response.
+_STALE_RESPONSE = (
+    b'\x01\x06\x00'
+    b'\x00\x00\x01\x0f\x00'
+    b'\x19\x20\x06'
+    b'\x07\x00\x00\x00'      # count = 7 (stale ReceiptLineFeedCount)
+    b'\x00\x00\x00\x00'
+    b'\x80'
+    b'\x84'                   # echo = ReceiptLineFeedCount
+)  # 21 bytes
+
+
+class TestReadStatStrideScan:
+    """read_stat must find the matching frame inside a multi-response packet."""
+
+    def _make_stub(self, packets):
+        """Return a _StubIBM4610 whose read_response() yields each packet in turn."""
+        stub = _StubIBM4610()
+        queue = list(reversed(packets))
+
+        def _fake_read_response(size=0, timeout=2000):
+            return queue.pop() if queue else b""
+
+        stub.read_response = _fake_read_response
+        return stub
+
+    def test_single_frame_returned_directly(self):
+        """A 21-byte packet with the right echo is returned as-is."""
+        stub = self._make_stub([_PAPER_CUT_RAW])
+        result = stub.read_stat("PaperCutCount", timeout=5000)
+        assert result == _PAPER_CUT_RAW
+
+    def test_stale_first_frame_correct_second(self):
+        """A 42-byte packet (stale + current) returns the matching second frame."""
+        combined = _STALE_RESPONSE + _PAPER_CUT_RAW   # 42 bytes
+        stub = self._make_stub([combined])
+        result = stub.read_stat("PaperCutCount", timeout=5000)
+        assert result == _PAPER_CUT_RAW
+
+    def test_stale_only_packet_then_correct_packet(self):
+        """Two separate reads: first packet has no match, second does."""
+        stub = self._make_stub([_STALE_RESPONSE, _PAPER_CUT_RAW])
+        result = stub.read_stat("PaperCutCount", timeout=5000)
+        assert result == _PAPER_CUT_RAW
+
+    def test_no_match_returns_empty(self):
+        """All packets have wrong echo → read_stat returns b'' on timeout."""
+        stub = self._make_stub([_STALE_RESPONSE])
+        result = stub.read_stat("PaperCutCount", timeout=1)
+        assert result == b""
+
+    def test_stride_scan_extracts_count(self):
+        """parse_stat on the extracted frame gives the correct count."""
+        from py_ibm_4610 import parse_stat
+        combined = _STALE_RESPONSE + _PAPER_CUT_RAW
+        stub = self._make_stub([combined])
+        result = stub.read_stat("PaperCutCount", timeout=5000)
+        assert parse_stat(result) == 40
+
+
+# ---------------------------------------------------------------------------
 # print_line / print_receipt
 # ---------------------------------------------------------------------------
 

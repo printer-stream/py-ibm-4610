@@ -176,22 +176,28 @@ additional status frames while it finishes the work.  The response to a
 stat query therefore arrives among a stream of shorter frames.
 
 The reliable way to identify the stat response is the **subcommand echo
-byte at fixed offset `resp[20]`**: the printer mirrors back the subcommand
-byte from the request (e.g. `0x81` for `PaperCutCount`).  Checking the
-fixed byte position (rather than `resp[-1]`) is necessary because some
-Linux USB stacks zero-pad interrupt IN packets to `wMaxPacketSize` (often
-64 bytes), which shifts the last byte away from the echo position.  Status
-frames will not have `0x81` at offset 20.  The driver loop is:
+byte at offset +20 within each 21-byte frame**.  The printer mirrors back
+the subcommand byte from the request (e.g. `0x81` for `PaperCutCount`).
+Checking at a fixed offset (rather than `resp[-1]`) is necessary because
+some Linux USB stacks zero-pad interrupt IN packets to `wMaxPacketSize`.
+
+Additionally, the printer may **concatenate multiple queued stat responses
+into a single USB IN packet** — for example when a stale query from a
+previous session was still pending in the printer's command queue alongside
+the current query.  The driver therefore scans in 21-byte strides and
+returns the first frame whose echo byte matches:
 
 ```python
+_STAT_FRAME = 21
 expected_echo = STATISTIC_SUBCMDS[stat_type][0]
 while True:
     resp = read_response(timeout=remaining_ms)
     if not resp:
         return b""  # timeout
-    if len(resp) >= 21 and resp[20] == expected_echo:
-        return resp   # this is the stat response
-    # discard status frames and other non-stat packets
+    for start in range(0, len(resp) - _STAT_FRAME + 1, _STAT_FRAME):
+        if resp[start + 20] == expected_echo:
+            return resp[start:start + _STAT_FRAME]
+    # discard packet — no matching frame found
 ```
 
 ### 3.4 — Timeout after mechanical operations

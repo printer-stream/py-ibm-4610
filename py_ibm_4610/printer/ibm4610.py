@@ -352,9 +352,12 @@ class IBM4610(BasePrinter):
         self.drain_in()
         self.statistic(stat_type)       # raises ValueError if stat_type unknown
         self.flush()
-        # Identify the stat response by its subcommand echo byte (last byte).
-        # This is more reliable than a length check alone: status frames and
-        # other unsolicited packets will not share the same echo byte.
+        # Each stat response is exactly 21 bytes.  The printer may
+        # concatenate multiple queued responses into one USB IN packet
+        # (e.g. a stale response from a previous session followed by the
+        # current one).  Scan in 21-byte strides; the echo byte at offset
+        # +20 within each frame uniquely identifies the stat type.
+        _STAT_FRAME = 21
         expected_echo = STATISTIC_SUBCMDS[stat_type][0]
         deadline = time.monotonic() + timeout / 1000.0
         while True:
@@ -363,16 +366,21 @@ class IBM4610(BasePrinter):
             if not resp:
                 _log.debug("read_stat: %r timed out waiting for stat response", stat_type)
                 return b""
-            if len(resp) >= 21 and resp[20] == expected_echo:
-                _log.debug("read_stat: %r → %d bytes", stat_type, len(resp))
-                return resp
+            # Scan all 21-byte-aligned frames in the received packet.
+            for start in range(0, len(resp) - _STAT_FRAME + 1, _STAT_FRAME):
+                if resp[start + 20] == expected_echo:
+                    frame = bytes(resp[start:start + _STAT_FRAME])
+                    _log.debug(
+                        "read_stat: %r → %d bytes (offset %d in %d-byte packet)",
+                        stat_type, _STAT_FRAME, start, len(resp),
+                    )
+                    return frame
             _log.debug(
-                "read_stat: discarding non-stat IN packet "
-                "(%d bytes, byte[20]=0x%02x, want echo=0x%02x, hex=%s)",
+                "read_stat: discarding %d-byte IN packet "
+                "(no frame with echo=0x%02x, hex=%s)",
                 len(resp),
-                resp[20] if len(resp) >= 21 else 0xFF,
                 expected_echo,
-                resp[:24].hex(),
+                resp[:48].hex(),
             )
 
     def read_stat_value(self, stat_type: str, timeout: int = 5000) -> int:
