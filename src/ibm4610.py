@@ -372,11 +372,26 @@ class IBM4610:
     def select_station(self, station: int) -> "IBM4610":
         """Select the active print station and configure print mode.
 
-        Mirrors ``Print4610CmdFactory.setCmdsStation()``:
+        The 4610 has three physically separate print mechanisms, each
+        requiring its own station-select sequence before sending data:
 
-        * ``STATION_RECEIPT`` → CR_COMM (ESC c 0 2) + CR_SETTINGS (ESC c 1 2)
-        * ``STATION_SLIP``    → DIP_COMM (ESC c 0 4) + DIP_SETTINGS (ESC c 1 4)
-        * ``STATION_LABEL``  → DIL_COMM (ESC c 0 8)
+        * ``STATION_RECEIPT`` (0x02) -- Thermal roll receipt printer.
+          The main paper roll on the front of the unit.  Used for
+          standard customer receipts.  Sends CR_COMM + CR_SETTINGS
+          (ESC c 0 2, ESC c 1 2).
+
+        * ``STATION_SLIP`` (0x04) -- Impact document / slip station (DIP).
+          Accepts inserted paper documents such as cheques, vouchers or
+          multi-part forms.  Requires the paper to be inserted into the
+          document slot first (see ``open_jaws`` / ``begin_insertion``).
+          Sends DIP_COMM + DIP_SETTINGS (ESC c 0 4, ESC c 1 4).
+
+        * ``STATION_LABEL`` (0x14) -- Landscape slip / label station (DIL).
+          A second document-insert path oriented in landscape mode, used
+          for pre-cut labels or wide documents.  Sends DIL_COMM
+          (ESC c 0 8).
+
+        Mirrors ``Print4610CmdFactory.setCmdsStation()``.
         """
         if station == STATION_RECEIPT:
             return self.write(bytes([
@@ -968,24 +983,36 @@ class IBM4610:
 
     def print_bitmap(
         self,
-        density:      int,
-        width_bytes:  int,
-        height_bytes: int,
-        data:         bytes,
-        align:        int = ALIGN_LEFT,
+        density:  int,
+        columns:  int,
+        data:     bytes,
+        align:    int = ALIGN_LEFT,
     ) -> "IBM4610":
-        """Print an inline raster bitmap — ESC * density w h data.
+        """Print an inline raster bitmap — ESC * mode nL nH d1...dk.
 
         Mirrors ``Grap4610CmdFactory.createPrintBitmapCmd()``.
 
-        *density*:      DENSITY_NORMAL (0), DENSITY_DOUBLE (1),
-                        DENSITY_DOUBLE_WIDTH_HEIGHT (2)
-        *width_bytes*:  image width / 8
-        *height_bytes*: image height / 8
+        *density* / *mode*:
+          - ``DENSITY_NORMAL`` (0)  — 8-dot single-density.  1 byte per column,
+            8 dots tall.  Data length must equal *columns*.
+          - ``DENSITY_DOUBLE`` (1)  — 8-dot double-density.  1 byte per column,
+            8 dots tall.  Data length must equal *columns*.
+          - 32 / 33               — 24-dot single / double density.  3 bytes per
+            column, 24 dots tall.  Data length must equal 3 * *columns*.
+
+        *columns*:  number of dot-columns to print (the 16-bit nL+nH value).
+        *data*:     raw bitmap bytes — see *density* above for expected length.
+
+        ESC/POS command layout::
+
+            ESC * mode nL nH d1 ... dk
+            nL = columns & 0xFF
+            nH = (columns >> 8) & 0xFF
         """
+        nL = columns & 0xFF
+        nH = (columns >> 8) & 0xFF
         self.alignment(align)
-        self.write(bytes([0x1B, 0x2A, density & 0xFF,
-                          width_bytes & 0xFF, height_bytes & 0xFF]))
+        self.write(bytes([0x1B, 0x2A, density & 0xFF, nL, nH]))
         return self.write(data)
 
     def set_bitmap(
