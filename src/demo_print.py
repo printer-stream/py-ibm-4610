@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""demo_print.py — IBM 4610 SureMark full-feature showcase.
+"""demo_print.py - IBM 4610 SureMark full-feature showcase.
 
 Exercises every public method in ibm4610.py in a single receipt print.
 Run with the printer connected via USB:
@@ -51,10 +51,10 @@ def section(p: IBM4610, title: str) -> None:
 # ---------------------------------------------------------------------------
 def build_demo(p: IBM4610) -> None:
 
-    # ── 1. Station selection ──────────────────────────────────────────────
+    # -- 1. Station selection ----------------------------------------------
     p.select_station(STATION_RECEIPT)
 
-    # ── 2. Header ─────────────────────────────────────────────────────────
+    # -- 2. Header ---------------------------------------------------------
     p.alignment(ALIGN_CENTER)
     p.bold(True)
     p.scale_font(width=1, height=1)
@@ -63,7 +63,7 @@ def build_demo(p: IBM4610) -> None:
     p.bold(False)
     p.alignment(ALIGN_LEFT)
 
-    # ── 3. Text formatting ────────────────────────────────────────────────
+    # -- 3. Text formatting ------------------------------------------------
     section(p, "3. TEXT FORMATTING")
 
     p.write(b"Normal text\n")
@@ -95,7 +95,7 @@ def build_demo(p: IBM4610) -> None:
     p.normal_mode()
     p.write(b"normal_mode() reset\n")
 
-    # ── 4. Font scaling (GS !) ────────────────────────────────────────────
+    # -- 4. Font scaling (GS !) --------------------------------------------
     section(p, "4. FONT SCALING")
 
     for w, h in [(0, 0), (1, 0), (0, 1), (1, 1), (2, 2)]:
@@ -103,7 +103,7 @@ def build_demo(p: IBM4610) -> None:
         p.write(f"scale {w}w {h}h\n".encode("cp437"))
     p.scale_font(0, 0)
 
-    # ── 5. Font faces ─────────────────────────────────────────────────────
+    # -- 5. Font faces -----------------------------------------------------
     section(p, "5. FONT FACES")
 
     for face, name in [(FONT_A, "Font A"), (FONT_B, "Font B"), (FONT_C, "Font C")]:
@@ -111,7 +111,7 @@ def build_demo(p: IBM4610) -> None:
         p.write(f"{name}: ABCDEFGHIJ 0123456789\n".encode("cp437"))
     p.select_font(FONT_A)
 
-    # ── 6. Alignment ──────────────────────────────────────────────────────
+    # -- 6. Alignment ------------------------------------------------------
     section(p, "6. ALIGNMENT")
 
     p.alignment(ALIGN_LEFT)
@@ -122,7 +122,7 @@ def build_demo(p: IBM4610) -> None:
     p.write(b"Right aligned\n")
     p.alignment(ALIGN_LEFT)
 
-    # ── 7. Font color (red ribbon printers) ───────────────────────────────
+    # -- 7. Font color (red ribbon printers) -------------------------------
     section(p, "7. FONT COLOR")
 
     p.font_color(0)
@@ -131,7 +131,7 @@ def build_demo(p: IBM4610) -> None:
     p.write(b"Color 1 (red if dual-color)\n")
     p.font_color(0)
 
-    # ── 8. Rotation ───────────────────────────────────────────────────────
+    # -- 8. Rotation -------------------------------------------------------
     section(p, "8. ROTATION")
 
     p.rotate_90(True)
@@ -142,7 +142,7 @@ def build_demo(p: IBM4610) -> None:
     p.write(b"rotate_180 ON\n")
     p.rotate_180(False)
 
-    # ── 9. Line spacing ───────────────────────────────────────────────────
+    # -- 9. Line spacing ---------------------------------------------------
     section(p, "9. LINE SPACING")
 
     for dots in [24, 36, 48]:
@@ -150,7 +150,7 @@ def build_demo(p: IBM4610) -> None:
         p.write(f"Line spacing {dots} dots\n".encode("cp437"))
     p.line_spacing(30)   # restore default
 
-    # ── 10. Feed commands ─────────────────────────────────────────────────
+    # -- 10. Feed commands -------------------------------------------------
     section(p, "10. FEED COMMANDS")
 
     p.write(b"Before feed(2)\n")
@@ -161,14 +161,14 @@ def build_demo(p: IBM4610) -> None:
     p.feed_units(40)
     p.write(b"After feed_units(40)\n")
 
-    # ── 11. Tab stops ─────────────────────────────────────────────────────
+    # -- 11. Tab stops -----------------------------------------------------
     section(p, "11. TAB STOPS")
 
     p.set_tab_stops([80, 160, 240])
     p.write(b"A\tB\tC\tD\n")
     p.set_tab_stops([])   # clear tabs
 
-    # ── 12. Left margin / relative position ───────────────────────────────
+    # -- 12. Left margin / relative position -------------------------------
     section(p, "12. MARGINS & POSITION")
 
     p.left_margin(40)
@@ -178,7 +178,7 @@ def build_demo(p: IBM4610) -> None:
     p.relative_position(20)
     p.write(b"Relative +20 dots\n")
 
-    # ── 13. Dot spacing ───────────────────────────────────────────────────
+    # -- 13. Dot spacing ---------------------------------------------------
     section(p, "13. DOT SPACING")
 
     for n in [0, 3, 6]:
@@ -186,7 +186,7 @@ def build_demo(p: IBM4610) -> None:
         p.write(f"SBCS spacing={n}: Hello\n".encode("cp437"))
     p.dot_spacing(0)
 
-    # ── 14. Character sets ────────────────────────────────────────────────
+    # -- 14. Character sets ------------------------------------------------
     section(p, "14. CHARACTER SETS")
 
     p.resident_char_set()
@@ -200,7 +200,7 @@ def build_demo(p: IBM4610) -> None:
 
     p.select_code_page(0)
 
-    # ── 15. Unidirectional / print quality ────────────────────────────────
+    # -- 15. Unidirectional / print quality --------------------------------
     section(p, "15. PRINT QUALITY")
 
     p.print_quality(True)
@@ -212,7 +212,7 @@ def build_demo(p: IBM4610) -> None:
     p.write(b"Unidirectional ON\n")
     p.unidirectional(False)
 
-    # ── 16. Barcodes ──────────────────────────────────────────────────────
+    # -- 16. Barcodes ------------------------------------------------------
     section(p, "16. BARCODES")
 
     p.write(b"--- UPC-A ---\n")
@@ -242,10 +242,10 @@ def build_demo(p: IBM4610) -> None:
 
     p.alignment(ALIGN_LEFT)
 
-    # ── 17. Inline bitmap (8×8 checkerboard) ─────────────────────────────
+    # -- 17. Inline bitmap (8x8 checkerboard) -----------------------------
     section(p, "17. INLINE BITMAP")
 
-    # 8 columns × 8 rows, normal density (8 dots/column)
+    # 8 columns x 8 rows, normal density (8 dots/column)
     # Each byte = 8 vertical dots in one column
     checker_col = bytes([0b10101010, 0b01010101] * 4)   # 8-byte vertical stripe
     checker = checker_col * 8                            # 8 columns
@@ -259,25 +259,25 @@ def build_demo(p: IBM4610) -> None:
     )
     p.write(b"\n")
 
-    # ── 18. Page mode ─────────────────────────────────────────────────────
+    # -- 18. Page mode -----------------------------------------------------
     section(p, "18. PAGE MODE")
 
     p.page_mode_enable()
     p.page_mode_define(x=0, y=0, dx=200, dy=100)
-    p.page_mode_position(0)           # top→bottom, left→right
+    p.page_mode_position(0)           # top->bottom, left->right
     p.write(b"Page mode text")
     p.page_mode_print(clear_after=True)
     p.page_mode_disable()
     p.write(b"\n")
 
-    # ── 19. Buffer control ────────────────────────────────────────────────
+    # -- 19. Buffer control ------------------------------------------------
     section(p, "19. BUFFER CONTROL")
 
     p.hold_buffer()
-    p.write(b"(buffer held — then released)\n")
+    p.write(b"(buffer held - then released)\n")
     p.release_buffer()
 
-    # ── 20. Status / device info requests ────────────────────────────────
+    # -- 20. Status / device info requests --------------------------------
     section(p, "20. STATUS & DEVICE INFO")
 
     p.write(b"Issuing status_request...\n")
@@ -289,7 +289,7 @@ def build_demo(p: IBM4610) -> None:
     p.write(b"Issuing ec_level_request (buffered)...\n")
     p.ec_level_request(buffered=True)
 
-    # ── 21. Line count ────────────────────────────────────────────────────
+    # -- 21. Line count ----------------------------------------------------
     section(p, "21. LINE COUNT")
 
     p.enable_line_count(True)
@@ -298,19 +298,19 @@ def build_demo(p: IBM4610) -> None:
     p.write(b"Line count reset\n")
     p.enable_line_count(False)
 
-    # ── 22. Status-sent configuration ────────────────────────────────────
+    # -- 22. Status-sent configuration ------------------------------------
     section(p, "22. STATUS-SENT CONFIG")
 
     p.status_sent(buff_empty=True, cover_open=True)
     p.write(b"status_sent configured\n")
 
-    # ── 23. Error recovery ────────────────────────────────────────────────
+    # -- 23. Error recovery ------------------------------------------------
     section(p, "23. ERROR RECOVERY")
 
     p.error_recovery(ER_RELEASE_AFTER_CORRECTION | ER_AUTO_RETRY_AFTER_HOME_ERR)
     p.write(b"error_recovery flags set\n")
 
-    # ── 24. Feed button ───────────────────────────────────────────────────
+    # -- 24. Feed button ---------------------------------------------------
     section(p, "24. FEED BUTTON")
 
     p.enable_feed_button(True)
@@ -318,13 +318,13 @@ def build_demo(p: IBM4610) -> None:
     p.enable_feed_button(False)
     p.write(b"Feed button disabled\n")
 
-    # ── 25. Cash drawer pulse ─────────────────────────────────────────────
+    # -- 25. Cash drawer pulse ---------------------------------------------
     section(p, "25. CASH DRAWER")
 
     p.write(b"Pulsing drawer 1...\n")
     p.pulse_drawer(pin=0, on_time=50, off_time=50)
 
-    # ── 26. Beeper ────────────────────────────────────────────────────────
+    # -- 26. Beeper --------------------------------------------------------
     section(p, "26. BEEPER")
 
     p.write(b"Beep 500 Hz, 300 ms, vol 80...\n")
@@ -333,13 +333,13 @@ def build_demo(p: IBM4610) -> None:
     p.write(b"Beep 1000 Hz, 100 ms, vol 30...\n")
     p.beep(duration_100ms=1, frequency=1000, volume=30)
 
-    # ── 27. MCT read / write ──────────────────────────────────────────────
+    # -- 27. MCT read / write ----------------------------------------------
     section(p, "27. MCT (MATRIX CARD TRANSPORT)")
 
     p.write(b"Requesting MCT read track 1...\n")
     p.mct_read(0x01)
 
-    # ── 28. Statistics ────────────────────────────────────────────────────
+    # -- 28. Statistics ----------------------------------------------------
     section(p, "28. STATISTICS QUERIES")
 
     for key in ["ManufactureDate", "PaperCutCount", "ReceiptLineFeedCount",
@@ -348,7 +348,7 @@ def build_demo(p: IBM4610) -> None:
         p.statistic(key)
     p.feed(1)
 
-    # ── 29. Reprint char ─────────────────────────────────────────────────
+    # -- 29. Reprint char -------------------------------------------------
     section(p, "29. MISC COMMANDS")
 
     p.write(b"reprint_char: ")
@@ -366,7 +366,7 @@ def build_demo(p: IBM4610) -> None:
     p.write(b"reinit()\n")
     p.reinit()
 
-    # ── 30. Footer + cut ─────────────────────────────────────────────────
+    # -- 30. Footer + cut -------------------------------------------------
     section(p, "30. END OF DEMO")
 
     p.alignment(ALIGN_CENTER)
@@ -386,14 +386,14 @@ def build_demo(p: IBM4610) -> None:
 # Main
 # ---------------------------------------------------------------------------
 def main() -> None:
-    print("IBM 4610 SureMark — full-feature demo")
-    print(f"Connecting to printer (VID=0x04B3, PID=0x4535) …")
+    print("IBM 4610 SureMark - full-feature demo")
+    print(f"Connecting to printer (VID=0x04B3, PID=0x4535) ...")
 
     try:
         with IBM4610() as p:
-            print("Printer found. Building demo receipt …")
+            print("Printer found. Building demo receipt ...")
             build_demo(p)
-            print("Done — check your receipt.")
+            print("Done - check your receipt.")
     except RuntimeError as exc:
         print(f"\nERROR: {exc}", file=sys.stderr)
         print("Make sure the printer is connected and libusb is installed.",
