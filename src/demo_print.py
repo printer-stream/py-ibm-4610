@@ -354,21 +354,26 @@ def build_demo(p: IBM4610) -> None:
 
     # -- 28. Statistics ----------------------------------------------------
     section(p, "26. STATISTICS QUERIES")
-    # Statistics are USB request/response — the printer sends data back
-    # on the HID interrupt IN endpoint. read_stat() flushes the query
-    # and reads the raw response bytes (up to 2 s timeout each).
+    # Statistics are USB request/response -- the printer replies on the HID
+    # interrupt IN endpoint.  drain_in() discards unsolicited status packets
+    # so read_stat() picks up the actual reply.  Response is trimmed of
+    # trailing zeros and capped at 32 bytes for readable receipt output.
     for key in ["ManufactureDate", "PaperCutCount", "ReceiptLineFeedCount",
                 "ReceiptCharacterPrintedCount", "IBM_CheckScannedCount"]:
-        p.write(f"  stat: {key}\n".encode("cp437"))
+        p.write(f"  {key}:\n".encode("cp437"))
         p.flush()
         try:
             resp = p.read_stat(key, timeout=2000)
             if resp:
-                p.write(f"  resp: {resp.hex()}\n".encode("cp437"))
+                trimmed = resp.rstrip(b'\x00')
+                display = trimmed[:32]   # cap at 32 bytes = 64 hex chars
+                suffix = b"..." if len(trimmed) > 32 else b""
+                p.write(b"  " + display.hex().encode("ascii") + suffix + b"\n")
             else:
-                p.write(b"  resp: (timeout)\n")
+                p.write(b"  (no response)\n")
         except Exception as exc:
-            p.write(f"  err: {exc}\n".encode("cp437")[:48])
+            short = str(exc)[:36]
+            p.write(f"  err: {short}\n".encode("cp437"))
         p.flush()
     p.feed(1)
 

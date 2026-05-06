@@ -337,6 +337,27 @@ class IBM4610:
             timeout=5000,
         )
 
+    def drain_in(self, timeout: int = 100) -> int:
+        """Discard all pending HID IN packets, return number discarded.
+
+        The printer sends unsolicited status frames on the interrupt IN
+        endpoint continuously (like a Java StatusDaemon).  Call this before
+        a query command to flush stale frames so the next :meth:`read_response`
+        gets the actual reply, not a queued status packet.
+        """
+        if self._dev is None or self._ep_in is None:
+            return 0
+        count = 0
+        size = self._ep_in.wMaxPacketSize
+        while True:
+            try:
+                self._dev.read(self._ep_in.bEndpointAddress,
+                               size, timeout=timeout)
+                count += 1
+            except (usb.core.USBTimeoutError, usb.core.USBError):
+                break
+        return count
+
     def read_response(self, size: int = 0, timeout: int = 2000) -> bytes:
         """Read one HID interrupt IN report from the printer.
 
@@ -345,8 +366,8 @@ class IBM4610:
         ``bytes`` object if the read times out.
 
         *size*:    maximum number of bytes to read.  Defaults to
-                   ``self._report_size`` (1022) — must be at least the
-                   endpoint's wMaxPacketSize or libusb raises EOVERFLOW.
+                   ``ep.wMaxPacketSize`` — must equal the endpoint's packet
+                   size or libusb may raise EOVERFLOW.
         *timeout*: USB read timeout in milliseconds (default 2000).
         """
         if self._dev is None:
@@ -354,7 +375,7 @@ class IBM4610:
         if self._ep_in is None:
             raise RuntimeError("No interrupt IN endpoint found on interface.")
         if size <= 0:
-            size = self._report_size
+            size = self._ep_in.wMaxPacketSize
         try:
             return bytes(self._dev.read(
                 self._ep_in.bEndpointAddress, size, timeout=timeout,
@@ -365,14 +386,12 @@ class IBM4610:
     def read_stat(self, stat_type: str, timeout: int = 2000) -> bytes:
         """Send a statistics query, flush it immediately, and read the response.
 
-        Combines :meth:`statistic` + :meth:`flush` + :meth:`read_response`
-        into a single blocking call.  Returns the raw HID report bytes
-        from the printer (empty ``bytes`` on timeout).
+        Drains any pending unsolicited IN packets first, then sends the query
+        and waits for the printer's reply.
 
-        .. note::
-            Any data previously accumulated with :meth:`write` is flushed
-            together with the statistic command.
+        Returns the raw HID report bytes (empty ``bytes`` on timeout).
         """
+        self.drain_in()         # discard queued status frames
         self.statistic(stat_type)
         self.flush()
         return self.read_response(timeout=timeout)
