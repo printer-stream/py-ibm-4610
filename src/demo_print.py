@@ -346,57 +346,57 @@ def build_demo(p: IBM4610) -> None:
     p.write(b"Beep 1000 Hz, 100 ms, vol 30...\n")
     p.beep(duration_100ms=1, frequency=1000, volume=30)
 
-    # -- 27. MCT read / write ----------------------------------------------
-    section(p, "25. MCT (MATRIX CARD TRANSPORT)")
+    # # -- 27. MCT read / write ----------------------------------------------
+    # section(p, "25. MCT (MATRIX CARD TRANSPORT)")
 
-    p.write(b"Requesting MCT read track 1...\n")
-    p.mct_read(0x01)
+    # p.write(b"Requesting MCT read track 1...\n")
+    # p.mct_read(0x01)
 
-    # -- 28. Statistics ----------------------------------------------------
-    section(p, "26. STATISTICS QUERIES")
-    # Statistics are USB request/response -- the printer replies on the HID
-    # interrupt IN endpoint.  drain_in() discards unsolicited status packets
-    # so read_stat() picks up the actual reply.  Response is trimmed of
-    # trailing zeros and capped at 32 bytes for readable receipt output.
-    for key in ["ManufactureDate", "PaperCutCount", "ReceiptLineFeedCount",
-                "ReceiptCharacterPrintedCount", "IBM_CheckScannedCount"]:
-        p.write(f"  {key}:\n".encode("cp437"))
-        p.flush()
-        try:
-            resp = p.read_stat(key, timeout=2000)
-            if resp:
-                trimmed = resp.rstrip(b'\x00')
-                display = trimmed[:32]   # cap at 32 bytes = 64 hex chars
-                suffix = b"..." if len(trimmed) > 32 else b""
-                p.write(b"  " + display.hex().encode("ascii") + suffix + b"\n")
-            else:
-                p.write(b"  (no response)\n")
-        except Exception as exc:
-            short = str(exc)[:36]
-            p.write(f"  err: {short}\n".encode("cp437"))
-        p.flush()
-    p.feed(1)
+    # # -- 28. Statistics ----------------------------------------------------
+    # section(p, "26. STATISTICS QUERIES")
+    # # Statistics are USB request/response -- the printer replies on the HID
+    # # interrupt IN endpoint.  drain_in() discards unsolicited status packets
+    # # so read_stat() picks up the actual reply.  Response is trimmed of
+    # # trailing zeros and capped at 32 bytes for readable receipt output.
+    # for key in ["ManufactureDate", "PaperCutCount", "ReceiptLineFeedCount",
+    #             "ReceiptCharacterPrintedCount", "IBM_CheckScannedCount"]:
+    #     p.write(f"  {key}:\n".encode("cp437"))
+    #     p.flush()
+    #     try:
+    #         resp = p.read_stat(key, timeout=2000)
+    #         if resp:
+    #             trimmed = resp.rstrip(b'\x00')
+    #             display = trimmed[:32]   # cap at 32 bytes = 64 hex chars
+    #             suffix = b"..." if len(trimmed) > 32 else b""
+    #             p.write(b"  " + display.hex().encode("ascii") + suffix + b"\n")
+    #         else:
+    #             p.write(b"  (no response)\n")
+    #     except Exception as exc:
+    #         short = str(exc)[:36]
+    #         p.write(f"  err: {short}\n".encode("cp437"))
+    #     p.flush()
+    # p.feed(1)
 
-    # -- 29. Reprint char -------------------------------------------------
-    section(p, "27. MISC COMMANDS")
+    # # -- 29. Reprint char -------------------------------------------------
+    # section(p, "27. MISC COMMANDS")
 
-    p.write(b"reprint_char: ")
-    p.write(b"X")
-    p.reprint_char()
-    p.write(b"\n")
+    # p.write(b"reprint_char: ")
+    # p.write(b"X")
+    # p.reprint_char()
+    # p.write(b"\n")
 
-    p.write(b"fix_font()\n")
-    p.fix_font()
+    # p.write(b"fix_font()\n")
+    # p.fix_font()
 
-    p.write(b"chase mode: ")
-    p.set_chase_mode()
-    p.write(b"OK\n")
+    # p.write(b"chase mode: ")
+    # p.set_chase_mode()
+    # p.write(b"OK\n")
 
-    p.write(b"reinit()\n")
-    p.reinit()
+    # p.write(b"reinit()\n")
+    # p.reinit()
 
     # -- 30. Footer + cut -------------------------------------------------
-    section(p, "28. END OF DEMO")
+    section(p, "END OF DEMO")
 
     p.alignment(ALIGN_CENTER)
     p.bold(True)
