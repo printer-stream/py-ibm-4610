@@ -248,13 +248,19 @@ def build_demo(p: IBM4610) -> None:
     # -- 17. Inline bitmap (checkerboard) ----------------------------------
     section(p, "15. INLINE BITMAP")
 
-    # ESC * mode=0: 8-dot single density, 1 byte per column, 8 dots tall.
-    # columns=64  -> nL=64, nH=0  -> printer expects exactly 64 data bytes.
-    # Alternating 0xAA (10101010) / 0x55 (01010101) columns = checkerboard.
-    bmp_columns = 64
-    bmp_data = bytes([0xAA if i % 2 == 0 else 0x55 for i in range(bmp_columns)])
+    # IBM 4610 PRINT_LOGOS (ESC * density width_bytes height_bytes data).
+    # width_bytes = pixel_columns/8, height_bytes = pixel_rows/8.
+    # blockSize = width_bytes * height_bytes * 8 bytes of data, row-major.
+    # 64 pixels wide x 8 pixels tall: width_bytes=8, height_bytes=1, data=64 B.
+    # Alternating 0xAA/0x55 rows produce a checkerboard pattern.
+    bmp_width  = 8   # 64 pixel columns / 8
+    bmp_height = 1   # 8 pixel rows / 8
+    bmp_data   = bytes([0xAA if i % 2 == 0 else 0x55
+                        for i in range(bmp_width * bmp_height * 8)])
     p.write(b"Checkerboard (64 cols x 8 dots):\n")
-    p.print_bitmap(density=DENSITY_NORMAL, columns=bmp_columns, data=bmp_data)
+    p.print_bitmap(density=DENSITY_NORMAL,
+                   width_bytes=bmp_width, height_bytes=bmp_height,
+                   data=bmp_data)
     p.lf()
 
     # -- 18. Page mode -----------------------------------------------------
@@ -339,11 +345,22 @@ def build_demo(p: IBM4610) -> None:
 
     # -- 28. Statistics ----------------------------------------------------
     section(p, "26. STATISTICS QUERIES")
-
+    # Statistics are USB request/response — the printer sends data back
+    # on the HID interrupt IN endpoint. read_stat() flushes the query
+    # and reads the raw response bytes (up to 2 s timeout each).
     for key in ["ManufactureDate", "PaperCutCount", "ReceiptLineFeedCount",
                 "ReceiptCharacterPrintedCount", "IBM_CheckScannedCount"]:
         p.write(f"  stat: {key}\n".encode("cp437"))
-        p.statistic(key)
+        p.flush()
+        try:
+            resp = p.read_stat(key, timeout=2000)
+            if resp:
+                p.write(f"  resp: {resp.hex()}\n".encode("cp437"))
+            else:
+                p.write(b"  resp: (timeout)\n")
+        except Exception as exc:
+            p.write(f"  err: {exc}\n".encode("cp437")[:48])
+        p.flush()
     p.feed(1)
 
     # -- 29. Reprint char -------------------------------------------------
@@ -371,7 +388,6 @@ def build_demo(p: IBM4610) -> None:
     p.bold(True)
     p.write(b"All features exercised.\n")
     p.bold(False)
-    p.write(b"ibm4610.py  (c) 2026\n")
     p.alignment(ALIGN_LEFT)
     p.normal_mode()
 

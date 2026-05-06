@@ -271,6 +271,7 @@ class IBM4610:
         self._report_size = report_size
         self._dev         = None
         self._buf         = bytearray()
+        self._ep_in       = None  # interrupt IN endpoint (found in open())
 
     # ------------------------------------------------------------------
     # Context-manager / open / close
@@ -287,6 +288,16 @@ class IBM4610:
         if self._dev.is_kernel_driver_active(self._iface):
             self._dev.detach_kernel_driver(self._iface)
         usb.util.claim_interface(self._dev, self._iface)
+        # Locate the interrupt IN endpoint on our interface (for stat responses).
+        self._ep_in = None
+        for cfg in self._dev:
+            for intf in cfg:
+                if intf.bInterfaceNumber == self._iface:
+                    for ep in intf:
+                        if (usb.util.endpoint_direction(ep.bEndpointAddress)
+                                == usb.util.ENDPOINT_IN):
+                            self._ep_in = ep
+                            break
         return self
 
     def close(self) -> None:
@@ -325,6 +336,42 @@ class IBM4610:
             data_or_wLength=pkt,
             timeout=5000,
         )
+
+    def read_response(self, size: int = 64, timeout: int = 2000) -> bytes:
+        """Read one HID interrupt IN report from the printer.
+
+        Used to collect the printer's response to query commands such as
+        :meth:`statistic`.  Returns the raw report bytes, or an empty
+        ``bytes`` object if the read times out.
+
+        *size*:    maximum number of bytes to read (default 64).
+        *timeout*: USB read timeout in milliseconds (default 2000).
+        """
+        if self._dev is None:
+            raise RuntimeError("Printer not open.")
+        if self._ep_in is None:
+            raise RuntimeError("No interrupt IN endpoint found on interface.")
+        try:
+            return bytes(self._dev.read(
+                self._ep_in.bEndpointAddress, size, timeout=timeout,
+            ))
+        except usb.core.USBTimeoutError:
+            return b""
+
+    def read_stat(self, stat_type: str, timeout: int = 2000) -> bytes:
+        """Send a statistics query, flush it immediately, and read the response.
+
+        Combines :meth:`statistic` + :meth:`flush` + :meth:`read_response`
+        into a single blocking call.  Returns the raw HID report bytes
+        from the printer (empty ``bytes`` on timeout).
+
+        .. note::
+            Any data previously accumulated with :meth:`write` is flushed
+            together with the statistic command.
+        """
+        self.statistic(stat_type)
+        self.flush()
+        return self.read_response(timeout=timeout)
 
     # ------------------------------------------------------------------
     # Buffered build / flush helpers
@@ -983,36 +1030,35 @@ class IBM4610:
 
     def print_bitmap(
         self,
-        density:  int,
-        columns:  int,
-        data:     bytes,
-        align:    int = ALIGN_LEFT,
+        density:     int,
+        width_bytes: int,
+        height_bytes: int,
+        data:        bytes,
+        align:       int = ALIGN_LEFT,
     ) -> "IBM4610":
-        """Print an inline raster bitmap — ESC * mode nL nH d1...dk.
+        """Print an inline raster bitmap — ESC * density width height data.
 
-        Mirrors ``Grap4610CmdFactory.createPrintBitmapCmd()``.
+        Mirrors ``Grap4610CmdFactory.createPrintBitmapCmd()`` using the
+        IBM 4610 ``PRINT_LOGOS`` command (``{0x1B, 0x2A}``).
 
-        *density* / *mode*:
-          - ``DENSITY_NORMAL`` (0)  — 8-dot single-density.  1 byte per column,
-            8 dots tall.  Data length must equal *columns*.
-          - ``DENSITY_DOUBLE`` (1)  — 8-dot double-density.  1 byte per column,
-            8 dots tall.  Data length must equal *columns*.
-          - 32 / 33               — 24-dot single / double density.  3 bytes per
-            column, 24 dots tall.  Data length must equal 3 * *columns*.
+        *density*:
+          - ``DENSITY_NORMAL`` (0) — 8-dot single-density.
+          - ``DENSITY_DOUBLE`` (1) — 8-dot double-density.
 
-        *columns*:  number of dot-columns to print (the 16-bit nL+nH value).
-        *data*:     raw bitmap bytes — see *density* above for expected length.
+        *width_bytes*:  horizontal extent in 8-bit units (= pixel_columns / 8).
+        *height_bytes*: vertical extent in 8-bit units (= pixel_rows / 8).
+        *data*:         raw bitmap bytes, row-major.
+                        Length must equal ``width_bytes * height_bytes * 8``.
 
-        ESC/POS command layout::
+        IBM 4610 command layout (different from standard ESC/POS ESC *)::
 
-            ESC * mode nL nH d1 ... dk
-            nL = columns & 0xFF
-            nH = (columns >> 8) & 0xFF
+            SET_ALIGNMENT  alignment
+            ESC *  density  width_bytes  height_bytes  d1 ... dk
+            blockSize = width_bytes * height_bytes * 8
         """
-        nL = columns & 0xFF
-        nH = (columns >> 8) & 0xFF
         self.alignment(align)
-        self.write(bytes([0x1B, 0x2A, density & 0xFF, nL, nH]))
+        self.write(bytes([0x1B, 0x2A, density & 0xFF,
+                          width_bytes & 0xFF, height_bytes & 0xFF]))
         return self.write(data)
 
     def set_bitmap(
