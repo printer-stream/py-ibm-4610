@@ -11,8 +11,20 @@ silent mis-use of hardware that does not exist on this model.
 
 from __future__ import annotations
 
+import logging
+import warnings
+
 from .ibm4610 import IBM4610
-from .._constants import STATION_RECEIPT, VENDOR, PRODUCT_1NR
+from .._constants import (
+    STATION_RECEIPT, VENDOR, PRODUCT_1NR,
+    QR_MODE_BYTE, QR_EC_M,
+    QR_MODE_ALPHANUM, QR_MODE_NUMERIC, QR_MODE_KANJI, QR_MODE_MIXING,
+    ALIGN_CENTER,
+)
+
+logger = logging.getLogger(__name__)
+
+_QR_MODES_UNSUPPORTED_ON_1NR = {QR_MODE_ALPHANUM, QR_MODE_NUMERIC, QR_MODE_KANJI, QR_MODE_MIXING}
 
 
 class IBM4610_1NR(IBM4610):
@@ -117,3 +129,35 @@ class IBM4610_1NR(IBM4610):
 
     def scanner_calibrate(self) -> "IBM4610_1NR":
         raise NotImplementedError("IBM 4610 1NR has no check scanner.")
+
+    # ------------------------------------------------------------------
+    # QR code — mode restriction
+    # ------------------------------------------------------------------
+
+    def qr_code(
+        self,
+        data:     str,
+        mode:     int = QR_MODE_BYTE,
+        ec:       int = QR_EC_M,
+        eci:      int = 0,
+        align:    int = ALIGN_CENTER,
+        encoding: str = "utf-8",
+    ) -> "IBM4610_1NR":
+        """Print a QR code.
+
+        .. warning::
+            The IBM 4610 1NR hardware only supports ``QR_MODE_BYTE`` and
+            ``QR_MODE_ECI``.  Passing ``QR_MODE_ALPHANUM``, ``QR_MODE_NUMERIC``,
+            ``QR_MODE_KANJI``, or ``QR_MODE_MIXING`` will produce garbled output
+            or no QR symbol at all.  A :class:`UserWarning` is emitted when one
+            of these unsupported modes is used.
+        """
+        if mode in _QR_MODES_UNSUPPORTED_ON_1NR:
+            warnings.warn(
+                f"QR mode {mode:#04x} is not supported by the IBM 4610 1NR hardware. "
+                "Only QR_MODE_BYTE (0x00) and QR_MODE_ECI (0x04) produce a valid "
+                "QR symbol on this model.  Use QR_MODE_BYTE instead.",
+                UserWarning,
+                stacklevel=2,
+            )
+        return super().qr_code(data, mode=mode, ec=ec, eci=eci, align=align, encoding=encoding)

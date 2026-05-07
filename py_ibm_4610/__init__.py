@@ -176,6 +176,10 @@ __all__ = [
     "BC_ITF", "BC_CODABAR", "BC_CODE128", "BC_CODE93",
     "BC_CODE128A", "BC_PDF417",
     "HRI_NONE", "HRI_ABOVE", "HRI_BELOW", "HRI_BOTH",
+    # qr code
+    "QR_MODE_BYTE", "QR_MODE_ALPHANUM", "QR_MODE_NUMERIC",
+    "QR_MODE_KANJI", "QR_MODE_ECI", "QR_MODE_MIXING",
+    "QR_EC_L", "QR_EC_M", "QR_EC_Q", "QR_EC_H",
     # graphics
     "DENSITY_NORMAL", "DENSITY_DOUBLE", "DENSITY_DOUBLE_WIDTH_HEIGHT",
     # flash

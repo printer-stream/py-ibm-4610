@@ -18,7 +18,7 @@ import logging
 
 from py_ibm_4610 import IBM4610_1NR
 from py_ibm_4610 import ALIGN_LEFT, ALIGN_CENTER
-from py_ibm_4610._constants import BC_CODE128, QR_EC_M, QR_MODE_ALPHANUM
+from py_ibm_4610._constants import BC_CODE128, QR_EC_M
 
 logging.basicConfig(level=logging.WARNING)
 
