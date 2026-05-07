@@ -16,6 +16,7 @@ import logging
 from datetime import datetime
 
 from py_ibm_4610 import IBM4610_1NR
+from py_ibm_4610 import version
 from py_ibm_4610 import ALIGN_LEFT, ALIGN_CENTER, QR_EC_M
 
 logging.basicConfig(level=logging.WARNING)
@@ -48,7 +49,7 @@ with IBM4610_1NR() as p:
     p.alignment(ALIGN_CENTER)
     p.bold(True).double_wide(True).text("QR CODE\n").double_wide(False).bold(False)
     p.text("IBM 4610 SureMark demo\n")
-    p.text(datetime.now().strftime("%Y-%m-%d  %H:%M:%S") + "\n")
+    p.text(f"{datetime.now().strftime('%Y-%m-%d  %H:%M:%S')} v{version}\n")
 
     # WiFi network config (standard scanned by Android / iOS)
     label(p, "WiFi config  (SSID + password)")

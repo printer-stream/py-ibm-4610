@@ -17,6 +17,7 @@ Run with the printer connected over USB:
 import logging
 
 from py_ibm_4610 import IBM4610_1NR
+from py_ibm_4610 import version
 from py_ibm_4610 import ALIGN_LEFT, ALIGN_CENTER, BC_CODE128, QR_EC_M
 
 logging.basicConfig(level=logging.WARNING)
@@ -144,7 +145,7 @@ with IBM4610_1NR() as p:
     # ------------------------------------------------------------------
     p.alignment(ALIGN_CENTER)
     p.text("The Jolly Bailiff\n", ENC)
-    p.text("Tack för besöket\n", ENC)
+    p.text(f"Tack för besöket v{version}\n", ENC)
     p.text("Välkommen åter!\n", ENC)
     p.bold(True).text("Spara kvitto\n", ENC).bold(False)
     p.alignment(ALIGN_LEFT)

@@ -18,6 +18,7 @@ Reference page demo::
 """
 
 from .version import __version__
+from .version import __version__ as version
 
 # Printer classes
 from .printer.ibm4610     import IBM4610
@@ -208,4 +209,6 @@ __all__ = [
     "make_packet", "MAX_PAYLOAD",
     # beeper
     "play_melody", "MARIO_MELODY",
+    # version
+    "version",
 ]
