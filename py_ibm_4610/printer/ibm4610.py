@@ -15,6 +15,8 @@ from .._constants import (
     ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT,
     FONT_A, FONT_B, FONT_C,
     BC_PDF417, BC_CODE128A,
+    HRI_NONE, HRI_ABOVE, HRI_BELOW, HRI_BOTH,
+    QR_MODE_BYTE, QR_EC_M,
     FLASH_DL_GRAPHICS, FLASH_PRE_MESSAGES,
     FLASH_USR_DEF_IMPACT_CHARSETS, FLASH_USR_DEF_THERMAL_CHARSETS,
     FLASH_USR_FLA_STORAGE, FLASH_ALL_DBCS, FLASH_CHECK_IMAGES,
@@ -114,7 +116,7 @@ class IBM4610:
         """
         data = bytes(self._buf)
         self._buf.clear()
-        logger.debug("build: returning %d buffered bytes", len(data))
+        logger.debug("drain: returning %d buffered bytes", len(data))
         return data
 
     # ------------------------------------------------------------------
@@ -911,8 +913,8 @@ class IBM4610:
         data:     str,
         height:   int = 50,
         width:    int = 2,
-        align:    int = ALIGN_LEFT,
-        hri:      int = 2,   # HRI_BELOW
+        align:    int = ALIGN_CENTER,
+        hri:      int = HRI_BELOW,
         encoding: str = "ascii",
     ) -> "IBM4610":
         """Print a barcode.
@@ -929,6 +931,8 @@ class IBM4610:
             encoding: codec for *data* (default ``ascii``).
 
         ``BC_PDF417`` is handled via ``GS P`` instead of the standard ``GS k``.
+        
+        TODO: Describe limitations on width/height for different symbologies, and how to calculate the PDF417 parameters.
         """
         self.alignment(align)
         data_bytes = data.encode(encoding)
@@ -949,6 +953,52 @@ class IBM4610:
         if symbol != BC_CODE128A:
             self.write(b'\x00')
 
+        self.alignment(ALIGN_LEFT)
+        return self
+
+    def qr_code(
+        self,
+        data:     str,
+        mode:     int = QR_MODE_BYTE,
+        ec:       int = QR_EC_M,
+        eci:      int = 0,
+        align:    int = ALIGN_CENTER,
+        encoding: str = "utf-8",
+    ) -> "IBM4610":
+        """Print a QR code — ``GS 4F n1 n2 n3 data 00``.
+
+        Supported on 4610 models 1NR, 2NR, 2CR with firmware 0F.xx or above.
+        **Receipt station only.**
+
+        Args:
+            data:     payload string (encoded to bytes with *encoding*).
+            mode:     encoding mode — ``QR_MODE_BYTE`` / ``QR_MODE_ALPHANUM`` /
+                      ``QR_MODE_NUMERIC`` / ``QR_MODE_KANJI`` /
+                      ``QR_MODE_ECI`` / ``QR_MODE_MIXING``.
+                      Default ``QR_MODE_BYTE``.
+            ec:       error correction level — ``QR_EC_L`` (7%) / ``QR_EC_M`` (15%) /
+                      ``QR_EC_Q`` (25%) / ``QR_EC_H`` (30%).
+                      Default ``QR_EC_M``.
+            eci:      ECI value; only meaningful when *mode* is ``QR_MODE_ECI``
+                      (e.g. 26 = UTF-8).  Ignored otherwise.
+            align:    horizontal alignment (default ``ALIGN_CENTER``).
+            encoding: Python codec used to encode *data* (default ``utf-8``).
+
+        Raises:
+            ValueError: if the encoded payload exceeds 1000 bytes.
+
+        Data length limits per error correction level (byte mode):
+        L=919, M=701, Q=499, H=393.
+        """
+        data_bytes = data.encode(encoding)
+        if len(data_bytes) > 1000:
+            raise ValueError(
+                f"QR code data too long: {len(data_bytes)} bytes "
+                "(maximum is 1000 bytes)."
+            )
+        self.alignment(align)
+        self.write(bytes([0x1D, 0x4F, mode & 0xFF, ec & 0xFF, eci & 0xFF]))
+        self.write(data_bytes + b'\x00')
         self.alignment(ALIGN_LEFT)
         return self
 

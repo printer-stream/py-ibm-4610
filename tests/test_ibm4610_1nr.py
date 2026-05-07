@@ -91,19 +91,19 @@ class TestReceiptCommandsWork:
 
     def test_bold_produces_bytes(self, p):
         p.bold(True)
-        assert p.build() == bytes([0x1B, 0x47, 0x01])
+        assert p.drain() == bytes([0x1B, 0x47, 0x01])
 
     def test_text_produces_bytes(self, p):
         p.text("1NR")
-        assert p.build() == b"1NR"
+        assert p.drain() == b"1NR"
 
     def test_feed_produces_bytes(self, p):
         p.feed(2)
-        assert p.build() == b" \n \n"
+        assert p.drain() == b" \n \n"
 
     def test_cut_flushes(self, p):
         p.cut()
-        assert p.build() == b""
+        assert p.drain() == b""
 
     def test_chaining_works(self, p):
         result = p.bold(True).text("OK").bold(False)

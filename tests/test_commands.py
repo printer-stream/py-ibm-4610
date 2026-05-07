@@ -47,31 +47,31 @@ def p() -> _StubIBM4610:
 class TestText:
     def test_text_str_encodes_cp437(self, p):
         p.text("Hello")
-        assert p.build() == b"Hello"
+        assert p.drain() == b"Hello"
 
     def test_text_bytes_passthrough(self, p):
         p.text(b"\x1B\x40")
-        assert p.build() == b"\x1B\x40"
+        assert p.drain() == b"\x1B\x40"
 
     def test_text_bytearray_passthrough(self, p):
         p.text(bytearray(b"\x01\x02"))
-        assert p.build() == b"\x01\x02"
+        assert p.drain() == b"\x01\x02"
 
     def test_text_custom_encoding(self, p):
         p.text("A", encoding="ascii")
-        assert p.build() == b"A"
+        assert p.drain() == b"A"
 
     def test_lf(self, p):
         p.lf()
-        assert p.build() == b"\n"
+        assert p.drain() == b"\n"
 
     def test_crlf(self, p):
         p.crlf()
-        assert p.build() == b"\r\n"
+        assert p.drain() == b"\r\n"
 
     def test_raw_bytes(self, p):
         p.raw_bytes(b"\xDE\xAD\xBE\xEF")
-        assert p.build() == b"\xDE\xAD\xBE\xEF"
+        assert p.drain() == b"\xDE\xAD\xBE\xEF"
 
 
 # ---------------------------------------------------------------------------
@@ -81,34 +81,34 @@ class TestText:
 class TestFormatting:
     def test_bold_on(self, p):
         p.bold(True)
-        assert p.build() == bytes([0x1B, 0x47, 0x01])
+        assert p.drain() == bytes([0x1B, 0x47, 0x01])
 
     def test_bold_off(self, p):
         p.bold(False)
-        assert p.build() == bytes([0x1B, 0x47, 0x00])
+        assert p.drain() == bytes([0x1B, 0x47, 0x00])
 
     def test_underline_on(self, p):
         p.underline(True)
-        assert p.build() == bytes([0x1B, 0x2D, 0x01])
+        assert p.drain() == bytes([0x1B, 0x2D, 0x01])
 
     def test_underline_off(self, p):
         p.underline(False)
-        assert p.build() == bytes([0x1B, 0x2D, 0x00])
+        assert p.drain() == bytes([0x1B, 0x2D, 0x00])
 
     def test_double_wide_on(self, p):
         p.double_wide(True)
-        assert p.build() == bytes([0x1B, 0x57, 0x01])
+        assert p.drain() == bytes([0x1B, 0x57, 0x01])
 
     def test_double_high_on(self, p):
         p.double_high(True)
-        assert p.build() == bytes([0x1B, 0x68, 0x01])
+        assert p.drain() == bytes([0x1B, 0x68, 0x01])
 
     def test_reverse_video_on(self, p):
         p.reverse_video(True)
-        assert p.build() == bytes([0x1B, 0x48, 0x01])
+        assert p.drain() == bytes([0x1B, 0x48, 0x01])
 
     def test_normal_mode_resets_all_attributes(self, p):
-        data = p.normal_mode().build()
+        data = p.normal_mode().drain()
         assert bytes([0x1B, 0x47, 0x00]) in data  # bold off
         assert bytes([0x1B, 0x57, 0x00]) in data  # double-wide off
         assert bytes([0x1B, 0x68, 0x00]) in data  # double-high off
@@ -117,35 +117,35 @@ class TestFormatting:
 
     def test_scale_font(self, p):
         p.scale_font(width=2, height=3)
-        assert p.build() == bytes([0x1D, 0x21, (2 << 4) | 3])
+        assert p.drain() == bytes([0x1D, 0x21, (2 << 4) | 3])
 
     def test_scale_font_defaults(self, p):
         p.scale_font()
-        assert p.build() == bytes([0x1D, 0x21, 0x00])
+        assert p.drain() == bytes([0x1D, 0x21, 0x00])
 
     def test_select_font_a(self, p):
         p.select_font(FONT_A)
-        assert p.build() == bytes([0x1B, 0x21, FONT_A])
+        assert p.drain() == bytes([0x1B, 0x21, FONT_A])
 
     def test_alignment_center(self, p):
         p.alignment(ALIGN_CENTER)
-        assert p.build() == bytes([0x1B, 0x61, ALIGN_CENTER])
+        assert p.drain() == bytes([0x1B, 0x61, ALIGN_CENTER])
 
     def test_alignment_right(self, p):
         p.alignment(ALIGN_RIGHT)
-        assert p.build() == bytes([0x1B, 0x61, ALIGN_RIGHT])
+        assert p.drain() == bytes([0x1B, 0x61, ALIGN_RIGHT])
 
     def test_font_color(self, p):
         p.font_color(1)
-        assert p.build() == bytes([0x1B, 0x72, 0x01])
+        assert p.drain() == bytes([0x1B, 0x72, 0x01])
 
     def test_rotate_90_on(self, p):
         p.rotate_90(True)
-        assert p.build() == bytes([0x1B, 0x56, 0x01])
+        assert p.drain() == bytes([0x1B, 0x56, 0x01])
 
     def test_rotate_180_off(self, p):
         p.rotate_180(False)
-        assert p.build() == bytes([0x1B, 0x7B, 0x00])
+        assert p.drain() == bytes([0x1B, 0x7B, 0x00])
 
 
 # ---------------------------------------------------------------------------
@@ -155,17 +155,17 @@ class TestFormatting:
 class TestStationSelect:
     def test_select_receipt(self, p):
         p.select_station(STATION_RECEIPT)
-        data = p.build()
+        data = p.drain()
         assert bytes([0x1B, 0x63, 0x30, 0x02]) in data
 
     def test_select_slip(self, p):
         p.select_station(STATION_SLIP)
-        data = p.build()
+        data = p.drain()
         assert bytes([0x1B, 0x63, 0x30, 0x04]) in data
 
     def test_select_label(self, p):
         p.select_station(STATION_LABEL)
-        assert p.build() == bytes([0x1B, 0x63, 0x30, 0x08])
+        assert p.drain() == bytes([0x1B, 0x63, 0x30, 0x08])
 
     def test_select_unknown_station_raises(self, p):
         with pytest.raises(ValueError):
@@ -179,19 +179,19 @@ class TestStationSelect:
 class TestFeed:
     def test_feed_one_line(self, p):
         p.feed(1)
-        assert p.build() == b" \n"
+        assert p.drain() == b" \n"
 
     def test_feed_three_lines(self, p):
         p.feed(3)
-        assert p.build() == b" \n \n \n"
+        assert p.drain() == b" \n \n \n"
 
     def test_feed_units(self, p):
         p.feed_units(50)
-        assert p.build() == bytes([0x1B, 0x4A, 50])
+        assert p.drain() == bytes([0x1B, 0x4A, 50])
 
     def test_feed_reverse(self, p):
         p.feed_reverse(3)
-        assert p.build() == bytes([0x1B, 0x65, 3])
+        assert p.drain() == bytes([0x1B, 0x65, 3])
 
 
 # ---------------------------------------------------------------------------
@@ -201,34 +201,34 @@ class TestFeed:
 class TestSpacing:
     def test_line_spacing(self, p):
         p.line_spacing(30)
-        assert p.build() == bytes([0x1B, 0x33, 30])
+        assert p.drain() == bytes([0x1B, 0x33, 30])
 
     def test_left_margin(self, p):
         p.left_margin(0x0100)
-        assert p.build() == bytes([0x1B, 0x24, 0x01, 0x00])
+        assert p.drain() == bytes([0x1B, 0x24, 0x01, 0x00])
 
     def test_set_tab_stops(self, p):
         p.set_tab_stops([0x0010, 0x0020])
-        data = p.build()
+        data = p.drain()
         assert data[:2] == bytes([0x1B, 0x44])
         assert data[-2:] == b'\x00\x00'
         assert bytes([0x00, 0x10, 0x00, 0x20]) in data
 
     def test_dot_spacing_sbcs(self, p):
         p.dot_spacing(4)
-        assert p.build() == bytes([0x1B, 0x20, 4])
+        assert p.drain() == bytes([0x1B, 0x20, 4])
 
     def test_dot_spacing_dbcs(self, p):
         p.dot_spacing(10, dbcs=True)
-        assert p.build() == bytes([0x1B, 0x52, 10])
+        assert p.drain() == bytes([0x1B, 0x52, 10])
 
     def test_dot_spacing_clamps_sbcs_max(self, p):
         p.dot_spacing(99)
-        assert p.build() == bytes([0x1B, 0x20, 8])
+        assert p.drain() == bytes([0x1B, 0x20, 8])
 
     def test_dot_spacing_clamps_sbcs_min(self, p):
         p.dot_spacing(-5)
-        assert p.build() == bytes([0x1B, 0x20, 0])
+        assert p.drain() == bytes([0x1B, 0x20, 0])
 
 
 # ---------------------------------------------------------------------------
@@ -238,11 +238,11 @@ class TestSpacing:
 class TestAccessories:
     def test_pulse_drawer_defaults(self, p):
         p.pulse_drawer()
-        assert p.build() == bytes([0x1B, 0x70, 0x00, 50, 50])
+        assert p.drain() == bytes([0x1B, 0x70, 0x00, 50, 50])
 
     def test_pulse_drawer_pin1(self, p):
         p.pulse_drawer(pin=1, on_time=20, off_time=30)
-        assert p.build() == bytes([0x1B, 0x70, 0x01, 20, 30])
+        assert p.drain() == bytes([0x1B, 0x70, 0x01, 20, 30])
 
     def test_beep_returns_self(self, p):
         result = p.beep()
@@ -250,7 +250,7 @@ class TestAccessories:
 
     def test_beep_produces_4_bytes(self, p):
         p.beep(duration_100ms=2)
-        data = p.build()
+        data = p.drain()
         assert len(data) == 4
         assert data[0] == 0x1B
         assert data[1] == 0x07
@@ -264,31 +264,31 @@ class TestAccessories:
 class TestBufferControl:
     def test_hold_buffer(self, p):
         p.hold_buffer()
-        assert p.build() == bytes([0x1B, 0x37])
+        assert p.drain() == bytes([0x1B, 0x37])
 
     def test_release_buffer(self, p):
         p.release_buffer()
-        assert p.build() == bytes([0x10, 0x05, 0x31])
+        assert p.drain() == bytes([0x10, 0x05, 0x31])
 
     def test_cancel_buffer(self, p):
         p.cancel_buffer()
-        assert p.build() == bytes([0x10, 0x05, 0x32])
+        assert p.drain() == bytes([0x10, 0x05, 0x32])
 
     def test_status_request(self, p):
         p.status_request()
-        assert p.build() == bytes([0x1B, 0x00, 0x20, 0x00])
+        assert p.drain() == bytes([0x1B, 0x00, 0x20, 0x00])
 
     def test_reset_line_count(self, p):
         p.reset_line_count()
-        assert p.build() == bytes([0x1B, 0x36])
+        assert p.drain() == bytes([0x1B, 0x36])
 
     def test_enable_line_count_on(self, p):
         p.enable_line_count(True)
-        assert p.build() == bytes([0x1B, 0x38, 0x00])  # 0 = enabled (inverted)
+        assert p.drain() == bytes([0x1B, 0x38, 0x00])  # 0 = enabled (inverted)
 
     def test_enable_line_count_off(self, p):
         p.enable_line_count(False)
-        assert p.build() == bytes([0x1B, 0x38, 0x01])
+        assert p.drain() == bytes([0x1B, 0x38, 0x01])
 
 
 # ---------------------------------------------------------------------------
@@ -300,7 +300,7 @@ class TestCut:
         p.text("before cut")
         p.cut()
         # Buffer should be empty after cut
-        assert p.build() == b""
+        assert p.drain() == b""
 
     def test_cut_output_contains_cut_command(self, p):
         # Intercept what send_raw receives
@@ -338,7 +338,7 @@ class TestChaining:
 
     def test_chained_buffer_content(self, p):
         p.bold(True).text("Hi").bold(False)
-        data = p.build()
+        data = p.drain()
         assert bytes([0x1B, 0x47, 0x01]) in data  # bold on
         assert b"Hi" in data
         assert bytes([0x1B, 0x47, 0x00]) in data  # bold off
@@ -352,18 +352,18 @@ class TestBarcode:
     def test_barcode_code39_contains_gs_k(self, p):
         from py_ibm_4610._constants import BC_CODE39
         p.barcode(BC_CODE39, "12345")
-        data = p.build()
+        data = p.drain()
         assert bytes([0x1D, 0x6B, BC_CODE39]) in data
 
     def test_barcode_pdf417_uses_gs_p(self, p):
         p.barcode(BC_PDF417, "test")
-        data = p.build()
+        data = p.drain()
         assert bytes([0x1D, 0x50]) in data
 
     def test_barcode_code128a_contains_length_byte(self, p):
         payload = "ABC"
         p.barcode(BC_CODE128A, payload)
-        data = p.build()
+        data = p.drain()
         # The length byte (3) should appear before the payload
         assert bytes([len(payload)]) + b"ABC" in data
 
@@ -375,7 +375,7 @@ class TestBarcode:
 class TestFlashErase:
     def test_erase_logos(self, p):
         p.erase_logos()
-        assert p.build() == bytes([0x1B, 0x23, 0x01])
+        assert p.drain() == bytes([0x1B, 0x23, 0x01])
 
     def test_erase_flash_invalid_raises(self, p):
         with pytest.raises(ValueError):
@@ -384,7 +384,7 @@ class TestFlashErase:
     def test_erase_flash_dl_graphics(self, p):
         from py_ibm_4610._constants import FLASH_DL_GRAPHICS
         p.erase_flash(FLASH_DL_GRAPHICS)
-        assert p.build() == bytes([0x1B, 0x23, 0x01])
+        assert p.drain() == bytes([0x1B, 0x23, 0x01])
 
 
 # ---------------------------------------------------------------------------
@@ -395,7 +395,7 @@ class TestStatistics:
     def test_statistic_valid_key(self, p):
         key = next(iter(STATISTIC_SUBCMDS))  # first valid key
         p.statistic(key)
-        data = p.build()
+        data = p.drain()
         assert data[:2] == bytes([0x1B, 0x51])
 
     def test_statistic_invalid_raises(self, p):
