@@ -20,7 +20,6 @@ Reference page demo::
 from .version import __version__
 
 # Printer classes
-from .printer.base        import BasePrinter
 from .printer.ibm4610     import IBM4610
 from .printer.ibm4610_1nr import IBM4610_1NR
 
@@ -30,7 +29,7 @@ from .ref_page import ReferencePage
 # Constants — USB
 from ._constants import (
     VENDOR,
-    PRODUCT,
+    PRODUCT_1NR,
     IFACE,
     REPORT_SIZE,
 )
@@ -60,6 +59,10 @@ from ._constants import (
     ROTATE_180,
 )
 
+from ._constants import (
+    ALIGN_CENTER as ALIGN_CENTRE,
+)
+
 # Constants — barcodes
 from ._constants import (
     BC_UPCA,
@@ -77,6 +80,16 @@ from ._constants import (
     HRI_ABOVE,
     HRI_BELOW,
     HRI_BOTH,
+    QR_MODE_BYTE,
+    QR_MODE_ALPHANUM,
+    QR_MODE_NUMERIC,
+    QR_MODE_KANJI,
+    QR_MODE_ECI,
+    QR_MODE_MIXING,
+    QR_EC_L,
+    QR_EC_M,
+    QR_EC_Q,
+    QR_EC_H,
 )
 
 # Constants — graphics
@@ -145,16 +158,16 @@ __all__ = [
     # version
     "__version__",
     # classes
-    "BasePrinter",
     "IBM4610",
     "IBM4610_1NR",
     "ReferencePage",
     # USB
-    "VENDOR", "PRODUCT", "IFACE", "REPORT_SIZE",
+    "VENDOR", "PRODUCT_1NR", "IFACE", "REPORT_SIZE",
     # stations
     "STATION_NONE", "STATION_RECEIPT", "STATION_SLIP", "STATION_LABEL",
     # text
     "ALIGN_LEFT", "ALIGN_CENTER", "ALIGN_RIGHT",
+    "ALIGN_CENTRE",
     "FONT_A", "FONT_B", "FONT_C",
     "SLIP_FONT_A", "SLIP_FONT_B", "SLIP_PAGE2",
     "ROTATE_NONE", "ROTATE_LEFT", "ROTATE_RIGHT", "ROTATE_180",

@@ -12,7 +12,7 @@ Sourced from the official JavaPOS driver decompilation:
 VENDOR: int = 0x04B3
 """IBM/Toshiba USB vendor ID."""
 
-PRODUCT: int = 0x4535
+PRODUCT_1NR: int = 0x4535
 """IBM 4610 SureMark USB product ID."""
 
 IFACE: int = 1
@@ -93,6 +93,34 @@ HRI_NONE: int = 0
 HRI_ABOVE: int = 1
 HRI_BELOW: int = 2
 HRI_BOTH: int = 3
+
+# ---------------------------------------------------------------------------
+# QR code  (GS 4F — firmware 0F.xx+, 1NR/2xR only, receipt station only)
+# ---------------------------------------------------------------------------
+
+# Encoding mode (n1)
+QR_MODE_BYTE:     int = 0x00
+"""Byte mode — lower-case, binary, 8-bit values."""
+QR_MODE_ALPHANUM: int = 0x01
+"""Alpha-numeric mode — 0-9, A-Z, SP $ % * + - . / :"""
+QR_MODE_NUMERIC:  int = 0x02
+"""Numeric mode — decimal digits 0-9 only."""
+QR_MODE_KANJI:    int = 0x03
+"""Kanji mode — X'8140'–X'9FFC' and X'E040'–X'EBBF'."""
+QR_MODE_ECI:      int = 0x04
+"""ECI mode — encoding specified by n3 ECI value."""
+QR_MODE_MIXING:   int = 0x05
+"""Mixing mode — printer auto-selects encoding per segment."""
+
+# Error correction level (n2)
+QR_EC_L: int = 0x00
+"""Level L — ~7% data recovery."""
+QR_EC_M: int = 0x01
+"""Level M — ~15% data recovery (recommended default)."""
+QR_EC_Q: int = 0x02
+"""Level Q — ~25% data recovery."""
+QR_EC_H: int = 0x03
+"""Level H — ~30% data recovery."""
 
 # ---------------------------------------------------------------------------
 # Flash sectors  (POSPrinterCmdConst / IBM4610PrinterCmdConst)

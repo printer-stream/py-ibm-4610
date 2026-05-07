@@ -14,10 +14,6 @@ class TestVersion:
 
 
 class TestClassExports:
-    def test_base_printer_exported(self):
-        from py_ibm_4610 import BasePrinter
-        assert BasePrinter is not None
-
     def test_ibm4610_exported(self):
         from py_ibm_4610 import IBM4610
         assert IBM4610 is not None
@@ -34,16 +30,12 @@ class TestClassExports:
         from py_ibm_4610 import IBM4610, IBM4610_1NR
         assert issubclass(IBM4610_1NR, IBM4610)
 
-    def test_ibm4610_is_subclass_of_base_printer(self):
-        from py_ibm_4610 import BasePrinter, IBM4610
-        assert issubclass(IBM4610, BasePrinter)
-
 
 class TestConstantExports:
     def test_usb_constants(self):
-        from py_ibm_4610 import VENDOR, PRODUCT, IFACE, REPORT_SIZE
+        from py_ibm_4610 import VENDOR, PRODUCT_1NR, IFACE, REPORT_SIZE
         assert VENDOR == 0x04B3
-        assert PRODUCT == 0x4535
+        assert PRODUCT_1NR == 0x4535
         assert IFACE == 1
         assert REPORT_SIZE == 1022
 
