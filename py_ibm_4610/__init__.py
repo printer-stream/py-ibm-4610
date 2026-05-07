@@ -26,6 +26,9 @@ from .printer.ibm4610_1nr import IBM4610_1NR
 # Reference / demo page
 from .ref_page import ReferencePage
 
+# Beeper related
+from .beeper import play_melody, MARIO_MELODY
+
 # Constants — USB
 from ._constants import (
     VENDOR,
@@ -203,4 +206,6 @@ __all__ = [
     "STATISTIC_SUBCMDS",
     # transport
     "make_packet", "MAX_PAYLOAD",
+    # beeper
+    "play_melody", "MARIO_MELODY",
 ]

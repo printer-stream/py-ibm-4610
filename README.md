@@ -7,6 +7,13 @@
 Python library for **IBM / Toshiba 4610 SureMark** POS thermal receipt printers,
 communicating over USB.
 
+There are three communication modes supported:
+* Compatibility Legacy 4610
+* Native Mode
+* EPSON Emulation (RS-232 only)
+
+This library targets the Native Mode which is basically the only viable option for the models with USB interface.
+
 The library has been slop-reverse-engineered from JavaPOS, and then slop-coded into python. It's on the way to getting groomed to be a regular mediocre human-made nonsense.
 
 Communication: [Github Issues](https://github.com/printer-stream/py-ibm-4610/issues)

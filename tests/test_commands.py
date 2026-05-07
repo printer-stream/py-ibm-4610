@@ -256,6 +256,36 @@ class TestAccessories:
         assert data[1] == 0x07
         assert data[2] == 2  # duration
 
+    def test_beep_duration_clamp_zero(self, p):
+        p.beep(duration_100ms=0)
+        assert p.drain()[2] == 1  # clamped to minimum 1
+
+    def test_beep_duration_clamp_overflow(self, p):
+        p.beep(duration_100ms=255)
+        assert p.drain()[2] == 254  # clamped to maximum 254
+
+    def test_beep_high_volume_bit_clear(self, p):
+        # volume > 50 → high volume → bit 7 of freq_vol byte must be 0
+        p.beep(volume=100)
+        assert p.drain()[3] & 0x80 == 0x00
+
+    def test_beep_low_volume_bit_set(self, p):
+        # volume ≤ 50 → low volume → bit 7 of freq_vol byte must be 1
+        p.beep(volume=50)
+        assert p.drain()[3] & 0x80 == 0x80
+
+    def test_beep_frequency_below_range_logs_warning(self, p, caplog):
+        import logging
+        with caplog.at_level(logging.WARNING):
+            p.beep(frequency=100)
+        assert any("100" in r.message for r in caplog.records)
+
+    def test_beep_frequency_above_range_logs_warning(self, p, caplog):
+        import logging
+        with caplog.at_level(logging.WARNING):
+            p.beep(frequency=5000)
+        assert any("5000" in r.message for r in caplog.records)
+
 
 # ---------------------------------------------------------------------------
 # Buffer control / status commands

@@ -20,3 +20,9 @@ Here is an example of how you can print a receipt with a QR Code that contains a
 Source: [qr_code_wifi_access.py](/examples/qr_code_wifi_access.py)
 
 [![toshiba_4610_1nr_qr_code_wifi_access.jpg](https://gh.printer.stream/static/sm/toshiba_4610_1nr_qr_code_wifi_access.jpg)](https://gh.printer.stream/static/toshiba_4610_1nr_qr_code_wifi_access.jpg)
+
+## 3. Printer's ringtone
+
+Some of the 4610 models are equipped with a beeper. It can do beeps of various frequencies and duration. There is most certainly a reason for a beeper to exist in a POS printer, but you can't ignore the opportunity to have some fun with it.
+
+Source: [play_melody.py](/examples/play_melody.py)

@@ -803,9 +803,12 @@ class IBM4610:
         Args:
             duration_100ms: 1–254, each unit ≈ 100 ms.
             frequency:      tone in Hz (mapped to the nearest semitone above
-                            middle-C 261.7 Hz).
+                            middle-C 261.7 Hz). Range from 261 to 3958.
             volume:         > 50 = high volume, ≤ 50 = low volume.
         """
+        if frequency < 261 or frequency > 3958:
+            logger.warning(f"Frequency {frequency} Hz out of range (261-3958), it will play as 261.")
+
         dur     = max(1, min(254, duration_100ms))
         vol_bit = 0x00 if volume > 50 else 0x80
         semitones = 0

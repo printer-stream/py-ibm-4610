@@ -48,6 +48,9 @@ class IBM4610_1NR(IBM4610):
     VENDOR_ID:  int = VENDOR
     #: USB product ID for the 1NR model.
     PRODUCT_ID: int = PRODUCT_1NR
+    
+    BEEPER_FREQ_MIN: int = 261
+    BEEPER_FREQ_MAX: int = 3958
 
     # ------------------------------------------------------------------
     # Station restriction
